@@ -7,8 +7,8 @@
 #include "Geometry.h"
 
 Geometry::Geometry(glm::mat4 modelMatrix, GeometryData& data, std::shared_ptr<Material> material)
-	: _elements(data.indices.size()), _modelMatrix(modelMatrix), _material(material)
-{
+	: _elements(data.indices.size()), _modelMatrix(modelMatrix), _material(material) {
+
 	// create VAO
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
@@ -49,8 +49,7 @@ Geometry::Geometry(glm::mat4 modelMatrix, GeometryData& data, std::shared_ptr<Ma
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-Geometry::~Geometry()
-{
+Geometry::~Geometry() {
 	glDeleteBuffers(1, &_vboPositions);
 	glDeleteBuffers(1, &_vboNormals);
 	glDeleteBuffers(1, &_vboUVs);
@@ -58,8 +57,7 @@ Geometry::~Geometry()
 	glDeleteVertexArrays(1, &_vao);
 }
 
-void Geometry::draw()
-{
+void Geometry::draw() {
 	Shader* shader = _material->getShader();
 	shader->use();
 
@@ -72,18 +70,15 @@ void Geometry::draw()
 	glBindVertexArray(0);
 }
 
-void Geometry::transform(glm::mat4 transformation)
-{
+void Geometry::transform(glm::mat4 transformation) {
 	_modelMatrix = transformation * _modelMatrix;
 }
 
-void Geometry::resetModelMatrix()
-{
+void Geometry::resetModelMatrix() {
 	_modelMatrix = glm::mat4(1);
 }
 
-GeometryData Geometry::createCubeGeometry(float width, float height, float depth)
-{
+GeometryData Geometry::createCubeGeometry(float width, float height, float depth) {
 	GeometryData data;
 
 	data.positions = {
@@ -209,8 +204,7 @@ GeometryData Geometry::createCubeGeometry(float width, float height, float depth
 	return std::move(data);
 }
 
-GeometryData Geometry::createCylinderGeometry(unsigned int segments, float height, float radius)
-{
+GeometryData Geometry::createCylinderGeometry(unsigned int segments, float height, float radius) {
 	GeometryData data;
 
 
@@ -277,8 +271,7 @@ GeometryData Geometry::createCylinderGeometry(unsigned int segments, float heigh
 	return std::move(data);
 }
 
-GeometryData Geometry::createSphereGeometry(unsigned int longitudeSegments, unsigned int latitudeSegments, float radius)
-{
+GeometryData Geometry::createSphereGeometry(unsigned int longitudeSegments, unsigned int latitudeSegments, float radius) {
 	GeometryData data;
 
 

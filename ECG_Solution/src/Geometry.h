@@ -37,8 +37,7 @@ struct GeometryData {
 };
 
 
-class Geometry
-{
+class Geometry {
 protected:
 	/*!
 	 * Vertex array object

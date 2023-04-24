@@ -19,8 +19,7 @@
 /*!
  * Shader class that encapsulates all shader access
  */
-class Shader
-{
+class Shader {
 protected:
 	/*!
 	 * The shader program handle
