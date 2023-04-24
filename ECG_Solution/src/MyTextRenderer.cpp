@@ -5,11 +5,11 @@ MyTextRenderer::MyTextRenderer(std::string const &fontName, unsigned int fontSiz
 }
 
 void MyTextRenderer::renderText(MyShader& shader, std::string text, float x, float y, float scale, glm::vec3 color) {
-	GLint polygonMode;
-	glGetIntegerv(GL_POLYGON_MODE, &polygonMode);
-	if (polygonMode != GL_FILL) {
+	/*GLint prevPolygonMode;
+	glGetIntegerv(GL_POLYGON_MODE, &prevPolygonMode);
+	if (prevPolygonMode != GL_FILL) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+	}*/
 
 	shader.use();
 	shader.setVec3("textColor", glm::vec3(color.x, color.y, color.z));
@@ -51,7 +51,7 @@ void MyTextRenderer::renderText(MyShader& shader, std::string text, float x, flo
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
+	//glPolygonMode(GL_FRONT_AND_BACK, prevPolygonMode);
 }
 
 void MyTextRenderer::initFont(std::string const& fontName) {
