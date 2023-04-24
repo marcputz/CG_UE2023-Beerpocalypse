@@ -1,6 +1,6 @@
 #include "DynamicGameObject.h"
 
-DynamicGameObject::DynamicGameObject(std::string const& path) : GameObject(path) {
+DynamicGameObject::DynamicGameObject(std::string const& path, MyShader& shader) : GameObject(path, shader) {
 
 }
 

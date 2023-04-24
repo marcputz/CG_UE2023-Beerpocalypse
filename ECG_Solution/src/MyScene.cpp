@@ -8,10 +8,10 @@ MyScene::~MyScene() {
 
 }
 
-void MyScene::draw(MyShader& shader) {
+void MyScene::draw() {
 
 	for (GameObject* obj : gameObjects_) {
-		obj->draw(shader);
+		obj->draw();
 	}
 }
 

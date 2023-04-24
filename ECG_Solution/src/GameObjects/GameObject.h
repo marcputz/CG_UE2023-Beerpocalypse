@@ -17,25 +17,26 @@ public:
 
 	MyTransform transform_;
 
-	GameObject(const std::string& path);
+	GameObject(const std::string& path, MyShader& shader);
 	~GameObject();
 
 	void update(float deltaTime);
-	void draw(MyShader& shader);
+	void draw();
 
-	void addChild(const std::string& path);
+	void addChild(const std::string& path, MyShader& shader);
 	void addChild(std::shared_ptr<GameObject> child);
-	//void updateSelfAndChild();
-	//void forceUpdateSelfAndChild();
 
 protected:
 	MyModel* model_;
+	MyShader* shader_;
 
 	std::shared_ptr<Shader> shader;
 	std::shared_ptr<Texture> texture;
 	std::shared_ptr<Material> material;
 
 private:
+	//void updateSelfAndChild();
+	//void forceUpdateSelfAndChild();
 
 };
 

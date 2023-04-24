@@ -107,33 +107,19 @@ int main(int argc, char** argv) {
 
 // ------------------------------------------------------------------
 	MyTextRenderer textRenderer("arial/arial.ttf");
-
 	MyShader textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
-	MyShader blinnPhongShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
-	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
-
-	//MyShader textShader("text.vert", "text.frag");
 	glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
 	textShader.use();
 	textShader.setMat4("projection", textProjection);
 
-	//MyShader blinnPhongShader("blinn-phong.vert", "blinn-phong.frag");
-	//MyShader myLightShader("simpleLightSource.vert", "simpleLightSource.frag");
+	MyShader blinnPhongShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
+	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
 
-	/*
-	MyShader myMaterialShader("material.vert", "material.frag");
-	MyShader myLightShader("simpleLightSource.vert", "simpleLightSource.frag");
-	*/
-
-	//MyModel backpack("backpack/backpack.obj");
-	//MyTransform backpackTransform;
-	//backpackTransform.setRotation(glm::vec3(15.0f, 0.0f, 0.0f));
-
-	GameObject backpack("backpack/backpack.obj");
+	GameObject backpack("backpack/backpack.obj", blinnPhongShader);
 	scene.addGameObject(backpack);
 	backpack.transform_.setLocalPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
 
-	std::shared_ptr<GameObject> backpack2 = std::make_shared<GameObject>("backpack/backpack.obj");
+	std::shared_ptr<GameObject> backpack2 = std::make_shared<GameObject>("backpack/backpack.obj", blinnPhongShader);
 
 	backpack.addChild(backpack2);
 
@@ -240,28 +226,9 @@ int main(int argc, char** argv) {
 		blinnPhongShader.setMat4("projection", projection);
 		glm::mat4 view = camera.getViewMatrix();
 		blinnPhongShader.setMat4("view", view);
-		/*
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-		//model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		*/
-
-		//backpackTransform.setRotation(backpackTransform.getRotation() + glm::vec3(0.0f, 45.0f * deltaTime, 0.0f));
-		/*
-		if (backpackTransform.isDirty()) {
-			backpackTransform.computeModelMatrix();
-		}
-		*/
-
-		//blinnPhongShader.setMat4("model", backpackTransform.getModelMatrix());
-		//backpack.draw(blinnPhongShader);
 
 		scene.update(deltaTime);
-		scene.draw(blinnPhongShader);
-
-		//backpack.update(deltaTime);
-		//backpack.draw(blinnPhongShader);
+		scene.draw();
 
 		glBindVertexArray(lightVAO);
 

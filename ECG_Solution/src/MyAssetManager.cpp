@@ -2,6 +2,7 @@
 
 std::map<std::string, MyShader> MyAssetManager::shaders_;
 std::map<std::string, My2DTexture> MyAssetManager::textures_;
+std::map<std::string, MyModel> MyAssetManager::models_;
 
 MyShader MyAssetManager::loadShader(const char* vertexShaderFileName, const char* fragmentShaderFileName, std::string shaderName) {
 	std::string vertexCode;

@@ -1,8 +1,9 @@
 #include "GameObject.h"
 
 
-GameObject::GameObject(const std::string& path) {
+GameObject::GameObject(const std::string& path, MyShader& shader) {
 	model_ = new MyModel(path);
+	shader_ = &shader;
 }
 
 GameObject::~GameObject() {
@@ -24,21 +25,21 @@ void GameObject::update(float deltaTime) {
 	}
 }
 
-void GameObject::draw(MyShader& shader) {
-	shader.use();
+void GameObject::draw() {
+	shader_->use();
 	if (transform_.isDirty()) {
 		transform_.computeModelMatrix();
 	}
-	shader.setMat4("model", transform_.getModelMatrix());
-	model_->draw(shader);
+	shader_->setMat4("model", transform_.getModelMatrix());
+	model_->draw(*shader_);
 
 	for (auto&& child : children_) {
-		child->draw(shader);
+		child->draw();
 	}
 }
 
-void GameObject::addChild(const std::string& path) {
-	children_.emplace_back(std::make_unique<GameObject>(path));
+void GameObject::addChild(const std::string& path, MyShader& shader) {
+	children_.emplace_back(std::make_unique<GameObject>(path, shader));
 	children_.back()->parent_ = this;
 }
 

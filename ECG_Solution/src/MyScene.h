@@ -14,7 +14,7 @@ public:
 	MyScene(MyFPSCamera &camera);
 	virtual ~MyScene();
 
-	void draw(MyShader& shader);
+	void draw();
 	void update(float deltaTime);
 
 	void addGameObject(GameObject& gameObject);
