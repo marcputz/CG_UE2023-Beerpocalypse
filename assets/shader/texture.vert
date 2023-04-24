@@ -1,4 +1,4 @@
-#version 430 core
+#version 330 core
 /*
 * Copyright 2019 Vienna University of Technology.
 * Institute of Computer Graphics and Algorithms.
