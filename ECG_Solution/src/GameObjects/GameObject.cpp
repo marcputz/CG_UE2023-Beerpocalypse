@@ -11,6 +11,12 @@ GameObject::~GameObject() {
 
 void GameObject::update(float deltaTime) {
 	transform_.setRotation(transform_.getRotation() + glm::vec3(0.0f, 45.0f * deltaTime, 0.0f));
+
+	for (auto&& child : children_) {
+		child->update(deltaTime);
+	}
+
+	updateSelfAndChild();
 }
 
 void GameObject::draw(MyShader& shader) {
@@ -20,6 +26,10 @@ void GameObject::draw(MyShader& shader) {
 	}
 	shader.setMat4("model", transform_.getModelMatrix());
 	model_->draw(shader);
+
+	for (auto&& child : children_) {
+		child->draw(shader);
+	}
 }
 
 void GameObject::addChild(const std::string& path) {
@@ -27,7 +37,7 @@ void GameObject::addChild(const std::string& path) {
 	children_.back()->parent_ = this;
 }
 
-void GameObject::addChild(std::unique_ptr<GameObject> child) {
+void GameObject::addChild(std::shared_ptr<GameObject> child) {
 	children_.emplace_back(std::move(child));
 	children_.back()->parent_ = this;
 }

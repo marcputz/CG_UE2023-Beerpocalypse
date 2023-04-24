@@ -17,7 +17,7 @@ struct MyTextCharacter {
 class MyTextRenderer {
 public:
 	MyTextRenderer(std::string const &fontName, unsigned int fontSize = 48);
-	void renderText(MyShader& shader, std::string text, float x, float y, float scale, glm::vec3 color);
+	void renderText(MyShader& shader, std::string text, float x, float y, float scale, glm::vec3 color, bool setPolygonModeLine = false);
 
 private:
 	std::map<GLchar, MyTextCharacter> characters_;

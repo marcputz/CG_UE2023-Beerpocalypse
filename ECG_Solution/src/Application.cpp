@@ -133,12 +133,12 @@ int main(int argc, char** argv) {
 	scene.addGameObject(backpack);
 	backpack.transform_.setLocalPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
 
-	std::unique_ptr<GameObject> backpack2 = std::make_unique<GameObject>("backpack/backpack.obj");
-	scene.addGameObject(*backpack2.get());
+	std::shared_ptr<GameObject> backpack2 = std::make_shared<GameObject>("backpack/backpack.obj");
+
+	backpack.addChild(backpack2);
+
 	backpack2->transform_.setLocalPosition(glm::vec3(2.0f, 0.0f, 0.0f));
 	backpack2->transform_.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
-
-	backpack.addChild(std::move(backpack2));
 
 	
 	// cube vertices with normals and texture coords
@@ -278,11 +278,11 @@ int main(int argc, char** argv) {
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)SCR_HEIGHT - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f));
-		textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 24.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f));
-		textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f));
-		textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f));
-		textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f));
+		textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)SCR_HEIGHT - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 24.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
 		
 // ------------------------------------------------------------------
 

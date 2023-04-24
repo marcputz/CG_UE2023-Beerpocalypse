@@ -12,7 +12,7 @@
 class GameObject {
 
 public:
-	std::list<std::unique_ptr<GameObject>> children_;
+	std::list<std::shared_ptr<GameObject>> children_;
 	GameObject* parent_ = nullptr;
 
 	MyTransform transform_;
@@ -24,7 +24,7 @@ public:
 	void draw(MyShader& shader);
 
 	void addChild(const std::string& path);
-	void addChild(std::unique_ptr<GameObject> child);
+	void addChild(std::shared_ptr<GameObject> child);
 	void updateSelfAndChild();
 	void forceUpdateSelfAndChild();
 
