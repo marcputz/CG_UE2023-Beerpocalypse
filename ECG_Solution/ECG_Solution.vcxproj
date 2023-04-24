@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="src\My2DTexture.cpp" />
+    <ClCompile Include="src\MyAssetManager.cpp" />
+    <ClCompile Include="src\MyFPSCamera.cpp" />
     <ClCompile Include="src\GameObjects\DynamicGameObject.cpp" />
     <ClCompile Include="src\GameObjects\StaticGameObject.cpp" />
+    <ClCompile Include="src\MyMesh.cpp" />
+    <ClCompile Include="src\MyModel.cpp" />
+    <ClCompile Include="src\MyShader.cpp" />
+    <ClCompile Include="src\MyTextRenderer.cpp" />
+    <ClCompile Include="src\MyScene.cpp" />
+    <ClCompile Include="src\MyTransform.cpp" />
+    <ClCompile Include="src\stb_image.cpp" />
+    <ClInclude Include="src\My2DTexture.h" />
+    <ClInclude Include="src\MyAssetManager.h" />
+    <ClInclude Include="src\MyFPSCamera.h" />
     <ClInclude Include="src\GameObjects\DynamicGameObject.h" />
     <ClInclude Include="src\GameObjects\GameObject.h" />
     <ClInclude Include="src\Camera.h" />
@@ -10,11 +23,16 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\MyMesh.h" />
+    <ClInclude Include="src\MyModel.h" />
+    <ClInclude Include="src\MyShader.h" />
+    <ClInclude Include="src\MyTextRenderer.h" />
+    <ClInclude Include="src\MyScene.h" />
     <ClInclude Include="src\INIReader.h" />
     <ClInclude Include="src\Light.h" />
-    <ClCompile Include="src\OldMain.cpp" />
     <ClCompile Include="src\Material.cpp" />
     <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\MyTransform.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Utils.h" />
@@ -47,6 +65,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>false</CLRSupport>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -100,15 +119,15 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>NO_BONUS;WIN32;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)external\include;$(SolutionDir)ECG_Solution/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/DBT_USE_DOUBLE_PRECISION %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)external\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;BulletCollision_vs2010_debug.lib;BulletDynamics_vs2010_debug.lib;LinearMath_vs2010_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)external\lib;$(SolutionDir)ECG_Solution/src;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;ECG_Library_Debug.lib;BulletCollision_vs2010_debug.lib;BulletDynamics_vs2010_debug.lib;LinearMath_vs2010_debug.lib;assimp-vc143-mtd.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>MSVCRTD;LIBCMT</IgnoreSpecificDefaultLibraries>
       <AdditionalOptions>/DBT_USE_DOUBLE_PRECISION %(AdditionalOptions)</AdditionalOptions>
     </Link>

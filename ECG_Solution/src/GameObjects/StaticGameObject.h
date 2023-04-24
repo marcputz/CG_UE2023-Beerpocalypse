@@ -1,7 +1,6 @@
 #pragma once
 #include "GameObject.h"
-class StaticGameObject :
-    public GameObject
-{
+class StaticGameObject : public GameObject {
+
 };
 
