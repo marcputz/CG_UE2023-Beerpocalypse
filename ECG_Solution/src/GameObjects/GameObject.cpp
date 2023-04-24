@@ -12,11 +12,16 @@ GameObject::~GameObject() {
 void GameObject::update(float deltaTime) {
 	transform_.setRotation(transform_.getRotation() + glm::vec3(0.0f, 45.0f * deltaTime, 0.0f));
 
+	if (parent_) {
+		transform_.computeModelMatrix(parent_->transform_.getModelMatrix());
+	}
+	else {
+		transform_.computeModelMatrix();
+	}
+
 	for (auto&& child : children_) {
 		child->update(deltaTime);
 	}
-
-	updateSelfAndChild();
 }
 
 void GameObject::draw(MyShader& shader) {
@@ -42,7 +47,7 @@ void GameObject::addChild(std::shared_ptr<GameObject> child) {
 	children_.back()->parent_ = this;
 }
 
-void GameObject::updateSelfAndChild() {
+/*void GameObject::updateSelfAndChild() {
 	if (transform_.isDirty()) {
 		forceUpdateSelfAndChild();
 		return;
@@ -64,5 +69,5 @@ void GameObject::forceUpdateSelfAndChild() {
 		child->forceUpdateSelfAndChild();
 	}
 }
-
+*/
 

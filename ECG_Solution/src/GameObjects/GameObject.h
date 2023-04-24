@@ -25,8 +25,8 @@ public:
 
 	void addChild(const std::string& path);
 	void addChild(std::shared_ptr<GameObject> child);
-	void updateSelfAndChild();
-	void forceUpdateSelfAndChild();
+	//void updateSelfAndChild();
+	//void forceUpdateSelfAndChild();
 
 protected:
 	MyModel* model_;
