@@ -34,13 +34,14 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void handleContinuousKeyboardInput(GLFWwindow* window);
 
-// bullet physics
+// PhysX
+void stepPhysics(float deltaTime, bool interactive);
 void static initPhysX();
 void static destroyPhysX();
 
-// game and rendering
-void static initScene();
+// Game-Logic and Rendering
 void static update(float deltaT);
+void static renderHUD(MyTextRenderer textRenderer, MyShader textShader);
 void static draw();
 void static setUniformsOfLights(MyShader& shader);
 
@@ -48,31 +49,31 @@ void static setUniformsOfLights(MyShader& shader);
 /*     GLOBAL VARIABLES      */
 /* ------------------------- */
 
-// window, window-settings
+// Window-Attributes
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 GLFWwindow* window;
 string windowTitle = "Beerpocalypse (CG SS2023)";
 
-// toggles via F1...-Keys
+// Toggle-Flags
 bool enableWireframe = false;
 bool enableBackfaceCulling = true;
 bool enableHUD = true;
 bool enableNormalMapping = false;
 bool enableFlashLight = true;
 
-// camera
+// Camera
 MyFPSCamera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 bool firstMouse = true;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 
-// game-relevant
+// Game Logic
 float deltaTime = 0.0f;
 float framesPerSecond = 0.0f;
 MyScene scene(camera);
 
-// lights
+// Light Positions
 glm::vec3 pointLightPositions[] = {
 	glm::vec3( 0.7f,  0.2f,  2.0f),
 	glm::vec3( 2.3f, -3.3f, -4.0f),
@@ -83,13 +84,10 @@ glm::vec3 pointLightPositions[] = {
 // PhysX
 PxDefaultAllocator gAllocator;
 PxDefaultErrorCallback gErrorCallback;
-
 PxFoundation* gFoundation = nullptr;
 PxPhysics* gPhysics = nullptr;
-
 PxDefaultCpuDispatcher* gDispatcher = nullptr;
 PxScene* gScene = nullptr;
-
 PxMaterial* gMaterial = nullptr;
 PxPvd* gPvd = nullptr;
 
@@ -109,95 +107,97 @@ int main(int argc, char** argv) {
 	initPhysX();
 	std::cout << "Bullet initialized" << std::endl;
 
-	// Initialize the scene
-	initScene();
-
-
-// ------------------------------------------------------------------
+	// Prepare Text Renderer and Shader
 	MyTextRenderer textRenderer("arial/arial.ttf");
 	MyShader textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
-	glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
-	textShader.use();
-	textShader.setMat4("projection", textProjection);
+	{
+		// set the "camera" to be used for text rendering (static fixed orthogonal view-projection)
+		glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
+		textShader.use();
+		textShader.setMat4("projection", textProjection);
+	}
 
+	// Load Shaders
 	MyShader blinnPhongShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
 
-	GameObject backpack("backpack/backpack.obj", blinnPhongShader);
-	scene.addGameObject(backpack);
-	backpack.transform_.setLocalPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
-
+	// Prepare Scene and Game Objects
+	std::shared_ptr<GameObject> backpack = std::make_shared<GameObject>("backpack/backpack.obj", blinnPhongShader);
 	std::shared_ptr<GameObject> backpack2 = std::make_shared<GameObject>("backpack/backpack.obj", blinnPhongShader);
+	{
+		scene.addGameObject(*backpack);
+		backpack->transform_.setLocalPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
 
-	backpack.addChild(backpack2);
+		backpack->addChild(backpack2);
 
-	backpack2->transform_.setLocalPosition(glm::vec3(2.0f, 0.0f, 0.0f));
-	backpack2->transform_.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
+		backpack2->transform_.setLocalPosition(glm::vec3(2.0f, 0.0f, 0.0f));
+		backpack2->transform_.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	}
 
-	
-	// cube vertices with normals and texture coords
-	float vertices[] = {
-		// position			  // normal            // texture coords	
-		// backface
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,  // Left Bottom Back
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,	// Right Top Back
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,	// Right Bottom Back
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,	// Right Top Back
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,	// Left Bottom Back
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,	// Left Top Back
-		// frontface
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,	// Left Bottom Front
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,	// Right Bottom Front
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,	// Right Top Front
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,	// Right Top Front
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,	// Left Top Front
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,	// Left Bottom Front
-		// leftface
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,	// Left Top Front
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,	// Left Top Back
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,	// Left Bottom Back
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,	// Left Bottom Back
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,	// Left Bottom Front
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,	// Left Top Front
-		// rightface
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,	// Right Top Front
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,	// Right Bottom Back
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,	// Right Top Back
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,	// Right Bottom Back
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,	// Right Top Front
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,	// Right Bottom Front
-		 // bottomface
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,	// Left Bottom Back
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,	// Right Bottom Back
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,	// Right Bottom Front
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,	// Right Bottom Front
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,	// Left Bottom Front
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,	// Left Bottom Back
-		// topface
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,	// Left Top Back
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,	// Right Top Front
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,	// Right Top Back
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,	// Right Top Front
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,	// left Top Back
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f 	// Left Top Front
-	};
-	
-	// cube-light vao and vbo
+	// Prepare Light Cubes 
 	unsigned int VBO, lightVAO;
-	glGenVertexArrays(1, &lightVAO);
-	glGenBuffers(1, &VBO);
+	{
+		// cube vertices with normals and texture coords
+		float vertices[] = {
+			// position			  // normal            // texture coords	
+			// backface
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,  // Left Bottom Back
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,	// Right Top Back
+			 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,	// Right Bottom Back
+			 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,	// Right Top Back
+			-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,	// Left Bottom Back
+			-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,	// Left Top Back
+			// frontface
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,	// Left Bottom Front
+			 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f,	// Right Bottom Front
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,	// Right Top Front
+			 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f,	// Right Top Front
+			-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f,	// Left Top Front
+			-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f,	// Left Bottom Front
+			// leftface
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,	// Left Top Front
+			-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,	// Left Top Back
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,	// Left Bottom Back
+			-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,	// Left Bottom Back
+			-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,	// Left Bottom Front
+			-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,	// Left Top Front
+			// rightface
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,	// Right Top Front
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,	// Right Bottom Back
+			 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,	// Right Top Back
+			 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,	// Right Bottom Back
+			 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,	// Right Top Front
+			 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,	// Right Bottom Front
+			 // bottomface
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,	// Left Bottom Back
+			 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,	// Right Bottom Back
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,	// Right Bottom Front
+			 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,	// Right Bottom Front
+			-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,	// Left Bottom Front
+			-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,	// Left Bottom Back
+			// topface
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,	// Left Top Back
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,	// Right Top Front
+			 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,	// Right Top Back
+			 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,	// Right Top Front
+			-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,	// left Top Back
+			-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f 	// Left Top Front
+		};
 
-	glBindVertexArray(lightVAO);
+		// cube-light vao and vbo
+		glGenVertexArrays(1, &lightVAO);
+		glGenBuffers(1, &VBO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBindVertexArray(lightVAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	}
 
 	// vertex attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
-
-// ------------------------------------------------------------------
 
 	/*---- RENDER LOOP -----*/
 	float time = float(glfwGetTime());
@@ -217,59 +217,54 @@ int main(int argc, char** argv) {
 		lastTime = time;
 		framesPerSecond = 1.0f / deltaTime;
 
-		//update(deltaTime);
-		//draw();
-		//drawTeapot();
+		// Set Shader Attributes
+		{
+			blinnPhongShader.use();
+			blinnPhongShader.setVec3("viewPos", camera.position_);
+			setUniformsOfLights(blinnPhongShader);
+			blinnPhongShader.setBool("enableSpotLight", enableFlashLight);
+			blinnPhongShader.setBool("enableNormalMapping", enableNormalMapping);
+		}
 
-// ------------------------------------------------------------------
-		handleContinuousKeyboardInput(window);
-
-		blinnPhongShader.use();
-		blinnPhongShader.setVec3("viewPos", camera.position_);
-		setUniformsOfLights(blinnPhongShader);
-		blinnPhongShader.setBool("enableSpotLight", enableFlashLight);
-		blinnPhongShader.setBool("enableNormalMapping", enableNormalMapping);
-
+		// Prepare Camera (view-projection matrix)
 		glm::mat4 projection = glm::perspective(glm::radians(camera.fov_), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
-		blinnPhongShader.setMat4("projection", projection);
 		glm::mat4 view = camera.getViewMatrix();
+		blinnPhongShader.setMat4("projection", projection);
 		blinnPhongShader.setMat4("view", view);
 
+		// Update the game
+		handleContinuousKeyboardInput(window);
 		scene.update(deltaTime);
 		scene.draw();
 
-		glBindVertexArray(lightVAO);
+		// Render Light-Cubes
+		{
+			glBindVertexArray(lightVAO);
 
-		myLightShader.use();
-		myLightShader.setMat4("projection", projection);
-		myLightShader.setMat4("view", view);
+			myLightShader.use();
+			myLightShader.setMat4("projection", projection);
+			myLightShader.setMat4("view", view);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		for (unsigned int i = 0; i < 4; i++) {
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, pointLightPositions[i]);
-			model = glm::scale(model, glm::vec3(0.2f));
-			myLightShader.setMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glm::mat4 model = glm::mat4(1.0f);
+			for (unsigned int i = 0; i < 4; i++) {
+				model = glm::mat4(1.0f);
+				model = glm::translate(model, pointLightPositions[i]);
+				model = glm::scale(model, glm::vec3(0.2f));
+				myLightShader.setMat4("model", model);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
 		}
 
-		textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)SCR_HEIGHT - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 24.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-		
-// ------------------------------------------------------------------
+		renderHUD(textRenderer, textShader);
 
 		// Swap buffers
 		glfwSwapBuffers(window);
 	}
-	std::cout << "Render Loop STOP" << std::endl;
+
 
 	
 	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &VBO);
-	
 
 	// Breakdown Bullet Physics Engine
 	destroyPhysX();
@@ -285,6 +280,14 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 /*        FUNCTIONS          */
 /* ------------------------- */
+
+void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
+	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)SCR_HEIGHT - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 24.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+}
 
 void static update(float deltaT) {
 	//scene.update(deltaT);
@@ -345,10 +348,6 @@ void static setUniformsOfLights(MyShader &shader) {
 	shader.setFloat("spotLight.quadratic", 0.032f);
 	shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
 	shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-}
-
-void static initScene() {
-
 }
 
 // provides smoother movement than simply handling input events
@@ -586,6 +585,13 @@ void static initOpenGL() {
 	glEnable(GL_CULL_FACE);
 }
 
+void stepPhysics(float deltaTime, bool interactive)
+{
+	PX_UNUSED(interactive);
+	gScene->simulate(deltaTime / 1000.0f);
+	gScene->fetchResults(true);
+}
+
 void static initPhysX() {
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 
@@ -616,7 +622,15 @@ void static initPhysX() {
 }
 
 void static destroyPhysX() {
-	
+	//PX_UNUSED(interactive);
+	gScene->release();
+	gDispatcher->release();
+	gPhysics->release();
+	PxPvdTransport* transport = gPvd->getTransport();
+	gPvd->release();
+	transport->release();
+
+	gFoundation->release();
 }
 
 static void APIENTRY DebugCallbackDefault(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) {
