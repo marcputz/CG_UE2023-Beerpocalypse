@@ -12,7 +12,6 @@ public:
 	unsigned int ID_;
 
 	MyShader();
-	virtual ~MyShader();
 
 	void compile(const char* vertexSourceCode, const char* fragmentSourceCode);
 	void use();

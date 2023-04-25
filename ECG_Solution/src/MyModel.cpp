@@ -1,6 +1,6 @@
 #include "MyModel.h"
 
-MyModel::MyModel(std::string const& path/*, bool gamma*/) /* : gammaCorrection_(gamma)*/ {
+MyModel::MyModel(std::string const& path){
 	const std::string& fullPath = "assets/models/" + path;
 	loadModel(fullPath);
 }
@@ -13,7 +13,7 @@ void MyModel::draw(MyShader& shader) {
 
 void MyModel::loadModel(std::string const &path) {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace); //GenNormals, SplitLargeMeshes/OptimizeMeshes
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes); //GenNormals, SplitLargeMeshes/OptimizeMeshes
 
 	// check if errors occured during loading
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -24,7 +24,13 @@ void MyModel::loadModel(std::string const &path) {
 
 	processNode(scene->mRootNode, scene);
 }
+/*
+void MyModel::create(const aiScene* scene, std::string& directory) {
+	directory_ = directory;
 
+	processNode(scene->mRootNode, scene);
+}
+*/
 void MyModel::processNode(aiNode* node, const aiScene* scene) {
 
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
@@ -35,14 +41,16 @@ void MyModel::processNode(aiNode* node, const aiScene* scene) {
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
 		processNode(node->mChildren[i], scene);
 	}
+
 }
 
 MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 	std::vector<MyVertex> vertices;
 	std::vector<unsigned int> indices;
-	std::vector<MyTexture> textures;
+	std::vector<My2DTexture> textures;
 
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+		// vertex positions
 		MyVertex vertex;
 		glm::vec3 vector;
 		vector.x = mesh->mVertices[i].x;
@@ -50,6 +58,7 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 		vector.z = mesh->mVertices[i].z;
 		vertex.position = vector;
 
+		// add normals to the vertices
 		if (mesh->HasNormals()) {
 			vector.x = mesh->mNormals[i].x;
 			vector.y = mesh->mNormals[i].y;
@@ -57,12 +66,13 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 			vertex.normal = vector;
 		}
 
+		// add texture coords to vertices
 		if (mesh->mTextureCoords[0]) {
 			glm::vec2 vec;
 			vec.x = mesh->mTextureCoords[0][i].x;
 			vec.y = mesh->mTextureCoords[0][i].y;
 			vertex.texCoords = vec;
-			
+
 			vector.x = mesh->mTangents[i].x;
 			vector.y = mesh->mTangents[i].y;
 			vector.z = mesh->mTangents[i].z;
@@ -72,7 +82,7 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 			vector.y = mesh->mBitangents[i].y;
 			vector.z = mesh->mBitangents[i].z;
 			vertex.bitangent = vector;
-			
+
 		} else {
 			vertex.texCoords = glm::vec2(0.0f, 0.0f);
 		}
@@ -80,6 +90,7 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 		vertices.push_back(vertex);
 	}
 
+	// vertex indices
 	for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
 		aiFace face = mesh->mFaces[i];
 		for (unsigned int j = 0; j < face.mNumIndices; j++) {
@@ -89,86 +100,48 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-	std::vector<MyTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+	std::vector<My2DTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, DIFFUSE);
+	for (My2DTexture map : diffuseMaps) {
+		textures.push_back(map);
+	}
 
-	std::vector<MyTexture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	
-	std::vector<MyTexture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
-	textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-	
-	std::vector<MyTexture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
-	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-	
+	std::vector<My2DTexture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, SPECULAR);
+	for (My2DTexture map : specularMaps) {
+		textures.push_back(map);
+	}
+
+	std::vector<My2DTexture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, NORMAL);
+	for (My2DTexture map : normalMaps) {
+		textures.push_back(map);
+	}
+
+	std::vector<My2DTexture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, HEIGHT);
+	for (My2DTexture map : heightMaps) {
+		textures.push_back(map);
+	}
+
 	return MyMesh(vertices, indices, textures);
 }
 
-std::vector<MyTexture> MyModel::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName) {
-	std::vector<MyTexture> textures;
+std::vector<My2DTexture> MyModel::loadMaterialTextures(aiMaterial* mat, aiTextureType type, My2DTextureTypes textureType) {
+	std::vector<My2DTexture> textures;
 
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++) {
 		aiString str;
 		mat->GetTexture(type, i, &str);
 		bool skip = false;
-		// check if texture with same path was already loaded, reuse if it was and skip reading it again
-		for (unsigned int j = 0; j < textures_loaded_.size(); j++) {
-			if (std::strcmp(textures_loaded_[j].path.data(), str.C_Str()) == 0) {
-				textures.push_back(textures_loaded_[j]);
-				skip = true;
-				break;
-			}
-		}
-		if (!skip) {
-			MyTexture texture;
-			texture.id = textureFromFile(str.C_Str(), this->directory_);
-			texture.type = typeName;
-			texture.path = str.C_Str();
-			textures.push_back(texture);
-			textures_loaded_.push_back(texture);
-		}
+
+		std::string pathToTextureFile = directory_ + '/' + std::string(str.C_Str());
+		My2DTexture tex = MyAssetManager::loadTexture(pathToTextureFile.c_str(), textureType, pathToTextureFile);
+
+		textures.push_back(tex);
 	}
 
 	return textures;
 }
 
-unsigned int MyModel::textureFromFile(const char* path, const std::string& directory/*, bool gamma*/) {
-	std::string fileName = std::string(path);
-	fileName = directory + '/' + fileName;
-
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrChannels;
-	unsigned char* data = stbi_load(fileName.c_str(), &width, &height, &nrChannels, 0);
-	if (data) {
-		GLenum format;
-		if (nrChannels == 1) {
-			format = GL_RED;
-		} else {
-			if (nrChannels == 3) {
-				format = GL_RGB;
-			} else {
-				if (nrChannels == 4) {
-					format = GL_RGBA;
-				}
-			}
-		}
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	} else {
-		std::cout << "Texture failed to load at path: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
+/*
+unsigned int MyModel::textureFromFile(const char* path, const std::string& directory) {
+	return 0;
 }
+*/

@@ -6,6 +6,7 @@
     <ClCompile Include="src\MyFPSCamera.cpp" />
     <ClCompile Include="src\GameObjects\DynamicGameObject.cpp" />
     <ClCompile Include="src\GameObjects\StaticGameObject.cpp" />
+    <ClCompile Include="src\MyGeometry.cpp" />
     <ClCompile Include="src\MyMesh.cpp" />
     <ClCompile Include="src\MyModel.cpp" />
     <ClCompile Include="src\MyShader.cpp" />
@@ -23,6 +24,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClInclude Include="src\Geometry.h" />
+    <ClInclude Include="src\MyGeometry.h" />
     <ClInclude Include="src\MyMesh.h" />
     <ClInclude Include="src\MyModel.h" />
     <ClInclude Include="src\MyShader.h" />

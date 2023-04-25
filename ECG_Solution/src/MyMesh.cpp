@@ -1,7 +1,6 @@
 #include "MyMesh.h"
 
-
-MyMesh::MyMesh(std::vector<MyVertex> vertices, std::vector<unsigned int> indices, std::vector<MyTexture> textures) {
+MyMesh::MyMesh(std::vector<MyVertex> vertices, std::vector<unsigned int> indices, std::vector<My2DTexture> textures) {
 	this->vertices_ = vertices;
 	this->indices_ = indices;
 	this->textures_ = textures;
@@ -14,32 +13,39 @@ void MyMesh::draw(MyShader& shader) {
 	unsigned int specularNr = 1;
 	unsigned int normalNr = 1;
 	unsigned int heightNr = 1;
+
 	for (unsigned int i = 0; i < textures_.size(); i++) {
-		glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit
-		// retrieve texture number
+		glActiveTexture(GL_TEXTURE0 + i);
+
 		std::string number;
-		std::string name = textures_[i].type;
-		if (name == "texture_diffuse") {
+		std::string name;
+
+		if (textures_[i].type_ == DIFFUSE) {
+			name = "texture_diffuse";
 			number = std::to_string(diffuseNr++);
 		} else {
-			if (name == "texture_specular") {
+			if (textures_[i].type_ == SPECULAR) {
+				name = "texture_specular";
 				number = std::to_string(specularNr++);
 			} else {
-				if (name == "texture_normal") {
+				if (textures_[i].type_ == NORMAL) {
+					name = "texture_normal";
 					number = std::to_string(normalNr++);
 				} else {
-					if (name == "texture_height") {
+					if (textures_[i].type_ == HEIGHT) {
+						name = "texture_height";
 						number = std::to_string(heightNr++);
 					}
 				}
 			}
 		}
 		shader.setInt((name + number).c_str(), i);
-		glBindTexture(GL_TEXTURE_2D, textures_[i].id);
+		textures_[i].bind();
 	}
 
 	glBindVertexArray(VAO_);
 	glDrawElements(GL_TRIANGLES, indices_.size(), GL_UNSIGNED_INT, 0);
+
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE0);
 }
@@ -66,7 +72,6 @@ void MyMesh::setupMesh() {
 	// vertex texture coords 
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MyVertex), (void*)offsetof(MyVertex, texCoords));
-	
 	// vertex tangent
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(MyVertex), (void*)offsetof(MyVertex, tangent));

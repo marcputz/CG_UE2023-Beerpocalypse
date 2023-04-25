@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "MyShader.h"
+#include "My2DTexture.h"
 
 #define MAX_BONE_INFLUENCE 4
 
@@ -21,19 +22,13 @@ struct MyVertex {
 	*/
 };
 
-struct MyTexture {
-	unsigned int id;
-	std::string type;
-	std::string path;
-};
-
 class MyMesh {
 public:
 	std::vector<MyVertex> vertices_;
 	std::vector<unsigned int> indices_;
-	std::vector<MyTexture> textures_;
+	std::vector<My2DTexture> textures_;
 
-	MyMesh(std::vector<MyVertex> vertices, std::vector<unsigned int> indices, std::vector<MyTexture> textures);
+	MyMesh(std::vector<MyVertex> vertices, std::vector<unsigned int> indices, std::vector<My2DTexture> textures);
 	void draw(MyShader& shader);
 
 private:

@@ -4,10 +4,6 @@ MyShader::MyShader() : ID_(0) {
 	
 }
 
-MyShader::~MyShader() {
-
-}
-
 void MyShader::compile(const char* vertexSourceCode, const char* fragmentSourceCode) {
 	unsigned int vertex, fragment;
 	int success;
