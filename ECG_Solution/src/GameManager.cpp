@@ -24,6 +24,8 @@ void GameManager::draw() {
 }
 
 void GameManager::stepUpdate(float deltaTime) {
+	player_->update(deltaTime);
+
 	for (GameObject* obj : gameObjects_) {
 		obj->update(deltaTime);
 	}
@@ -34,6 +36,7 @@ void GameManager::stepUpdate(float deltaTime) {
 
 void GameManager::handleInput(GLFWwindow* window, float deltaTime) {
 	//camera_->handleInput(window, deltaTime);
+	player_->handleInput(window, deltaTime);
 	for (GameObject* obj : gameObjects_) {
 		obj->handleInput(window, deltaTime);
 	}

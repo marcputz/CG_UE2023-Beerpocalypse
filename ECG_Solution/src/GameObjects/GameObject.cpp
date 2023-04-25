@@ -1,26 +1,30 @@
 #include "GameObject.h"
 
+
+
 // Constructor
 
 GameObject::GameObject(MyShader& shader, PxPhysics* physics, GameObjectInfo& goInfo) {
+	if (goInfo.modelPath != "") {
+		model_ = new MyModel(goInfo.modelPath);
+		shader_ = &shader;
 
-	model_ = new MyModel(goInfo.modelPath);
-	shader_ = &shader;
+		actorType_ = goInfo.actorType;
 
-	PxMaterial* material = physics->createMaterial(goInfo.staticFriction, goInfo.dynamicFriction, goInfo.restitution);
-	//PxShape* shape = physics->createShape(PxBoxGeometry(1, 1, 1), *material);
-	PxShape* shape = physics->createShape(PxBoxGeometry(model_->boundingBox_.absDiff.x / 2.0f, model_->boundingBox_.absDiff.y / 2.0f, model_->boundingBox_.absDiff.z / 2.0f), *material);
+		PxMaterial* material = physics->createMaterial(goInfo.staticFriction, goInfo.dynamicFriction, goInfo.restitution);
+		//PxShape* shape = physics->createShape(PxBoxGeometry(1, 1, 1), *material);
+		PxShape* shape = physics->createShape(PxBoxGeometry(model_->boundingBox_.absDiff.x / 2.0f, model_->boundingBox_.absDiff.y / 2.0f, model_->boundingBox_.absDiff.z / 2.0f), *material);
 
-	switch (goInfo.actorType) {
-	case GameObjectActorType::TYPE_DYNAMIC:
-		actor_ = physics->createRigidDynamic(PxTransform(goInfo.location));
-		break;
-	default:
-		actor_ = physics->createRigidStatic(PxTransform(goInfo.location));
-		break;
+		switch (goInfo.actorType) {
+		case GameObjectActorType::TYPE_DYNAMIC:
+			actor_ = physics->createRigidDynamic(PxTransform(goInfo.location));
+			break;
+		default:
+			actor_ = physics->createRigidStatic(PxTransform(goInfo.location));
+			break;
+		}
+		actor_->attachShape(*shape);
 	}
-	actor_->attachShape(*shape);
-
 }
 
 // OpenGL Methods
@@ -67,6 +71,22 @@ void GameObject::setPosition(physx::PxVec3 pos) {
 void GameObject::setPosition(float x, float y, float z) {
 	PxTransform newTrans(x, y, z);
 	actor_->setGlobalPose(newTrans);
+}
+
+PxVec3 GameObject::getPosition() {
+	return actor_->getGlobalPose().p;
+}
+
+void GameObject::move(physx::PxVec3 moveVector) {
+	if (actorType_ == TYPE_DYNAMIC) {
+
+		PxVec3 pos = this->getPosition();
+		pos = pos + moveVector;
+		this->setPosition(pos);
+
+		//PxRigidDynamic* rigidDynamic = static_cast<PxRigidDynamic*>(actor_);
+		//rigidDynamic->setLinearVelocity(direction);
+	}
 }
 
 // Children-Parent Methods

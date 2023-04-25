@@ -30,6 +30,7 @@ protected:
 
 	// Physics
 	PxRigidActor* actor_;
+	GameObjectActorType actorType_;
 
 public:
 
@@ -51,6 +52,8 @@ public:
 	void setPosition(glm::vec3 pos);
 	void setPosition(physx::PxVec3 pos);
 	void setPosition(float x, float y, float z);
+	PxVec3 getPosition();
+	void move(physx::PxVec3 moveVector);
 
 	// Game-logic and OpenGL
 	virtual void update(float deltaTime) = 0;

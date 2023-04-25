@@ -126,6 +126,15 @@ int main(int argc, char** argv) {
 	// Setup Game Objects
 	GameManager gameManager(gPhysics, camera);
 
+	// Init Player
+	GameObjectInfo playerInfo;
+	playerInfo.location = PxVec3(0, 0, 0);
+	playerInfo.staticFriction = playerInfo.dynamicFriction = playerInfo.restitution = 0.5;
+	playerInfo.actorType = TYPE_DYNAMIC;
+	Player player(defaultShader, gPhysics, playerInfo, camera);
+
+	gameManager.setPlayer(&player);
+
 	// Init Objects
 	GameObjectInfo backpackInfo;
 	backpackInfo.modelPath = "backpack/backpack.obj";
@@ -143,7 +152,7 @@ int main(int argc, char** argv) {
 	gameManager.addObject(&backpack);
 	gameManager.addObject(&backpack2);
 
-	//camera.attachToSubject(&backpack);
+	camera.attachToSubject(&player);
 
 	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");

@@ -2,7 +2,6 @@
 
 #include <string>
 #include <PxPhysicsAPI.h>
-#include <GameObjects/GameObjectActorType.cpp>
 
 using namespace std;
 using namespace physx;
