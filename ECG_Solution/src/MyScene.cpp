@@ -22,6 +22,6 @@ void MyScene::update(float deltaTime) {
 	}
 }
 
-void MyScene::addGameObject(GameObject& gameObject) {
-	gameObjects_.push_back(&gameObject);
+void MyScene::addGameObject(GameObject* gameObject) {
+	gameObjects_.push_back(gameObject);
 }

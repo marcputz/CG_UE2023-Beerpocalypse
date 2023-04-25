@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 
 #include "MyFPSCamera.h"
-#include "GameObjects/DynamicGameObject.h"
+#include "GameObjects/GameObject.h"
 
 class MyScene {
 public:
@@ -17,7 +17,7 @@ public:
 	void draw();
 	void update(float deltaTime);
 
-	void addGameObject(GameObject& gameObject);
+	void addGameObject(GameObject* gameObject);
 
 protected:
 
