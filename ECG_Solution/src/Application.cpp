@@ -37,11 +37,12 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void handleContinuousKeyboardInput(GLFWwindow* window);
 
 // PhysX
-void stepPhysics(float deltaTime);
+void static stepPhysics(float deltaTime);
 void static initPhysX();
 void static destroyPhysX();
 
 // Game-Logic and Rendering
+void static initLevel();
 void static update(float deltaT);
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader);
 void static draw();
@@ -69,6 +70,9 @@ MyFPSCamera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 bool firstMouse = true;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
+
+// Shaders
+MyShader defaultShader;
 
 // Game Logic
 float deltaTime = 0.0f;
@@ -105,9 +109,9 @@ int main(int argc, char** argv) {
 	initOpenGL();
 	std::cout << "OpenGL initialized" << std::endl;
 
-	// Initialize Bullet Physics Engine
+	// Initialize PhysX Physics Engine
 	initPhysX();
-	std::cout << "Bullet initialized" << std::endl;
+	std::cout << "PhysX initialized" << std::endl;
 
 	// Prepare Text Renderer and Shader
 	MyTextRenderer textRenderer("arial/arial.ttf");
@@ -120,18 +124,11 @@ int main(int argc, char** argv) {
 	}
 
 	// Load Shaders
-	MyShader blinnPhongShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
+	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
 
 	// Prepare Scene and Game Objects
-	StaticBackpack backpack(blinnPhongShader, gPhysics);
-	Backpack backpack2(blinnPhongShader, gPhysics);
-	scene.addGameObject(&backpack);
-	scene.addGameObject(&backpack2);
-	physicsScene->addActor(*(backpack.actor_));
-	physicsScene->addActor(*(backpack2.actor_));
-	backpack.setPosition(0.55, -5, 0);
-	backpack2.setPosition(0, 5, 0);
+	initLevel();
 
 	// Prepare Light Cubes 
 	unsigned int VBO, lightVAO;
@@ -220,18 +217,18 @@ int main(int argc, char** argv) {
 
 		// Set Shader Attributes
 		{
-			blinnPhongShader.use();
-			blinnPhongShader.setVec3("viewPos", camera.position_);
-			setUniformsOfLights(blinnPhongShader);
-			blinnPhongShader.setBool("enableSpotLight", enableFlashLight);
-			blinnPhongShader.setBool("enableNormalMapping", enableNormalMapping);
+			defaultShader.use();
+			defaultShader.setVec3("viewPos", camera.position_);
+			setUniformsOfLights(defaultShader);
+			defaultShader.setBool("enableSpotLight", enableFlashLight);
+			defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 		}
 
 		// Prepare Camera (view-projection matrix)
 		glm::mat4 projection = glm::perspective(glm::radians(camera.fov_), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
 		glm::mat4 view = camera.getViewMatrix();
-		blinnPhongShader.setMat4("projection", projection);
-		blinnPhongShader.setMat4("view", view);
+		defaultShader.setMat4("projection", projection);
+		defaultShader.setMat4("view", view);
 
 		// Update the game
 		handleContinuousKeyboardInput(window);
@@ -282,20 +279,29 @@ int main(int argc, char** argv) {
 /*        FUNCTIONS          */
 /* ------------------------- */
 
+
+void static initLevel() {
+	// Initialize GameObjects
+	StaticBackpack backpack(defaultShader, gPhysics);
+	Backpack backpack2(defaultShader, gPhysics);
+	backpack.setPosition(0.55, -5, 0);
+	backpack2.setPosition(0, 5, 0);
+
+	// Add to OpenGL scene for rendering
+	scene.addGameObject(&backpack);
+	scene.addGameObject(&backpack2);
+
+	// Add to physics Scene for calculation
+	physicsScene->addActor(*(backpack.getActor()));
+	physicsScene->addActor(*(backpack2.getActor()));
+}
+
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)SCR_HEIGHT - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
 	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 24.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
 	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
 	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
 	textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-}
-
-void static update(float deltaT) {
-	//scene.update(deltaT);
-}
-
-void static draw() {
-	//scene.draw();
 }
 
 void static setUniformsOfLights(MyShader &shader) {
@@ -586,7 +592,7 @@ void static initOpenGL() {
 	glEnable(GL_CULL_FACE);
 }
 
-void stepPhysics(float deltaTime)
+void static stepPhysics(float deltaTime)
 {
 	//PX_UNUSED(interactive);
 	physicsScene->simulate(deltaTime);
