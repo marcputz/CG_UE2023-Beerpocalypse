@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <bullet/btBulletDynamicsCommon.h>
 #include "GameObjects/GameObject.h"
+#include "GameObjects/Dynamic/Backpack/Backpack.h"
 #include "MyScene.h"
 #include "MyShader.h"
 #include "stb/stb_image.h"
@@ -13,6 +14,7 @@
 #include "MyTransform.h"
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
+#include <GameObjects/Static/StaticBackpack/StaticBackpack.h>
 
 using namespace physx;
 using namespace std;
@@ -35,7 +37,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void handleContinuousKeyboardInput(GLFWwindow* window);
 
 // PhysX
-void stepPhysics(float deltaTime, bool interactive);
+void stepPhysics(float deltaTime);
 void static initPhysX();
 void static destroyPhysX();
 
@@ -87,7 +89,7 @@ PxDefaultErrorCallback gErrorCallback;
 PxFoundation* gFoundation = nullptr;
 PxPhysics* gPhysics = nullptr;
 PxDefaultCpuDispatcher* gDispatcher = nullptr;
-PxScene* gScene = nullptr;
+PxScene* physicsScene = nullptr;
 PxMaterial* gMaterial = nullptr;
 PxPvd* gPvd = nullptr;
 
@@ -122,17 +124,14 @@ int main(int argc, char** argv) {
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
 
 	// Prepare Scene and Game Objects
-	std::shared_ptr<GameObject> backpack = std::make_shared<GameObject>("backpack/backpack.obj", blinnPhongShader);
-	std::shared_ptr<GameObject> backpack2 = std::make_shared<GameObject>("backpack/backpack.obj", blinnPhongShader);
-	{
-		scene.addGameObject(*backpack);
-		backpack->transform_.setLocalPosition(glm::vec3(-2.0f, 0.0f, 0.0f));
-
-		backpack->addChild(backpack2);
-
-		backpack2->transform_.setLocalPosition(glm::vec3(2.0f, 0.0f, 0.0f));
-		backpack2->transform_.setScale(glm::vec3(0.5f, 0.5f, 0.5f));
-	}
+	StaticBackpack backpack("backpack/backpack.obj", blinnPhongShader, gPhysics);
+	Backpack backpack2("backpack/backpack.obj", blinnPhongShader, gPhysics);
+	scene.addGameObject(&backpack);
+	scene.addGameObject(&backpack2);
+	physicsScene->addActor(*(backpack.rigidActor_));
+	physicsScene->addActor(*(backpack2.rigidActor_));
+	backpack.setPosition(0.55, -5, 0);
+	backpack2.setPosition(0, 5, 0);
 
 	// Prepare Light Cubes 
 	unsigned int VBO, lightVAO;
@@ -216,6 +215,8 @@ int main(int argc, char** argv) {
 		deltaTime = time - lastTime;
 		lastTime = time;
 		framesPerSecond = 1.0f / deltaTime;
+
+		stepPhysics(deltaTime);
 
 		// Set Shader Attributes
 		{
@@ -585,11 +586,11 @@ void static initOpenGL() {
 	glEnable(GL_CULL_FACE);
 }
 
-void stepPhysics(float deltaTime, bool interactive)
+void stepPhysics(float deltaTime)
 {
-	PX_UNUSED(interactive);
-	gScene->simulate(deltaTime / 1000.0f);
-	gScene->fetchResults(true);
+	//PX_UNUSED(interactive);
+	physicsScene->simulate(deltaTime);
+	physicsScene->fetchResults(true);
 }
 
 void static initPhysX() {
@@ -620,9 +621,9 @@ void static initPhysX() {
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	gScene = gPhysics->createScene(sceneDesc);
+	physicsScene = gPhysics->createScene(sceneDesc);
 
-	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
+	PxPvdSceneClient* pvdClient = physicsScene->getScenePvdClient();
 	if (pvdClient)
 	{
 		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
@@ -631,13 +632,13 @@ void static initPhysX() {
 	}
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
-	PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
-	gScene->addActor(*groundPlane);
+	//PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
+	//gScene->addActor(*groundPlane);
 }
 
 void static destroyPhysX() {
 	//PX_UNUSED(interactive);
-	gScene->release();
+	physicsScene->release();
 	gDispatcher->release();
 	gPhysics->release();
 	PxPvdTransport* transport = gPvd->getTransport();

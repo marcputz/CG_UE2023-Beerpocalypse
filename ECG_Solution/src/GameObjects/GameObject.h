@@ -8,35 +8,46 @@
 #include "Texture.h"
 #include "MyModel.h"
 #include "MyTransform.h"
+#include <PxPhysicsAPI.h>
+
+using namespace physx;
+using namespace std;
 
 class GameObject {
-
-public:
-	std::list<std::shared_ptr<GameObject>> children_;
+/* VARIABLES */
+protected:
+	// Parent-Child variables
+	std::list<GameObject*> children_;
 	GameObject* parent_ = nullptr;
 
-	MyTransform transform_;
-
-	GameObject(const std::string& path, MyShader& shader);
-	~GameObject();
-
-	void update(float deltaTime);
-	void draw();
-
-	void addChild(const std::string& path, MyShader& shader);
-	void addChild(std::shared_ptr<GameObject> child);
-
-protected:
+	// Vertex-geometry
 	MyModel* model_;
+	
+	// Shader
 	MyShader* shader_;
 
-	std::shared_ptr<Shader> shader;
-	std::shared_ptr<Texture> texture;
-	std::shared_ptr<Material> material;
+public:
 
-private:
-	//void updateSelfAndChild();
-	//void forceUpdateSelfAndChild();
+	PxRigidActor* rigidActor_ = nullptr;
 
+//---------------------------------------------------------------
+/* FUNCTIONS */
+protected:
+	// Constructor
+	explicit GameObject(const std::string& path, MyShader& shader);
+
+	// Game-logic and OpenGL
+	void updateChildren(float deltaTime);
+
+public:
+	// Parent-Child management functions
+	void addChild(GameObject* child);
+
+	// Game-logic and OpenGL
+	virtual void update(float deltaTime) = 0;
+	void draw();
+	void setPosition(glm::vec3 pos);
+	void setPosition(physx::PxVec3 pos);
+	virtual void setPosition(float x, float y, float z) = 0;
 };
 
