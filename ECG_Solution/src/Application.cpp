@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
 	GameObjectInfo backpackInfo;
 	backpackInfo.modelPath = "backpack/backpack.obj";
 	backpackInfo.location = PxVec3(0, -2, 0);
-	backpackInfo.actorType = TYPE_STATIC;
+	backpackInfo.actorType = TYPE_DYNAMIC;
 	backpackInfo.staticFriction = 0.5;
 	backpackInfo.dynamicFriction = 0.5;
 	backpackInfo.restitution = 0.5;
@@ -138,6 +138,8 @@ int main(int argc, char** argv) {
 
 	// Add to game
 	gameManager.addObject(&backpack);
+
+	camera.attachToSubject(&backpack);
 
 	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
@@ -412,6 +414,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		case GLFW_KEY_KP_SUBTRACT:
 			// decrease illumination
 			std::cout << "Press -" << std::endl;
+			break;
+		case GLFW_KEY_T:
+			camera.detach();
 			break;
 	}
 }

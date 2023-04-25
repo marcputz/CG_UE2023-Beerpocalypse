@@ -28,6 +28,8 @@ void GameManager::stepUpdate(float deltaTime) {
 		obj->update(deltaTime);
 	}
 	stepPhysics(deltaTime);
+
+	camera_->update();
 }
 
 void GameManager::handleInput(GLFWwindow* window, float deltaTime) {

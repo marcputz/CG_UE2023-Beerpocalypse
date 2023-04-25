@@ -72,12 +72,53 @@ void MyFPSCamera::processMouseScrolling(float yOffset) {
 	}
 }
 
-void MyFPSCamera::update() {
+void MyFPSCamera::attachToSubject(GameObject* subject) {
+	subject_ = subject;
+}
 
+bool MyFPSCamera::isAttached() {
+	return subject_ != nullptr;
+}
+
+void MyFPSCamera::detach() {
+	subject_ = nullptr;
+}
+
+void MyFPSCamera::update() {
+	if (subject_) {
+		glm::vec3 subjectPos(subject_->getActor()->getGlobalPose().p.x, subject_->getActor()->getGlobalPose().p.y, subject_->getActor()->getGlobalPose().p.z);
+		glm::vec3 combinedPos = subjectPos + relativePosition_;
+		position_ = combinedPos;
+	}
 }
 
 // recalculate front, right and up vectors
 void MyFPSCamera::updateCamVectors() {
+	/*
+	if (subject_) {
+		glm::vec3 front;
+		PxQuat q = subject_->getActor()->getGlobalPose().q;
+		
+		float pitch = asin(2.0 * (q.y * q.w - q.z + q.x));
+		float yaw = atan2(2.0 * (q.z * q.w + q.x * q.y), -1.0 + 2.0 * (q.w * q.w + q.x * q.x));
+		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front.y = sin(glm::radians(pitch));
+		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front_ = glm::normalize(front);
+
+		right_ = glm::normalize(glm::cross(front_, worldUp_));
+		up_ = glm::normalize(glm::cross(right_, front_));
+	} else {
+		glm::vec3 front;
+		front.x = cos(glm::radians(yaw_)) * cos(glm::radians(pitch_));
+		front.y = sin(glm::radians(pitch_));
+		front.z = sin(glm::radians(yaw_)) * cos(glm::radians(pitch_));
+		front_ = glm::normalize(front);
+
+		right_ = glm::normalize(glm::cross(front_, worldUp_));
+		up_ = glm::normalize(glm::cross(right_, front_));
+	}
+	*/
 	glm::vec3 front;
 	front.x = cos(glm::radians(yaw_)) * cos(glm::radians(pitch_));
 	front.y = sin(glm::radians(pitch_));
