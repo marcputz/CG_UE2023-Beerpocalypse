@@ -12,7 +12,10 @@
 #include "MyTextRenderer.h"
 #include "MyTransform.h"
 #include "MyAssetManager.h"
+#include "PxPhysicsAPI.h"
 
+using namespace physx;
+using namespace std;
 
 
 /* ------------------------- */
@@ -32,8 +35,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void handleContinuousKeyboardInput(GLFWwindow* window);
 
 // bullet physics
-void static initBullet();
-void static destroyBullet();
+void static initPhysX();
+void static destroyPhysX();
 
 // game and rendering
 void static initScene();
@@ -77,13 +80,18 @@ glm::vec3 pointLightPositions[] = {
 	glm::vec3( 0.0f,  0.0f, -3.0f)
 };
 
-// Bullet Physics Engine
-btDefaultCollisionConfiguration* collisionConfiguration;
-btCollisionDispatcher* collisionDispatcher;
-btBroadphaseInterface* overlappingPairCache;
-btSequentialImpulseConstraintSolver* solver;
-btDiscreteDynamicsWorld* dynamicsWorld;
+// PhysX
+PxDefaultAllocator gAllocator;
+PxDefaultErrorCallback gErrorCallback;
 
+PxFoundation* gFoundation = nullptr;
+PxPhysics* gPhysics = nullptr;
+
+PxDefaultCpuDispatcher* gDispatcher = nullptr;
+PxScene* gScene = nullptr;
+
+PxMaterial* gMaterial = nullptr;
+PxPvd* gPvd = nullptr;
 
 /* ------------------------- */
 /*           MAIN            */
@@ -98,7 +106,7 @@ int main(int argc, char** argv) {
 	std::cout << "OpenGL initialized" << std::endl;
 
 	// Initialize Bullet Physics Engine
-	initBullet();
+	initPhysX();
 	std::cout << "Bullet initialized" << std::endl;
 
 	// Initialize the scene
@@ -264,7 +272,7 @@ int main(int argc, char** argv) {
 	
 
 	// Breakdown Bullet Physics Engine
-	destroyBullet();
+	destroyPhysX();
 
 	// Breakdown OpenGL
 	destroyFramework();
@@ -578,21 +586,37 @@ void static initOpenGL() {
 	glEnable(GL_CULL_FACE);
 }
 
-void static initBullet() {
-	collisionConfiguration = new btDefaultCollisionConfiguration();
-	collisionDispatcher = new btCollisionDispatcher(collisionConfiguration);
-	overlappingPairCache = new btDbvtBroadphase();
-	solver = new btSequentialImpulseConstraintSolver;
-	dynamicsWorld = new btDiscreteDynamicsWorld(collisionDispatcher, overlappingPairCache, solver, collisionConfiguration);
-	dynamicsWorld->setGravity(btVector3(0, -10, 0));
+void static initPhysX() {
+	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
+
+	gPvd = PxCreatePvd(*gFoundation);
+	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+	gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
+
+	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
+
+	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
+	gDispatcher = PxDefaultCpuDispatcherCreate(2);
+	sceneDesc.cpuDispatcher = gDispatcher;
+	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	gScene = gPhysics->createScene(sceneDesc);
+
+	PxPvdSceneClient* pvdClient = gScene->getScenePvdClient();
+	if (pvdClient)
+	{
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+	}
+	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
+
+	PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
+	gScene->addActor(*groundPlane);
 }
 
-void static destroyBullet() {
-	delete dynamicsWorld;
-	delete solver;
-	delete overlappingPairCache;
-	delete collisionDispatcher;
-	delete collisionConfiguration;
+void static destroyPhysX() {
+	
 }
 
 static void APIENTRY DebugCallbackDefault(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) {
