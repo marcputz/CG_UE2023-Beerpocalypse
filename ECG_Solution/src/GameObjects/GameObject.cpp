@@ -19,7 +19,7 @@ glm::mat4 pxMat44ToGlmMat4(PxMat44 mat) {
 }
 
 void GameObject::draw() {
-	PxTransform transform = rigidActor_->getGlobalPose();
+	PxTransform transform = actor_->getGlobalPose();
 	PxMat44 pxMat = PxMat44(transform);
 	glm::mat4 modelMatrix = pxMat44ToGlmMat4(pxMat);
 
@@ -30,6 +30,10 @@ void GameObject::draw() {
 	for (auto&& child : children_) {
 		child->draw();
 	}
+}
+
+PxRigidActor* GameObject::getActor() {
+	return actor_;
 }
 
 void GameObject::setPosition(glm::vec3 pos) {

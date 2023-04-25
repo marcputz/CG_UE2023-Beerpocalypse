@@ -12,5 +12,5 @@ public:
 	void update(float deltaTime);
 
 	// Constructors
-	Backpack(const std::string& path, MyShader& shader, PxPhysics* physics) : DynamicGameObject(path, shader, physics) {}
+	Backpack(MyShader& shader, PxPhysics* physics) : DynamicGameObject("backpack/backpack.obj", shader, physics) {}
 };

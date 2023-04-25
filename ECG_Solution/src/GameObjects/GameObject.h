@@ -26,9 +26,10 @@ protected:
 	// Shader
 	MyShader* shader_;
 
-public:
+	// Physics
+	PxRigidActor* actor_ = nullptr;
 
-	PxRigidActor* rigidActor_ = nullptr;
+public:
 
 //---------------------------------------------------------------
 /* FUNCTIONS */
@@ -42,6 +43,9 @@ protected:
 public:
 	// Parent-Child management functions
 	void addChild(GameObject* child);
+
+	// Physics
+	PxRigidActor* getActor();
 
 	// Game-logic and OpenGL
 	virtual void update(float deltaTime) = 0;

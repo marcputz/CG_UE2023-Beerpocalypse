@@ -13,5 +13,5 @@ public:
 	void update(float deltaTime);
 
 	// Constructors
-	StaticBackpack(const std::string& path, MyShader& shader, PxPhysics* physics) : StaticGameObject(path, shader, physics) {}
+	StaticBackpack(MyShader& shader, PxPhysics* physics) : StaticGameObject("backpack/backpack.obj", shader, physics) {}
 };

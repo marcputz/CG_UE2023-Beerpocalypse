@@ -124,12 +124,12 @@ int main(int argc, char** argv) {
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
 
 	// Prepare Scene and Game Objects
-	StaticBackpack backpack("backpack/backpack.obj", blinnPhongShader, gPhysics);
-	Backpack backpack2("backpack/backpack.obj", blinnPhongShader, gPhysics);
+	StaticBackpack backpack(blinnPhongShader, gPhysics);
+	Backpack backpack2(blinnPhongShader, gPhysics);
 	scene.addGameObject(&backpack);
 	scene.addGameObject(&backpack2);
-	physicsScene->addActor(*(backpack.rigidActor_));
-	physicsScene->addActor(*(backpack2.rigidActor_));
+	physicsScene->addActor(*(backpack.actor_));
+	physicsScene->addActor(*(backpack2.actor_));
 	backpack.setPosition(0.55, -5, 0);
 	backpack2.setPosition(0, 5, 0);
 
