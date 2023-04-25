@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <bullet/btBulletDynamicsCommon.h>
 #include "GameObjects/GameObject.h"
-#include "GameObjects/Dynamic/Backpack/Backpack.h"
-#include "MyScene.h"
+#include "GameObjects/Backpack/Backpack.h"
+#include "GameManager.h"
 #include "MyShader.h"
 #include "stb/stb_image.h"
 #include "MyFPSCamera.h"
@@ -14,7 +14,7 @@
 #include "MyTransform.h"
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
-#include <GameObjects/Static/StaticBackpack/StaticBackpack.h>
+#include <GameManager.h>
 
 using namespace physx;
 using namespace std;
@@ -42,10 +42,7 @@ void static initPhysX();
 void static destroyPhysX();
 
 // Game-Logic and Rendering
-void static initLevel();
-void static update(float deltaT);
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader);
-void static draw();
 void static setUniformsOfLights(MyShader& shader);
 
 /* ------------------------- */
@@ -77,7 +74,6 @@ MyShader defaultShader;
 // Game Logic
 float deltaTime = 0.0f;
 float framesPerSecond = 0.0f;
-MyScene scene(camera);
 
 // Light Positions
 glm::vec3 pointLightPositions[] = {
@@ -123,27 +119,28 @@ int main(int argc, char** argv) {
 		textShader.setMat4("projection", textProjection);
 	}
 
-	// Load Shaders
-	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
+
+	// Load default shader for objects
+	MyShader defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
+
+	// Setup Game Objects
+	GameManager gameManager(gPhysics, camera);
+
+	// Init Objects
+	GameObjectInfo backpackInfo;
+	backpackInfo.modelPath = "backpack/backpack.obj";
+	backpackInfo.location = PxVec3(0, -2, 0);
+	backpackInfo.actorType = TYPE_STATIC;
+	backpackInfo.staticFriction = 0.5;
+	backpackInfo.dynamicFriction = 0.5;
+	backpackInfo.restitution = 0.5;
+	Backpack backpack(defaultShader, gPhysics, backpackInfo);
+
+	// Add to game
+	gameManager.addObject(&backpack);
+
+	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
-
-	// Prepare Scene and Game Objects
-	initLevel();
-
-
-	// Initialize GameObjects
-	StaticBackpack backpack(defaultShader, gPhysics);
-	Backpack backpack2(defaultShader, gPhysics);
-	backpack.setPosition(0.55, -5, 0);
-	backpack2.setPosition(0, 5, 0);
-
-	// Add to OpenGL scene for rendering
-	scene.addGameObject(&backpack);
-	scene.addGameObject(&backpack2);
-
-	// Add to physics Scene for calculation
-	physicsScene->addActor(*(backpack.getActor()));
-	physicsScene->addActor(*(backpack2.getActor()));
 
 	// Prepare Light Cubes 
 	unsigned int VBO, lightVAO;
@@ -228,8 +225,6 @@ int main(int argc, char** argv) {
 		lastTime = time;
 		framesPerSecond = 1.0f / deltaTime;
 
-		stepPhysics(deltaTime);
-
 		// Set Shader Attributes
 		{
 			defaultShader.use();
@@ -246,9 +241,9 @@ int main(int argc, char** argv) {
 		defaultShader.setMat4("view", view);
 
 		// Update the game
-		handleContinuousKeyboardInput(window);
-		scene.update(deltaTime);
-		scene.draw();
+		gameManager.handleInput(window, deltaTime);
+		gameManager.stepUpdate(deltaTime);
+		gameManager.draw();
 
 		// Render Light-Cubes
 		{
@@ -293,10 +288,6 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 /*        FUNCTIONS          */
 /* ------------------------- */
-
-
-void static initLevel() {
-}
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)SCR_HEIGHT - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
@@ -357,27 +348,6 @@ void static setUniformsOfLights(MyShader &shader) {
 	shader.setFloat("spotLight.quadratic", 0.032f);
 	shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
 	shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-}
-
-// provides smoother movement than simply handling input events
-void handleContinuousKeyboardInput(GLFWwindow* window) {
-	// W - Forward movement
-	// A - Left Movement
-	// D - Right Movement
-	// S - Backward movement
-
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		camera.processKeyboardInput(FORWARD, deltaTime);
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		camera.processKeyboardInput(BACKWARD, deltaTime);
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		camera.processKeyboardInput(LEFT, deltaTime);
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		camera.processKeyboardInput(RIGHT, deltaTime);
-	}
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -594,13 +564,6 @@ void static initOpenGL() {
 	glEnable(GL_CULL_FACE);
 }
 
-void static stepPhysics(float deltaTime)
-{
-	//PX_UNUSED(interactive);
-	physicsScene->simulate(deltaTime);
-	physicsScene->fetchResults(true);
-}
-
 void static initPhysX() {
 	// Set-up PhysX foundation
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
@@ -622,32 +585,10 @@ void static initPhysX() {
 		std::cout << "[PhysX Error]: Failed to init PhysX engine" << std::endl;
 		exit(302);
 	}
-
-	// Create standard scene and set attributes
-	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
-	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
-	gDispatcher = PxDefaultCpuDispatcherCreate(2);
-	sceneDesc.cpuDispatcher = gDispatcher;
-	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	physicsScene = gPhysics->createScene(sceneDesc);
-
-	PxPvdSceneClient* pvdClient = physicsScene->getScenePvdClient();
-	if (pvdClient)
-	{
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
-		pvdClient->setScenePvdFlag(PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
-	}
-	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
-
-	//PxRigidStatic* groundPlane = PxCreatePlane(*gPhysics, PxPlane(0, 1, 0, 0), *gMaterial);
-	//gScene->addActor(*groundPlane);
 }
 
 void static destroyPhysX() {
 	//PX_UNUSED(interactive);
-	physicsScene->release();
-	gDispatcher->release();
 	gPhysics->release();
 	PxPvdTransport* transport = gPvd->getTransport();
 	gPvd->release();

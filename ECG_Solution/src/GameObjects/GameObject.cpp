@@ -1,13 +1,27 @@
 #include "GameObject.h"
-#include "PxPhysicsAPI.h"
 
-using namespace physx;
-using namespace std;
+// Constructor
 
-GameObject::GameObject(const std::string& path, MyShader& shader) {
-	model_ = new MyModel(path);
+GameObject::GameObject(MyShader& shader, PxPhysics* physics, GameObjectInfo& goInfo) {
+
+	model_ = new MyModel(goInfo.modelPath);
 	shader_ = &shader;
+
+	PxMaterial* material = physics->createMaterial(goInfo.staticFriction, goInfo.dynamicFriction, goInfo.restitution);
+	PxShape* shape = physics->createShape(PxBoxGeometry(1, 1, 1), *material);
+	switch (goInfo.actorType) {
+	case GameObjectActorType::TYPE_DYNAMIC:
+		actor_ = physics->createRigidDynamic(PxTransform(goInfo.location));
+		break;
+	default:
+		actor_ = physics->createRigidStatic(PxTransform(goInfo.location));
+		break;
+	}
+	actor_->attachShape(*shape);
+
 }
+
+// OpenGL Methods
 
 glm::mat4 pxMat44ToGlmMat4(PxMat44 mat) {
 	return glm::mat4{
@@ -32,9 +46,13 @@ void GameObject::draw() {
 	}
 }
 
+// Physics
+
 PxRigidActor* GameObject::getActor() {
 	return actor_;
 }
+
+// Transform-Methods
 
 void GameObject::setPosition(glm::vec3 pos) {
 	setPosition(pos.x, pos.y, pos.z);
@@ -43,6 +61,13 @@ void GameObject::setPosition(glm::vec3 pos) {
 void GameObject::setPosition(physx::PxVec3 pos) {
 	setPosition(pos.x, pos.y, pos.z);
 }
+
+void GameObject::setPosition(float x, float y, float z) {
+	PxTransform newTrans(x, y, z);
+	actor_->setGlobalPose(newTrans);
+}
+
+// Children-Parent Methods
 
 void GameObject::addChild(GameObject* child) {
 	children_.emplace_back(child);
