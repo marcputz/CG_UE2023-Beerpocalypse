@@ -15,6 +15,7 @@
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
 #include <GameManager.h>
+#include "GameObjects/BrickCube/BrickCube.h"
 
 using namespace physx;
 using namespace std;
@@ -148,9 +149,19 @@ int main(int argc, char** argv) {
 	backpackInfo.actorType = TYPE_STATIC;
 	Backpack backpack2(defaultShader, gPhysics, backpackInfo);
 
+	GameObjectInfo brickCubeInfo;
+	brickCubeInfo.modelPath = "cube/cube.obj";
+	brickCubeInfo.location = PxVec3(3, 3, 0);
+	backpackInfo.actorType = TYPE_STATIC;
+	backpackInfo.staticFriction = 0.5;
+	backpackInfo.dynamicFriction = 0.5;
+	backpackInfo.restitution = 0.5;
+	BrickCube brickCube(defaultShader, gPhysics, brickCubeInfo);
+
 	// Add to game
 	gameManager.addObject(&backpack);
 	gameManager.addObject(&backpack2);
+	gameManager.addObject(&brickCube);
 
 	camera.attachToSubject(&player);
 
