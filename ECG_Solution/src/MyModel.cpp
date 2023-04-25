@@ -13,7 +13,7 @@ void MyModel::draw(MyShader& shader) {
 
 void MyModel::loadModel(std::string const &path) {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes); //GenNormals, SplitLargeMeshes/OptimizeMeshes
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace/* | aiProcess_GenBoundingBoxes*/); //GenNormals, SplitLargeMeshes/OptimizeMeshes
 
 	// check if errors occured during loading
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -23,10 +23,10 @@ void MyModel::loadModel(std::string const &path) {
 	directory_ = path.substr(0, path.find_last_of('/'));
 
 	processNode(scene->mRootNode, scene);
-	aiAABB bb = scene->mMeshes[0]->mAABB;
-	boundingBox_.min = glm::vec3(bb.mMin.x, bb.mMin.y, bb.mMin.z);
-	boundingBox_.max = glm::vec3(bb.mMax.x, bb.mMax.y, bb.mMax.z);
+
+	boundingBox_.absDiff = glm::vec3(std::abs(boundingBox_.max.x - boundingBox_.min.x), std::abs(boundingBox_.max.y - boundingBox_.min.y), std::abs(boundingBox_.max.z - boundingBox_.min.z));
 }
+
 /*
 void MyModel::create(const aiScene* scene, std::string& directory) {
 	directory_ = directory;
@@ -34,6 +34,7 @@ void MyModel::create(const aiScene* scene, std::string& directory) {
 	processNode(scene->mRootNode, scene);
 }
 */
+
 void MyModel::processNode(aiNode* node, const aiScene* scene) {
 
 	for (unsigned int i = 0; i < node->mNumMeshes; i++) {
@@ -60,6 +61,14 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
 		vertex.position = vector;
+
+		boundingBox_.min.x = std::min(boundingBox_.min.x, vector.x);
+		boundingBox_.min.y = std::min(boundingBox_.min.y, vector.y);
+		boundingBox_.min.z = std::min(boundingBox_.min.z, vector.z);
+
+		boundingBox_.max.x = std::max(boundingBox_.max.x, vector.x);
+		boundingBox_.max.y = std::max(boundingBox_.max.y, vector.y);
+		boundingBox_.max.z = std::max(boundingBox_.max.z, vector.z);
 
 		// add normals to the vertices
 		if (mesh->HasNormals()) {
@@ -143,8 +152,3 @@ std::vector<My2DTexture> MyModel::loadMaterialTextures(aiMaterial* mat, aiTextur
 	return textures;
 }
 
-/*
-unsigned int MyModel::textureFromFile(const char* path, const std::string& directory) {
-	return 0;
-}
-*/

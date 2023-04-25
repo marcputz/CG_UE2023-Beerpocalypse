@@ -129,17 +129,21 @@ int main(int argc, char** argv) {
 	// Init Objects
 	GameObjectInfo backpackInfo;
 	backpackInfo.modelPath = "backpack/backpack.obj";
-	backpackInfo.location = PxVec3(0, -2, 0);
+	backpackInfo.location = PxVec3(-2.0, 2, 0);
 	backpackInfo.actorType = TYPE_DYNAMIC;
 	backpackInfo.staticFriction = 0.5;
 	backpackInfo.dynamicFriction = 0.5;
 	backpackInfo.restitution = 0.5;
 	Backpack backpack(defaultShader, gPhysics, backpackInfo);
+	backpackInfo.location = PxVec3(0, -3.0, 0);
+	backpackInfo.actorType = TYPE_STATIC;
+	Backpack backpack2(defaultShader, gPhysics, backpackInfo);
 
 	// Add to game
 	gameManager.addObject(&backpack);
+	gameManager.addObject(&backpack2);
 
-	camera.attachToSubject(&backpack);
+	//camera.attachToSubject(&backpack);
 
 	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");

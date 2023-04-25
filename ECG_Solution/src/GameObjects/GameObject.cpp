@@ -8,7 +8,9 @@ GameObject::GameObject(MyShader& shader, PxPhysics* physics, GameObjectInfo& goI
 	shader_ = &shader;
 
 	PxMaterial* material = physics->createMaterial(goInfo.staticFriction, goInfo.dynamicFriction, goInfo.restitution);
-	PxShape* shape = physics->createShape(PxBoxGeometry(1, 1, 1), *material);
+	//PxShape* shape = physics->createShape(PxBoxGeometry(1, 1, 1), *material);
+	PxShape* shape = physics->createShape(PxBoxGeometry(model_->boundingBox_.absDiff.x / 2.0f, model_->boundingBox_.absDiff.y / 2.0f, model_->boundingBox_.absDiff.z / 2.0f), *material);
+
 	switch (goInfo.actorType) {
 	case GameObjectActorType::TYPE_DYNAMIC:
 		actor_ = physics->createRigidDynamic(PxTransform(goInfo.location));
