@@ -8,9 +8,15 @@
 #include "MyMesh.h"
 #include "MyAssetManager.h"
 
+struct MyAABoundingBox {
+	glm::vec3 min;
+	glm::vec3 max;
+};
 
 class MyModel {
 public:
+	MyAABoundingBox boundingBox_;
+
 	MyModel(std::string const& path/*, bool gamma = false*/);
 	void draw(MyShader& shader);
 

@@ -23,6 +23,9 @@ void MyModel::loadModel(std::string const &path) {
 	directory_ = path.substr(0, path.find_last_of('/'));
 
 	processNode(scene->mRootNode, scene);
+	aiAABB bb = scene->mMeshes[0]->mAABB;
+	boundingBox_.min = glm::vec3(bb.mMin.x, bb.mMin.y, bb.mMin.z);
+	boundingBox_.max = glm::vec3(bb.mMax.x, bb.mMax.y, bb.mMax.z);
 }
 /*
 void MyModel::create(const aiScene* scene, std::string& directory) {
