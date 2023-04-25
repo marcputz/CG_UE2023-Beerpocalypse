@@ -130,6 +130,21 @@ int main(int argc, char** argv) {
 	// Prepare Scene and Game Objects
 	initLevel();
 
+
+	// Initialize GameObjects
+	StaticBackpack backpack(defaultShader, gPhysics);
+	Backpack backpack2(defaultShader, gPhysics);
+	backpack.setPosition(0.55, -5, 0);
+	backpack2.setPosition(0, 5, 0);
+
+	// Add to OpenGL scene for rendering
+	scene.addGameObject(&backpack);
+	scene.addGameObject(&backpack2);
+
+	// Add to physics Scene for calculation
+	physicsScene->addActor(*(backpack.getActor()));
+	physicsScene->addActor(*(backpack2.getActor()));
+
 	// Prepare Light Cubes 
 	unsigned int VBO, lightVAO;
 	{
@@ -281,19 +296,6 @@ int main(int argc, char** argv) {
 
 
 void static initLevel() {
-	// Initialize GameObjects
-	StaticBackpack backpack(defaultShader, gPhysics);
-	Backpack backpack2(defaultShader, gPhysics);
-	backpack.setPosition(0.55, -5, 0);
-	backpack2.setPosition(0, 5, 0);
-
-	// Add to OpenGL scene for rendering
-	scene.addGameObject(&backpack);
-	scene.addGameObject(&backpack2);
-
-	// Add to physics Scene for calculation
-	physicsScene->addActor(*(backpack.getActor()));
-	physicsScene->addActor(*(backpack2.getActor()));
 }
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
