@@ -593,14 +593,28 @@ void stepPhysics(float deltaTime, bool interactive)
 }
 
 void static initPhysX() {
+	// Set-up PhysX foundation
 	gFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 
+	if (!gFoundation) {
+		std::cout << "[PhysX Error]: Failed to init PhysX foundation" << std::endl;
+		exit(301);
+	}
+
+	// Set-up PhysX Visual Debugger (optional)
 	gPvd = PxCreatePvd(*gFoundation);
 	PxPvdTransport* transport = PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	gPvd->connect(*transport, PxPvdInstrumentationFlag::eALL);
 
+	// Create PhysX engine
 	gPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *gFoundation, PxTolerancesScale(), true, gPvd);
 
+	if (!gPhysics) {
+		std::cout << "[PhysX Error]: Failed to init PhysX engine" << std::endl;
+		exit(302);
+	}
+
+	// Create standard scene and set attributes
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
 	sceneDesc.gravity = PxVec3(0.0f, -9.81f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
