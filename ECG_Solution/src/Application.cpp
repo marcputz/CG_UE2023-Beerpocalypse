@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <bullet/btBulletDynamicsCommon.h>
 #include "GameObjects/GameObject.h"
-#include "GameObjects/Backpack/Backpack.h"
 #include "GameManager.h"
 #include "MyShader.h"
 #include "stb/stb_image.h"
@@ -137,17 +136,17 @@ int main(int argc, char** argv) {
 	gameManager.setPlayer(&player);
 
 	// Init Objects
-	GameObjectInfo backpackInfo;
-	backpackInfo.modelPath = "backpack/backpack.obj";
-	backpackInfo.location = PxVec3(-2.0, 2, 0);
-	backpackInfo.actorType = TYPE_DYNAMIC;
-	backpackInfo.staticFriction = 0.5;
-	backpackInfo.dynamicFriction = 0.5;
-	backpackInfo.restitution = 0.5;
-	Backpack backpack(defaultShader, gPhysics, backpackInfo);
-	backpackInfo.location = PxVec3(0, -3.0, 0);
-	backpackInfo.actorType = TYPE_STATIC;
-	Backpack backpack2(defaultShader, gPhysics, backpackInfo);
+	GameObjectInfo brickCubeInfo;
+	brickCubeInfo.modelPath = "cube/brick_cube/cube.obj";
+	brickCubeInfo.location = PxVec3(-2.0, 2, 0);
+	brickCubeInfo.actorType = TYPE_DYNAMIC;
+	brickCubeInfo.staticFriction = 0.5;
+	brickCubeInfo.dynamicFriction = 0.5;
+	brickCubeInfo.restitution = 0.5;
+	Cube brickCube1(defaultShader, gPhysics, brickCubeInfo);
+	brickCubeInfo.location = PxVec3(0, -3.0, 0);
+	brickCubeInfo.actorType = TYPE_STATIC;
+	Cube brickCube2(defaultShader, gPhysics, brickCubeInfo);
 
 	GameObjectInfo cubeInfo;
 	cubeInfo.modelPath = "cube/brick_cube/cube.obj";
@@ -156,10 +155,11 @@ int main(int argc, char** argv) {
 	cubeInfo.staticFriction = 0.5;
 	cubeInfo.dynamicFriction = 0.5;
 	cubeInfo.restitution = 0.5;
-	Cube brickCube(defaultShader, gPhysics, cubeInfo);
+	//Cube brickCube(defaultShader, gPhysics, cubeInfo);
 
 	cubeInfo.modelPath = "cube/metal_cube/cube.obj";
 	cubeInfo.location = PxVec3(-3, 3, 0);
+	cubeInfo.actorType = TYPE_STATIC;
 	Cube metalCube(defaultShader, gPhysics, cubeInfo);
 
 	cubeInfo.modelPath = "cube/paving_cube/cube.obj";
@@ -167,9 +167,9 @@ int main(int argc, char** argv) {
 	Cube pavingCube(defaultShader, gPhysics, cubeInfo);
 
 	// Add to game
-	gameManager.addObject(&backpack);
-	gameManager.addObject(&backpack2);
-	gameManager.addObject(&brickCube);
+	gameManager.addObject(&brickCube1);
+	gameManager.addObject(&brickCube2);
+	//gameManager.addObject(&brickCube);
 	gameManager.addObject(&metalCube); 
 	gameManager.addObject(&pavingCube);
 

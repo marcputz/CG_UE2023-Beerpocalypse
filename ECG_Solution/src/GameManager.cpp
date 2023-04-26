@@ -1,5 +1,4 @@
 #include "GameManager.h"
-#include <GameObjects/Backpack/Backpack.h>
 #include <GameObjects/GameObject.h>
 
 GameManager::GameManager(PxPhysics* physics, MyFPSCamera& camera) : camera_(&camera) {
