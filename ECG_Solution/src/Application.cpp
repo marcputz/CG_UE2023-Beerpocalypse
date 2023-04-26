@@ -2,7 +2,6 @@
 #include <sstream>
 #include <iostream>
 #include <stdio.h>
-#include <bullet/btBulletDynamicsCommon.h>
 #include "GameObjects/GameObject.h"
 #include "GameManager.h"
 #include "MyShader.h"
