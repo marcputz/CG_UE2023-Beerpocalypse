@@ -2,7 +2,7 @@
 
 #include <GameObjects/GameObject.h>
 
-class BrickCube : public GameObject {
+class Cube : public GameObject {
 private:
 
 protected:
@@ -11,5 +11,5 @@ public:
 	void update(float deltaTime);
 	void handleInput(GLFWwindow* window, float deltaTime);
 
-	BrickCube(MyShader& shader, PxPhysics* physics, GameObjectInfo goInfo);
+	Cube(MyShader& shader, PxPhysics* physics, GameObjectInfo goInfo);
 };

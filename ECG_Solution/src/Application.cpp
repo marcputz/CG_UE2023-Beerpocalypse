@@ -15,7 +15,7 @@
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
 #include <GameManager.h>
-#include "GameObjects/BrickCube/BrickCube.h"
+#include "GameObjects/Cube/Cube.h"
 
 using namespace physx;
 using namespace std;
@@ -150,18 +150,30 @@ int main(int argc, char** argv) {
 	Backpack backpack2(defaultShader, gPhysics, backpackInfo);
 
 	GameObjectInfo brickCubeInfo;
-	brickCubeInfo.modelPath = "cube/cube.obj";
+	brickCubeInfo.modelPath = "cube/brick_cube/cube.obj";
 	brickCubeInfo.location = PxVec3(3, 3, 0);
-	backpackInfo.actorType = TYPE_STATIC;
-	backpackInfo.staticFriction = 0.5;
-	backpackInfo.dynamicFriction = 0.5;
-	backpackInfo.restitution = 0.5;
-	BrickCube brickCube(defaultShader, gPhysics, brickCubeInfo);
+	brickCubeInfo.actorType = TYPE_STATIC;
+	brickCubeInfo.staticFriction = 0.5;
+	brickCubeInfo.dynamicFriction = 0.5;
+	brickCubeInfo.restitution = 0.5;
+	Cube brickCube(defaultShader, gPhysics, brickCubeInfo);
+
+	
+	GameObjectInfo metalCubeInfo;
+	metalCubeInfo.modelPath = "cube/metal_cube/cube.obj";
+	metalCubeInfo.location = PxVec3(-3, 3, 0);
+	metalCubeInfo.actorType = TYPE_STATIC;
+	metalCubeInfo.staticFriction = 0.5;
+	metalCubeInfo.dynamicFriction = 0.5;
+	metalCubeInfo.restitution = 0.5;
+	Cube metalCube(defaultShader, gPhysics, metalCubeInfo);
+	
 
 	// Add to game
 	gameManager.addObject(&backpack);
 	gameManager.addObject(&backpack2);
 	gameManager.addObject(&brickCube);
+	gameManager.addObject(&metalCube);
 
 	camera.attachToSubject(&player);
 
