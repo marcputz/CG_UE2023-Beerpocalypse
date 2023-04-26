@@ -1,6 +1,6 @@
 #pragma once
 #include "../GameObject.h"
-#include <MyFPSCamera.h>
+#include "../../MyFPSCamera.h"
 
 class Player : public GameObject {
 protected:

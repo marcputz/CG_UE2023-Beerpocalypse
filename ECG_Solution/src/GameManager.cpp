@@ -1,5 +1,5 @@
 #include "GameManager.h"
-#include <GameObjects/GameObject.h>
+#include "GameObjects/GameObject.h"
 
 GameManager::GameManager(PxPhysics* physics, MyFPSCamera& camera) : camera_(&camera) {
 	// Setup Physics Scene

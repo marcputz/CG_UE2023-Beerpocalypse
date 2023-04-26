@@ -7,7 +7,7 @@
 
 #include "MyFPSCamera.h"
 #include "GameObjects/GameObject.h"
-#include <GameObjects/Player/Player.h>
+#include "GameObjects/Player/Player.h"
 
 class GameManager {
 public:

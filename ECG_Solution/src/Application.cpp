@@ -12,7 +12,7 @@
 #include "MyTransform.h"
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
-#include <GameManager.h>
+#include "GameManager.h"
 #include "GameObjects/Cube/Cube.h"
 
 using namespace physx;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GameObjects/GameObject.h>
+#include "../GameObject.h"
 
 class Cube : public GameObject {
 private:

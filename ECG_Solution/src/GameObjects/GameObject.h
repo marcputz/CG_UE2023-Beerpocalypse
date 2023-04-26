@@ -2,12 +2,12 @@
 
 #include <stdio.h>
 #include <sstream>
-#include "Utils.h"
-#include "Shader.h"
-#include "Geometry.h"
-#include "Texture.h"
-#include "MyModel.h"
-#include "MyTransform.h"
+#include "../Utils.h"
+#include "../Shader.h"
+#include "../Geometry.h"
+#include "../Texture.h"
+#include "../MyModel.h"
+#include "../MyTransform.h"
 #include "GameObjectInfo.h"
 #include <PxPhysicsAPI.h>
 
