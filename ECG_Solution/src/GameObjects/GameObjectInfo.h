@@ -14,6 +14,7 @@ enum GameObjectActorType {
 struct GameObjectInfo {
 	string modelPath;
 	GameObjectActorType actorType;
+	PxVec3 scale = PxVec3(1, 1, 1);
 	PxVec3 location;
 	float staticFriction = 0;
 	float dynamicFriction = 0;

@@ -24,6 +24,7 @@ protected:
 
 	// Vertex-geometry
 	MyModel* model_;
+	PxVec3 scale_ = PxVec3(1, 1, 1);
 	
 	// Shader
 	MyShader* shader_;

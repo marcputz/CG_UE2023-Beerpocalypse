@@ -43,6 +43,7 @@ void GameManager::handleInput(GLFWwindow* window, float deltaTime) {
 
 void GameManager::setPlayer(Player* player) {
 	player_ = player;
+	//physicsScene_->addActor(*(player->getActor()));
 }
 
 void GameManager::addObject(GameObject* gameObject) {

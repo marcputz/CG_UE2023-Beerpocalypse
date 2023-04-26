@@ -127,8 +127,9 @@ int main(int argc, char** argv) {
 
 	// Init Player
 	GameObjectInfo playerInfo;
-	playerInfo.location = PxVec3(0, 0, 0);
-	playerInfo.staticFriction = playerInfo.dynamicFriction = playerInfo.restitution = 0.5;
+	playerInfo.location = PxVec3(0, 2, 5);
+	playerInfo.staticFriction = playerInfo.dynamicFriction = 0.5;
+	playerInfo.restitution = 0.05;
 	playerInfo.actorType = TYPE_DYNAMIC;
 	Player player(defaultShader, gPhysics, playerInfo, camera);
 
@@ -137,19 +138,19 @@ int main(int argc, char** argv) {
 	// Init Objects
 	GameObjectInfo brickCubeInfo;
 	brickCubeInfo.modelPath = "cube/brick_cube/cube.obj";
-	brickCubeInfo.location = PxVec3(-2.0, 2, 0);
+	brickCubeInfo.location = PxVec3(-2.0, 10, -2);
 	brickCubeInfo.actorType = TYPE_DYNAMIC;
 	brickCubeInfo.staticFriction = 0.5;
 	brickCubeInfo.dynamicFriction = 0.5;
 	brickCubeInfo.restitution = 0.5;
 	Cube brickCube1(defaultShader, gPhysics, brickCubeInfo);
-	brickCubeInfo.location = PxVec3(0, -3.0, 0);
+	brickCubeInfo.location = PxVec3(0, 2, 0);
 	brickCubeInfo.actorType = TYPE_STATIC;
 	Cube brickCube2(defaultShader, gPhysics, brickCubeInfo);
 
 	GameObjectInfo cubeInfo;
 	cubeInfo.modelPath = "cube/brick_cube/cube.obj";
-	cubeInfo.location = PxVec3(3, 3, 0);
+	cubeInfo.location = PxVec3(3, 3, 3);
 	cubeInfo.actorType = TYPE_STATIC;
 	cubeInfo.staticFriction = 0.5;
 	cubeInfo.dynamicFriction = 0.5;
@@ -157,12 +158,13 @@ int main(int argc, char** argv) {
 	//Cube brickCube(defaultShader, gPhysics, cubeInfo);
 
 	cubeInfo.modelPath = "cube/metal_cube/cube.obj";
-	cubeInfo.location = PxVec3(-3, 3, 0);
+	cubeInfo.location = PxVec3(-3, 3, -1.5);
 	cubeInfo.actorType = TYPE_STATIC;
 	Cube metalCube(defaultShader, gPhysics, cubeInfo);
 
 	cubeInfo.modelPath = "cube/paving_cube/cube.obj";
-	cubeInfo.location = PxVec3(0, -2, 2);
+	cubeInfo.location = PxVec3(0, -3, 0);
+	cubeInfo.scale = PxVec3(4, 1, 6.5);
 	Cube pavingCube(defaultShader, gPhysics, cubeInfo);
 
 	// Add to game

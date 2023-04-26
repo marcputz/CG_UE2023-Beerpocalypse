@@ -8,20 +8,24 @@ GameObject::GameObject(MyShader& shader, PxPhysics* physics, GameObjectInfo& goI
 	if (goInfo.modelPath != "") {
 		model_ = new MyModel(goInfo.modelPath);
 		shader_ = &shader;
-
-		actorType_ = goInfo.actorType;
+		scale_ = goInfo.scale;
 
 		PxMaterial* material = physics->createMaterial(goInfo.staticFriction, goInfo.dynamicFriction, goInfo.restitution);
 		//PxShape* shape = physics->createShape(PxBoxGeometry(1, 1, 1), *material);
-		PxShape* shape = physics->createShape(PxBoxGeometry(model_->boundingBox_.absDiff.x / 2.0f, model_->boundingBox_.absDiff.y / 2.0f, model_->boundingBox_.absDiff.z / 2.0f), *material);
+		float boundingBoxX = model_->boundingBox_.absDiff.x / 2.0f;
+		float boundingBoxY = model_->boundingBox_.absDiff.y / 2.0f;
+		float boundingBoxZ = model_->boundingBox_.absDiff.z / 2.0f;
+		PxShape* shape = physics->createShape(PxBoxGeometry(boundingBoxX * scale_.x, boundingBoxY * scale_.y, boundingBoxZ * scale_.z), *material);
 
 		switch (goInfo.actorType) {
-		case GameObjectActorType::TYPE_DYNAMIC:
-			actor_ = physics->createRigidDynamic(PxTransform(goInfo.location));
-			break;
-		default:
-			actor_ = physics->createRigidStatic(PxTransform(goInfo.location));
-			break;
+			case GameObjectActorType::TYPE_DYNAMIC:
+				actor_ = physics->createRigidDynamic(PxTransform(goInfo.location));
+				actorType_ = TYPE_DYNAMIC;
+				break;
+			default:
+				actor_ = physics->createRigidStatic(PxTransform(goInfo.location));
+				actorType_ = TYPE_STATIC;
+				break;
 		}
 		actor_->attachShape(*shape);
 	}
@@ -38,10 +42,29 @@ glm::mat4 pxMat44ToGlmMat4(PxMat44 mat) {
 	};
 }
 
+glm::vec3 pxVec3ToGlmVec3(PxVec3 vec) {
+	return glm::vec3(vec.x, vec.y, vec.z);
+}
+
+glm::quat pxQuatToGlmQuat(PxQuat quat) {
+	return glm::quat(quat.w, quat.x, quat.y, quat.z);
+}
+
 void GameObject::draw() {
 	PxTransform transform = actor_->getGlobalPose();
-	PxMat44 pxMat = PxMat44(transform);
-	glm::mat4 modelMatrix = pxMat44ToGlmMat4(pxMat);
+	glm::vec3 translate = pxVec3ToGlmVec3(transform.p);
+	glm::quat rotation = pxQuatToGlmQuat(transform.q);
+	glm::vec3 scale = pxVec3ToGlmVec3(scale_);
+
+	glm::mat4 transMatrix = glm::translate(glm::mat4(1.0f), translate);
+	glm::mat4 rotMatrix = glm::mat4_cast(rotation);
+	glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), scale);
+
+	glm::mat4 modelMatrix(1.0f);
+	modelMatrix = transMatrix * rotMatrix * scaleMatrix;
+
+	//PxMat44 pxMat = PxMat44(transform);
+	//glm::mat4 modelMatrix = pxMat44ToGlmMat4(pxMat);
 
 	shader_->use();
 	shader_->setMat4("model", modelMatrix);
