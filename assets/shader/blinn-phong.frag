@@ -69,7 +69,7 @@ void main() {
 	vec3 specularTex = texture(texture_specular1, fs_in.TexCoords).rgb;
 
 	if (enableNormalMapping == 1) {
-		vec3 norm = texture(texture_height1, fs_in.TexCoords).rgb;
+		vec3 norm = texture(texture_normal1, fs_in.TexCoords).rgb;
 		// transform normal vector to range [-1, 1]
 		norm = normalize(norm * 2.0 - 1.0); // is in tangent space
 		vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
