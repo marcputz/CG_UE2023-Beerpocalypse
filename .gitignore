@@ -1,4 +1,5 @@
 build/*
 .vs/*
+bin/Release/*
 bin/Debug/Beerpocalypse.pdb
 bin/Debug/Beerpocalypse.exe
