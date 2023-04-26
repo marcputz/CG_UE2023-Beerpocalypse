@@ -91,6 +91,7 @@ float lastY = 0.0f;
 MyShader defaultShader;
 
 // Game Logic
+GameManager* gameManager;
 float deltaTime = 0.0f;
 float framesPerSecond = 0.0f;
 
@@ -146,17 +147,20 @@ int main(int argc, char** argv) {
 	MyShader defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
 
 	// Setup Game Objects
-	GameManager gameManager(gPhysics, camera);
+	gameManager = new GameManager(gPhysics, camera);
 
 	// Init Player
 	GameObjectInfo playerInfo;
+	playerInfo.modelPath = "cube/brick_cube/cube.obj";
 	playerInfo.location = PxVec3(0, 2, 5);
 	playerInfo.staticFriction = playerInfo.dynamicFriction = 0.5;
 	playerInfo.restitution = 0.05;
 	playerInfo.actorType = TYPE_DYNAMIC;
 	Player player(defaultShader, gPhysics, playerInfo, camera);
 
-	gameManager.setPlayer(&player);
+	gameManager->setPlayer(&player);
+
+	camera.attachToSubject(&player);
 
 	// Init Objects
 	GameObjectInfo brickCubeInfo;
@@ -172,14 +176,9 @@ int main(int argc, char** argv) {
 	Cube brickCube2(defaultShader, gPhysics, brickCubeInfo);
 
 	GameObjectInfo cubeInfo;
-	cubeInfo.modelPath = "cube/brick_cube/cube.obj";
-	cubeInfo.location = PxVec3(3, 3, 3);
-	cubeInfo.actorType = TYPE_STATIC;
 	cubeInfo.staticFriction = 0.5;
 	cubeInfo.dynamicFriction = 0.5;
 	cubeInfo.restitution = 0.5;
-	//Cube brickCube(defaultShader, gPhysics, cubeInfo);
-
 	cubeInfo.modelPath = "cube/metal_cube/cube.obj";
 	cubeInfo.location = PxVec3(-3, 3, -1.5);
 	cubeInfo.actorType = TYPE_STATIC;
@@ -191,13 +190,10 @@ int main(int argc, char** argv) {
 	Cube pavingCube(defaultShader, gPhysics, cubeInfo);
 
 	// Add to game
-	gameManager.addObject(&brickCube1);
-	gameManager.addObject(&brickCube2);
-	//gameManager.addObject(&brickCube);
-	gameManager.addObject(&metalCube); 
-	gameManager.addObject(&pavingCube);
-
-	camera.attachToSubject(&player);
+	gameManager->addObject(&brickCube1);
+	gameManager->addObject(&brickCube2);
+	gameManager->addObject(&metalCube); 
+	gameManager->addObject(&pavingCube);
 
 	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
@@ -301,9 +297,9 @@ int main(int argc, char** argv) {
 		defaultShader.setMat4("view", view);
 
 		// Update the game
-		gameManager.handleInput(window, deltaTime);
-		gameManager.stepUpdate(deltaTime);
-		gameManager.draw();
+		gameManager->handleInput(window, deltaTime);
+		gameManager->stepUpdate(deltaTime);
+		gameManager->draw();
 
 		// Render Light-Cubes
 		{
@@ -355,6 +351,9 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
 	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
 	textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)screenHeight - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "WASD - Movement", 0.0f, (float)screenHeight - 72.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "F - Flashlight", 0.0f, (float)screenHeight - 84.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "Mouse - Look around", 0.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 }
 
 void static setUniformsOfLights(MyShader &shader) {
@@ -467,7 +466,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 		case GLFW_KEY_KP_ADD:
 			// increase illumination
-			std::cout << "PRess +" << std::endl;
+			std::cout << "Press +" << std::endl;
 			break;
 		case GLFW_KEY_KP_SUBTRACT:
 			// decrease illumination

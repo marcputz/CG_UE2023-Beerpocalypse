@@ -16,7 +16,7 @@ GameManager::~GameManager() {
 }
 
 void GameManager::draw() {
-
+	player_->draw();
 	for (GameObject* obj : gameObjects_) {
 		obj->draw();
 	}
