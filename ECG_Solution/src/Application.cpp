@@ -149,31 +149,29 @@ int main(int argc, char** argv) {
 	backpackInfo.actorType = TYPE_STATIC;
 	Backpack backpack2(defaultShader, gPhysics, backpackInfo);
 
-	GameObjectInfo brickCubeInfo;
-	brickCubeInfo.modelPath = "cube/brick_cube/cube.obj";
-	brickCubeInfo.location = PxVec3(3, 3, 0);
-	brickCubeInfo.actorType = TYPE_STATIC;
-	brickCubeInfo.staticFriction = 0.5;
-	brickCubeInfo.dynamicFriction = 0.5;
-	brickCubeInfo.restitution = 0.5;
-	Cube brickCube(defaultShader, gPhysics, brickCubeInfo);
+	GameObjectInfo cubeInfo;
+	cubeInfo.modelPath = "cube/brick_cube/cube.obj";
+	cubeInfo.location = PxVec3(3, 3, 0);
+	cubeInfo.actorType = TYPE_STATIC;
+	cubeInfo.staticFriction = 0.5;
+	cubeInfo.dynamicFriction = 0.5;
+	cubeInfo.restitution = 0.5;
+	Cube brickCube(defaultShader, gPhysics, cubeInfo);
 
-	
-	GameObjectInfo metalCubeInfo;
-	metalCubeInfo.modelPath = "cube/metal_cube/cube.obj";
-	metalCubeInfo.location = PxVec3(-3, 3, 0);
-	metalCubeInfo.actorType = TYPE_STATIC;
-	metalCubeInfo.staticFriction = 0.5;
-	metalCubeInfo.dynamicFriction = 0.5;
-	metalCubeInfo.restitution = 0.5;
-	Cube metalCube(defaultShader, gPhysics, metalCubeInfo);
-	
+	cubeInfo.modelPath = "cube/metal_cube/cube.obj";
+	cubeInfo.location = PxVec3(-3, 3, 0);
+	Cube metalCube(defaultShader, gPhysics, cubeInfo);
+
+	cubeInfo.modelPath = "cube/paving_cube/cube.obj";
+	cubeInfo.location = PxVec3(0, -2, 2);
+	Cube pavingCube(defaultShader, gPhysics, cubeInfo);
 
 	// Add to game
 	gameManager.addObject(&backpack);
 	gameManager.addObject(&backpack2);
 	gameManager.addObject(&brickCube);
-	gameManager.addObject(&metalCube);
+	gameManager.addObject(&metalCube); 
+	gameManager.addObject(&pavingCube);
 
 	camera.attachToSubject(&player);
 
