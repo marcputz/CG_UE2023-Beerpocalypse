@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <stdio.h>
+
 #include "GameObjects/GameObject.h"
 #include "GameManager.h"
 #include "MyShader.h"
@@ -12,8 +13,8 @@
 #include "MyTransform.h"
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
-#include "GameManager.h"
 #include "GameObjects/Cube/Cube.h"
+#include "INIReader.h"
 
 using namespace physx;
 using namespace std;
@@ -22,6 +23,9 @@ using namespace std;
 /* ------------------------- */
 /*        PROTOTYPES         */
 /* ------------------------- */
+
+// read ini
+void readINIFile();
 
 // openGL
 void static initOpenGL();
@@ -48,11 +52,24 @@ void static setUniformsOfLights(MyShader& shader);
 /*     GLOBAL VARIABLES      */
 /* ------------------------- */
 
+// Default values if settings are not found
+const unsigned int SCR_WIDTH_DEFAULT = 1280;
+const unsigned int SCR_HEIGHT_DEFAULT = 720;
+const unsigned int REFRESH_RATE_DEFAULT = 60;
+const string WINDOW_TITLE_DEFAULT = "Beerpocalypse (CG SS2023)";
+const bool START_FULLSCREEN_DEFAULT = false;
+
+const float CAMERA_STARTING_FOV_DEFAULT = 60.0f;
+const float CAMERA_NEAR_DEFAULT = 0.1f;
+const float CAMERA_FAR_DEFAULT = 100.0f;
+
 // Window-Attributes
-const unsigned int SCR_WIDTH = 1280;
-const unsigned int SCR_HEIGHT = 720;
 GLFWwindow* window;
-string windowTitle = "Beerpocalypse (CG SS2023)";
+unsigned int screenWidth = 0;
+unsigned int screenHeight = 0;
+unsigned int refreshRate = 0;
+string windowTitle = "";
+bool startFullscreen = false;
 
 // Toggle-Flags
 bool enableWireframe = false;
@@ -63,9 +80,12 @@ bool enableFlashLight = true;
 
 // Camera
 MyFPSCamera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float cameraStartingFOV = 0.0f;
+float cameraNear = 0.0f;
+float cameraFar = 0.0f;
 bool firstMouse = true;
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+float lastX = 0.0f;
+float lastY = 0.0f;
 
 // Shaders
 MyShader defaultShader;
@@ -100,6 +120,9 @@ int main(int argc, char** argv) {
 	// tell stbi to load image y-flipped so its right for opengl texCoords
 	stbi_set_flip_vertically_on_load(true);
 
+	// Read values from settings.ini
+	readINIFile();
+
 	// Initialize OpenGL
 	initOpenGL();
 	std::cout << "OpenGL initialized" << std::endl;
@@ -113,7 +136,7 @@ int main(int argc, char** argv) {
 	MyShader textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
 	{
 		// set the "camera" to be used for text rendering (static fixed orthogonal view-projection)
-		glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
+		glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
 		textShader.use();
 		textShader.setMat4("projection", textProjection);
 	}
@@ -272,7 +295,7 @@ int main(int argc, char** argv) {
 		}
 
 		// Prepare Camera (view-projection matrix)
-		glm::mat4 projection = glm::perspective(glm::radians(camera.fov_), float(SCR_WIDTH) / float(SCR_HEIGHT), 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.fov_), float(screenWidth) / float(screenHeight), cameraNear, cameraFar);
 		glm::mat4 view = camera.getViewMatrix();
 		defaultShader.setMat4("projection", projection);
 		defaultShader.setMat4("view", view);
@@ -327,11 +350,11 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
-	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)SCR_HEIGHT - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 24.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-	textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)SCR_HEIGHT - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)screenHeight - 24.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)screenHeight - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
 }
 
 void static setUniformsOfLights(MyShader &shader) {
@@ -509,6 +532,24 @@ void error_callback(int errorCode, const char* description) {
 	std::cout << "[GLFW Error " << errorCode << "]: " << description << std::endl;
 }
 
+void readINIFile() {
+	INIReader iniReader = INIReader::INIReader("settings.ini");
+
+	screenWidth = iniReader.GetInteger("window", "width", SCR_WIDTH_DEFAULT);
+	screenHeight = iniReader.GetInteger("window", "height", SCR_HEIGHT_DEFAULT);
+	refreshRate = iniReader.GetInteger("window", "refresh_rate", REFRESH_RATE_DEFAULT);
+	windowTitle = iniReader.Get("window", "title", WINDOW_TITLE_DEFAULT);
+	startFullscreen = iniReader.GetBoolean("window", "fullscreen", START_FULLSCREEN_DEFAULT);
+
+	cameraStartingFOV = iniReader.GetReal("camera", "fov", CAMERA_STARTING_FOV_DEFAULT);
+	cameraNear = iniReader.GetReal("camera", "near", CAMERA_NEAR_DEFAULT);
+	cameraFar = iniReader.GetReal("camera", "far", CAMERA_FAR_DEFAULT);
+
+	camera.fov_ = cameraStartingFOV;
+	lastX = screenWidth / 2.0f;
+	lastY = screenHeight / 2.0f;
+}
+
 void static initOpenGL() {
 	
 	/* --------------------------------------------- */
@@ -528,7 +569,7 @@ void static initOpenGL() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Request core profile
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);  // Create an OpenGL debug context 
-	glfwWindowHint(GLFW_REFRESH_RATE, 60); // Set refresh rate
+	glfwWindowHint(GLFW_REFRESH_RATE, refreshRate); // Set refresh rate
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	// Enable antialiasing (4xMSAA)
@@ -537,10 +578,17 @@ void static initOpenGL() {
 	// Open window
 	GLFWmonitor* monitor = nullptr;
 
-	if (false)
+	if (startFullscreen) {
 		monitor = glfwGetPrimaryMonitor();
 
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, windowTitle.c_str(), monitor, nullptr);
+		int xP, yP, w, h;
+		glfwGetMonitorWorkarea(monitor, &xP, &yP, &w, &h);
+		window = glfwCreateWindow(w, h, windowTitle.c_str(), monitor, nullptr);
+	} else {
+		window = glfwCreateWindow(screenWidth, screenHeight, windowTitle.c_str(), monitor, nullptr);
+	}
+
+
 
 	if (!window) {
 		glfwTerminate();
