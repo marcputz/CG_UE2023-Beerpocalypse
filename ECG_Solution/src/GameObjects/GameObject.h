@@ -54,11 +54,15 @@ public:
 	void setPosition(physx::PxVec3 pos);
 	void setPosition(float x, float y, float z);
 	PxVec3 getPosition();
+	glm::vec3 getGlmPosition();
+
+	// Movement
 	void move(physx::PxVec3 moveVector);
 
 	// Game-logic and OpenGL
 	virtual void update(float deltaTime) = 0;
-	virtual void handleInput(GLFWwindow* window, float deltaTime) = 0;
+	virtual void handleKeyboardInput(GLFWwindow* window, float deltaTime) = 0;
+	virtual void handleMouseInput(float xOffset, float yOffset) = 0;
 	void draw();
 };
 

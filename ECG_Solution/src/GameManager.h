@@ -18,7 +18,8 @@ public:
 	void setPlayer(Player* player);
 	void draw();
 	void stepUpdate(float deltaTime);
-	void handleInput(GLFWwindow* window, float deltaTime);
+	void handleKeyboardInput(GLFWwindow* window, float deltaTime);
+	void handleMouseInput(float xOffset, float yOffset);
 	void addObject(GameObject* gameObject);
 
 protected:

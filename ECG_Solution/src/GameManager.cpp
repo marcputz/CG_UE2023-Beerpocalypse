@@ -22,6 +22,8 @@ void GameManager::draw() {
 	}
 }
 
+// Game-logic and physics simulation
+
 void GameManager::stepUpdate(float deltaTime) {
 	player_->update(deltaTime);
 
@@ -33,13 +35,32 @@ void GameManager::stepUpdate(float deltaTime) {
 	camera_->update();
 }
 
-void GameManager::handleInput(GLFWwindow* window, float deltaTime) {
+
+void GameManager::stepPhysics(float deltaTime)
+{
+	physicsScene_->simulate(deltaTime);
+	physicsScene_->fetchResults(true);
+}
+
+// Input handling
+
+void GameManager::handleKeyboardInput(GLFWwindow* window, float deltaTime) {
 	//camera_->handleInput(window, deltaTime);
-	player_->handleInput(window, deltaTime);
+	player_->handleKeyboardInput(window, deltaTime);
 	for (GameObject* obj : gameObjects_) {
-		obj->handleInput(window, deltaTime);
+		obj->handleKeyboardInput(window, deltaTime);
 	}
 }
+
+void GameManager::handleMouseInput(float xOffset, float yOffset) {
+	player_->handleMouseInput(xOffset, yOffset);
+	for (GameObject* obj : gameObjects_) {
+		obj->handleMouseInput(xOffset, yOffset);
+	}
+	//camera_->handleMouseInput(xOffset, yOffset);
+}
+
+// Getters/Setters and list management
 
 void GameManager::setPlayer(Player* player) {
 	player_ = player;
@@ -50,10 +71,4 @@ void GameManager::addObject(GameObject* gameObject) {
 	gameObjects_.push_back(gameObject);
 	PxRigidActor* actor = gameObject->getActor();
 	physicsScene_->addActor(*actor);
-}
-
-void GameManager::stepPhysics(float deltaTime)
-{
-	physicsScene_->simulate(deltaTime);
-	physicsScene_->fetchResults(true);
 }

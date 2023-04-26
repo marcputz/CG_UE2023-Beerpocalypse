@@ -10,13 +10,12 @@ PxVec3 glmVec3ToPxVec3(glm::vec3 vec) {
 	return PxVec3(vec.x, vec.y, vec.z);
 }
 
-void Player::handleInput(GLFWwindow* window, float deltaTime) {
-	PxVec3 cameraFront = glmVec3ToPxVec3(camera_->front_);
-	PxVec3 cameraRight = glmVec3ToPxVec3(camera_->right_);
-
-	PxVec3 forwardVector = PxVec3(cameraFront.x, 0, cameraFront.z).getNormalized();
+void Player::handleKeyboardInput(GLFWwindow* window, float deltaTime) {
+	PxVec3 forwardVector = PxVec3(facingVector_.x, 0, facingVector_.z).getNormalized();
 	PxVec3 backwardVector = -forwardVector;
-	PxVec3 leftVector = PxVec3(cameraRight.x, 0, cameraRight.z).getNormalized();
+
+	PxVec3 leftFacingVector = facingVector_.cross(PxVec3(0, 1, 0)).getNormalized();
+	PxVec3 leftVector = PxVec3(leftFacingVector.x, 0, leftFacingVector.z).getNormalized();
 	PxVec3 rightVector = -leftVector;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -35,4 +34,47 @@ void Player::handleInput(GLFWwindow* window, float deltaTime) {
 		this->move(leftVector * (moveSpeed * deltaTime));
 		//camera_->processKeyboardInput(RIGHT, deltaTime);
 	}
+
+	//camera_->setPosition(getGlmPosition());
+}
+
+void Player::handleMouseInput(float xOffset, float yOffset) {
+	setFacingAngle(facingAngle_ + (-xOffset / turningSpeedDivisor_));
+}
+
+// Movement
+
+void Player::setFacingAngle(float angle) {
+
+	while (angle < 0) {
+		angle += 360;
+	}
+	while (angle > 360) {
+		angle -= 360;
+	}
+
+	facingAngle_ = angle;
+	facingVector_ = PxVec3(-sin(glm::radians(angle)), 0, -cos(glm::radians(angle))).getNormalized();
+
+	// Update player rotation
+	PxVec3 rotationAxis(0, 1, 0);
+	PxQuat newRotation(glm::radians(facingAngle_), rotationAxis.getNormalized());
+
+	PxTransform transform = actor_->getGlobalPose();
+	transform.q = newRotation;
+	actor_->setGlobalPose(transform);
+
+	//camera_->setPlayerFacingVector(getGlmFacingVector());
+}
+
+float Player::getFacingAngle() {
+	return facingAngle_;
+}
+
+PxVec3 Player::getFacingVector() {
+	return facingVector_;
+}
+
+glm::vec3 Player::getGlmFacingVector() {
+	return glm::vec3(facingVector_.x, facingVector_.y, facingVector_.z);
 }

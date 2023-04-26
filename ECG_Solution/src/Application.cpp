@@ -297,7 +297,7 @@ int main(int argc, char** argv) {
 		defaultShader.setMat4("view", view);
 
 		// Update the game
-		gameManager->handleInput(window, deltaTime);
+		gameManager->handleKeyboardInput(window, deltaTime);
 		gameManager->stepUpdate(deltaTime);
 		gameManager->draw();
 
@@ -346,14 +346,15 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
-	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)screenHeight - 24.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
-	textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)screenHeight - 60.0f, 0.25f, glm::vec3(0.5f, 0.8f, 0.2f), enableWireframe);
+	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)screenHeight - 24.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)screenHeight - 60.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "WASD - Movement", 0.0f, (float)screenHeight - 72.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "F - Flashlight", 0.0f, (float)screenHeight - 84.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "Mouse - Look around", 0.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "ESC - Exit Application", 0.0f, (float)screenHeight - 108.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 }
 
 void static setUniformsOfLights(MyShader &shader) {
@@ -510,13 +511,11 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
 	lastX = x;
 	lastY = y;
 
-	camera.processMouseMovement(xOffset, yOffset);
-
-	//std::cout << "Mouse cursor event" << std::endl;
+	gameManager->handleMouseInput(xOffset, yOffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	camera.processMouseScrolling(yoffset);
+	camera.handleMouseScrolling(yoffset);
 
 	//std::cout << "Mouse scroll event" << std::endl;
 }

@@ -8,8 +8,11 @@ void Cube::update(float deltaTime) {
 	updateChildren(deltaTime);
 }
 
-void Cube::handleInput(GLFWwindow* window, float deltaTime) {
+void Cube::handleKeyboardInput(GLFWwindow* window, float deltaTime) {
 	
 }
 
+void Cube::handleMouseInput(float xOffset, float yOffset) {
+
+}
 

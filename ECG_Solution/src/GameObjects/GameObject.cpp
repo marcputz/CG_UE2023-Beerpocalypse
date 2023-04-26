@@ -92,12 +92,18 @@ void GameObject::setPosition(physx::PxVec3 pos) {
 }
 
 void GameObject::setPosition(float x, float y, float z) {
-	PxTransform newTrans(x, y, z);
-	actor_->setGlobalPose(newTrans);
+	PxTransform trans = actor_->getGlobalPose();
+	trans.p = PxVec3(x, y, z);
+	actor_->setGlobalPose(trans);
 }
 
 PxVec3 GameObject::getPosition() {
 	return actor_->getGlobalPose().p;
+}
+
+glm::vec3 GameObject::getGlmPosition() {
+	PxVec3 pos = getPosition();
+	return glm::vec3(pos.x, pos.y, pos.z);
 }
 
 void GameObject::move(physx::PxVec3 moveVector) {

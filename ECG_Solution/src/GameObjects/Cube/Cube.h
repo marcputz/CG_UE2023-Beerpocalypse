@@ -9,7 +9,8 @@ protected:
 
 public:
 	void update(float deltaTime);
-	void handleInput(GLFWwindow* window, float deltaTime);
+	void handleKeyboardInput(GLFWwindow* window, float deltaTime);
+	void handleMouseInput(float xOffset, float yOffset);
 
 	Cube(MyShader& shader, PxPhysics* physics, GameObjectInfo goInfo);
 };

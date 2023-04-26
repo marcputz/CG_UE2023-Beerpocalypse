@@ -39,8 +39,8 @@ public:
 
 	glm::mat4 getViewMatrix();
 	void processKeyboardInput(Camera_Movement_Direction direction, float deltaTime);
-	void processMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
-	void processMouseScrolling(float yOffset);
+	void handleMouseInput(float xOffset, float yOffset, bool constrainPitch = true);
+	void handleMouseScrolling(float yOffset);
 	void attachToSubject(GameObject* subject);
 	bool isAttached();
 	void detach();

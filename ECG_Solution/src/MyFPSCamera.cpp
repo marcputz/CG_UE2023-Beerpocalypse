@@ -42,7 +42,7 @@ void MyFPSCamera::processKeyboardInput(Camera_Movement_Direction direction, floa
 	//position_.y = 0.0f;
 }
 
-void MyFPSCamera::processMouseMovement(float xOffset, float yOffset, bool constrainPitch) {
+void MyFPSCamera::handleMouseInput(float xOffset, float yOffset, bool constrainPitch) {
 	xOffset *= lookSensitivity_;
 	yOffset *= lookSensitivity_;
 
@@ -62,7 +62,7 @@ void MyFPSCamera::processMouseMovement(float xOffset, float yOffset, bool constr
 	updateCamVectors();
 }
 
-void MyFPSCamera::processMouseScrolling(float yOffset) {
+void MyFPSCamera::handleMouseScrolling(float yOffset) {
 	fov_ -= (float)yOffset;
 	if (fov_ < 20.0f) {
 		fov_ = 20.0f;
@@ -90,7 +90,7 @@ void MyFPSCamera::update() {
 		glm::vec3 combinedPos = subjectPos + relativePosition_;
 		position_ = combinedPos;
 	}
-}
+	}
 
 // recalculate front, right and up vectors
 void MyFPSCamera::updateCamVectors() {
