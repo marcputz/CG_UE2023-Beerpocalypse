@@ -200,26 +200,26 @@ int main(int argc, char** argv) {
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
-		false, glm::vec3(-0.2f, -1.0f, 0.3f));
+		true, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
 
 	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, pointLightPositions[0],
+		true, pointLightPositions[0],
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
 
 	MyPointLight pointLightTwo(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, pointLightPositions[1],
+		true, pointLightPositions[1],
 		1.0f, 0.09f, 0.032f);
 	pointLightTwo.addLightToShader(defaultShader);
 
 	MyPointLight pointLightThree(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, pointLightPositions[2],
+		true, pointLightPositions[2],
 		1.0f, 0.09f, 0.032f);
 	pointLightThree.addLightToShader(defaultShader);
 
 	MyPointLight pointLightFour(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, pointLightPositions[3],
+		true, pointLightPositions[3],
 		1.0f, 0.09f, 0.032f);
 	pointLightFour.addLightToShader(defaultShader);
 
