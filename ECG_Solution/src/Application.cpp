@@ -79,7 +79,7 @@ bool enableWireframe = false;
 bool enableBackfaceCulling = true;
 bool enableHUD = true;
 bool enableNormalMapping = false;
-bool enableFlashLight = true;
+//bool enableFlashLight = true;
 
 // Camera
 MyFPSCamera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -200,34 +200,40 @@ int main(int argc, char** argv) {
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
-		true, glm::vec3(-0.2f, -1.0f, 0.3f));
+		false, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
 
 	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightPositions[0],
+		false, pointLightPositions[0],
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
 
 	MyPointLight pointLightTwo(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightPositions[1],
+		false, pointLightPositions[1],
 		1.0f, 0.09f, 0.032f);
 	pointLightTwo.addLightToShader(defaultShader);
 
 	MyPointLight pointLightThree(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightPositions[2],
+		false, pointLightPositions[2],
 		1.0f, 0.09f, 0.032f);
 	pointLightThree.addLightToShader(defaultShader);
 
 	MyPointLight pointLightFour(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightPositions[3],
+		false, pointLightPositions[3],
 		1.0f, 0.09f, 0.032f);
 	pointLightFour.addLightToShader(defaultShader);
 
 	MySpotLight flashLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, camera);
+		12.5f, 15.0f, &camera);
 	flashLight.addLightToShader(defaultShader);
+
+	MySpotLight spotLightOne(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(-0.3f, 0.0f, -1.0f),
+		1.0f, 0.09f, 0.032f,
+		12.5f, 15.0f, nullptr);
+	spotLightOne.addLightToShader(defaultShader);
 
 	// Add lights to the game
 	gameManager->addLight(&dirLight);
@@ -236,6 +242,7 @@ int main(int argc, char** argv) {
 	gameManager->addLight(&pointLightThree);
 	gameManager->addLight(&pointLightFour);
 	gameManager->setPlayerFlashLight(&flashLight);
+	gameManager->addLight(&spotLightOne);
 
 	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
@@ -327,7 +334,7 @@ int main(int argc, char** argv) {
 		{
 			defaultShader.use();
 			defaultShader.setVec3("viewPos", camera.position_);
-			defaultShader.setBool("enableSpotLight", enableFlashLight);
+			//defaultShader.setBool("enableSpotLight", enableFlashLight);
 			defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 		}
 
@@ -510,7 +517,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			std::cout << "Press R" << std::endl;
 			break;
 		case GLFW_KEY_F:
-			enableFlashLight = !enableFlashLight;
+			//enableFlashLight = !enableFlashLight;
+			gameManager->toggleFlashlight();
 			break;
 		case GLFW_KEY_KP_ADD:
 			// increase illumination

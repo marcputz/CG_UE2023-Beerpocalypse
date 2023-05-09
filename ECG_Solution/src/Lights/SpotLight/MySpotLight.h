@@ -8,7 +8,7 @@ public:
 	MySpotLight(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, bool enabled,
 		const glm::vec3& position, const glm::vec3& direction,
 		float attenuationConstant, float attenuationLinear, float attenuationQuadratic,
-		float cutOffAngle, float outerCutOffAngle, MyFPSCamera& camera);
+		float cutOffAngle, float outerCutOffAngle, MyFPSCamera* camera);
 
 	void setUniforms(unsigned int index);
 

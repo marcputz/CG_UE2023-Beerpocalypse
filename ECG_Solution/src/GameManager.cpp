@@ -74,6 +74,10 @@ void GameManager::handleMouseInput(float xOffset, float yOffset) {
 	//camera_->handleMouseInput(xOffset, yOffset);
 }
 
+void GameManager::toggleFlashlight() {
+	playerFlashLight_->setEnabled(!playerFlashLight_->isEnabled());
+}
+
 // Getters/Setters and list management
 
 void GameManager::setPlayer(Player* player) {

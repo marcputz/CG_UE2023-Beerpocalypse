@@ -1,6 +1,7 @@
 #include "MySpotLight.h"
 
-MySpotLight::MySpotLight(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, bool enabled, const glm::vec3& position, const glm::vec3& direction, float attenuationConstant, float attenuationLinear, float attenuationQuadratic, float cutOffAngle, float outerCutOffAngle, MyFPSCamera& camera) : MyLight(ambient, diffuse, specular, enabled) {
+MySpotLight::MySpotLight(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, bool enabled, const glm::vec3& position, const glm::vec3& direction,
+	float attenuationConstant, float attenuationLinear, float attenuationQuadratic, float cutOffAngle, float outerCutOffAngle, MyFPSCamera* camera) : MyLight(ambient, diffuse, specular, enabled) {
 	position_ = position;
 	direction_ = direction;
 	attenuationConstant_ = attenuationConstant;
@@ -8,7 +9,7 @@ MySpotLight::MySpotLight(const glm::vec3& ambient, const glm::vec3& diffuse, con
 	attenuationQuadratic_ = attenuationQuadratic;
 	cutOffAngle_ = cutOffAngle;
 	outerCutOffAngle_ = outerCutOffAngle;
-	camera_ = &camera;
+	camera_ = camera;
 }
 
 void MySpotLight::setUniforms(unsigned int index) {

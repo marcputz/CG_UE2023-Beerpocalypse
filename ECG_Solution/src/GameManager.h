@@ -23,6 +23,7 @@ public:
 	void stepUpdate(float deltaTime);
 	void handleKeyboardInput(GLFWwindow* window, float deltaTime);
 	void handleMouseInput(float xOffset, float yOffset);
+	void toggleFlashlight();
 	void addObject(GameObject* gameObject);
 	void addLight(MyDirectionalLight* dirLight);
 	void addLight(MyPointLight* pointLight);

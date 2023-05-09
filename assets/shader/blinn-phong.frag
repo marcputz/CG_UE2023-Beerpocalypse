@@ -1,7 +1,7 @@
 #version 330 core
 
 #define NR_POINT_LIGHTS 4
-#define NR_SPOT_LIGHTS 1
+#define NR_SPOT_LIGHTS 2
 
 out vec4 FragColor;
 
@@ -56,7 +56,7 @@ in VS_OUT {
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
-uniform int enableSpotLight;
+//uniform int enableSpotLight;
 uniform vec3 viewPos;
 
 uniform sampler2D texture_diffuse1;
@@ -89,7 +89,7 @@ void main() {
 		}
 
 		for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
-			if (enableSpotLight == 1) {
+			if (spotLights[i].enabled == 1) {
 				result += calcSpotLight(spotLights[i], fs_in.TangentSpotLightsPos[i], fs_in.TangentSpotLightsDir[i], norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
 			}
 		}
@@ -111,7 +111,7 @@ void main() {
 		}
 
 		for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
-			if (enableSpotLight == 1) {
+			if (spotLights[i].enabled == 1) {
 				result += calcSpotLight(spotLights[i], spotLights[i].position, spotLights[i].direction, norm, fs_in.FragPos, viewDir, diffuseTex, specularTex);
 			}
 		}
