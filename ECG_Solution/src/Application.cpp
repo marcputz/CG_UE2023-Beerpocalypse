@@ -327,7 +327,6 @@ int main(int argc, char** argv) {
 		{
 			defaultShader.use();
 			defaultShader.setVec3("viewPos", camera.position_);
-			//setUniformsOfLights(defaultShader);
 			defaultShader.setBool("enableSpotLight", enableFlashLight);
 			defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 		}
