@@ -1,6 +1,7 @@
 #version 330 core
 
 #define NR_POINT_LIGHTS 4
+#define NR_SPOT_LIGHTS 1
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
@@ -13,6 +14,7 @@ struct DirLight {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+    int enabled;
 };
 
 struct PointLight {
@@ -20,6 +22,7 @@ struct PointLight {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+    int enabled;
 	float constant;
 	float linear;
 	float quadratic;
@@ -31,6 +34,7 @@ struct SpotLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+    int enabled;
 	float constant;
 	float linear;
 	float quadratic;
@@ -43,15 +47,15 @@ out VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
     vec3 TangentPointLightsPos[NR_POINT_LIGHTS];
-    vec3 TangentSpotLightPos;
-    vec3 TangentSpotLightDir;
+    vec3 TangentSpotLightsPos[NR_SPOT_LIGHTS];
+    vec3 TangentSpotLightsDir[NR_SPOT_LIGHTS];
     vec3 TangentViewPos;
     vec3 TangentFragPos;
 } vs_out;
 
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
-uniform SpotLight spotLight;
+uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 
 uniform mat4 model;
 uniform mat4 view;
@@ -67,16 +71,6 @@ void main() {
         vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
         vs_out.TexCoords = aTexCoords;
 
-        /* // doing it like this can cause problems
-        mat3 normalMatrix = transpose(inverse(mat3(model)));
-        vec3 T = normalize(normalMatrix * aTangent);
-        vec3 N = normalize(normalMatrix * aNormal);
-        T = normalize(T - dot(T, N) * N);
-        vec3 B = cross(N, T);
-
-        mat3 TBN = transpose(mat3(T, B, N));
-        */
-
         // gram-schmidt process
         vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
         vec3 N = normalize(vec3(model * vec4(aNormal, 0.0)));
@@ -89,8 +83,12 @@ void main() {
         for (int i = 0; i < NR_POINT_LIGHTS; i++) {
             vs_out.TangentPointLightsPos[i] = TBN * pointLights[i].position;
         }
-        vs_out.TangentSpotLightPos = TBN * spotLight.position;
-        vs_out.TangentSpotLightDir = TBN * spotLight.direction;
+
+        for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
+            vs_out.TangentSpotLightsPos[i] = TBN * spotLights[i].position;
+            vs_out.TangentSpotLightsDir[i] = TBN * spotLights[i].direction;
+        }
+
         vs_out.TangentViewPos = TBN * viewPos;
         vs_out.TangentFragPos = TBN * vs_out.FragPos;
 

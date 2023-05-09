@@ -8,6 +8,9 @@
 #include "MyFPSCamera.h"
 #include "GameObjects/GameObject.h"
 #include "GameObjects/Player/Player.h"
+#include "Lights/DirectionalLight/MyDirectionalLight.h"
+#include "Lights/PointLight/MyPointLight.h"
+#include "Lights/SpotLight/MySpotLight.h"
 
 class GameManager {
 public:
@@ -21,6 +24,10 @@ public:
 	void handleKeyboardInput(GLFWwindow* window, float deltaTime);
 	void handleMouseInput(float xOffset, float yOffset);
 	void addObject(GameObject* gameObject);
+	void addLight(MyDirectionalLight* dirLight);
+	void addLight(MyPointLight* pointLight);
+	void addLight(MySpotLight* spotLight);
+	void setPlayerFlashLight(MySpotLight* spotLight);
 
 protected:
 	PxPhysics* physics_;
@@ -29,6 +36,11 @@ protected:
 
 	std::list<GameObject*> gameObjects_;
 	PxScene* physicsScene_;
+
+	MyDirectionalLight* dirLight_;
+	std::list<MyPointLight*> pointLights_;
+	std::list<MySpotLight*> spotLights_;
+	MySpotLight* playerFlashLight_;
 
 private:
 	void stepPhysics(float deltaTime);

@@ -1,6 +1,7 @@
 #version 330 core
 
 #define NR_POINT_LIGHTS 4
+#define NR_SPOT_LIGHTS 1
 
 out vec4 FragColor;
 
@@ -9,6 +10,7 @@ struct DirLight {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+	int enabled;
 };
 
 struct PointLight {
@@ -16,6 +18,7 @@ struct PointLight {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+	int enabled;
 	float constant;
 	float linear;
 	float quadratic;
@@ -27,6 +30,7 @@ struct SpotLight {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+	int enabled;
 	float constant;
 	float linear;
 	float quadratic;
@@ -43,15 +47,15 @@ in VS_OUT {
     vec3 Normal;
     vec2 TexCoords;
     vec3 TangentPointLightsPos[NR_POINT_LIGHTS];
-    vec3 TangentSpotLightPos;
-    vec3 TangentSpotLightDir;
+    vec3 TangentSpotLightsPos[NR_SPOT_LIGHTS];
+    vec3 TangentSpotLightsDir[NR_SPOT_LIGHTS];
     vec3 TangentViewPos;
     vec3 TangentFragPos;
 } fs_in;
 
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
-uniform SpotLight spotLight;
+uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 uniform int enableSpotLight;
 uniform vec3 viewPos;
 
@@ -74,29 +78,45 @@ void main() {
 		norm = normalize(norm * 2.0 - 1.0); // is in tangent space
 		vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
 
-		result += calcDirLight(dirLight, norm, viewDir, diffuseTex, specularTex);
+		if (dirLight.enabled == 1) {
+			result += calcDirLight(dirLight, norm, viewDir, diffuseTex, specularTex);
+		}
 
 		for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-			result += calcPointLight(pointLights[i], fs_in.TangentPointLightsPos[i], norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
+			if (pointLights[i].enabled == 1) {
+				result += calcPointLight(pointLights[i], fs_in.TangentPointLightsPos[i], norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
+			}
 		}
 
-		if (enableSpotLight == 1) {
-			result += calcSpotLight(spotLight, fs_in.TangentSpotLightPos, fs_in.TangentSpotLightDir, norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
+		for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
+			if (enableSpotLight == 1) {
+				result += calcSpotLight(spotLights[i], fs_in.TangentSpotLightsPos[i], fs_in.TangentSpotLightsDir[i], norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
+			}
 		}
+
+		//result = norm * 0.5 + 0.5;
 
 	} else {
 		vec3 norm = normalize(fs_in.Normal);
 		vec3 viewDir = normalize(viewPos - fs_in.FragPos);
 
-		result += calcDirLight(dirLight, norm, viewDir, diffuseTex, specularTex);
+		if (dirLight.enabled == 1) {
+			result += calcDirLight(dirLight, norm, viewDir, diffuseTex, specularTex);
+		}
 
 		for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-			result += calcPointLight(pointLights[i], pointLights[i].position, norm, fs_in.FragPos, viewDir, diffuseTex, specularTex);
+			if (pointLights[i].enabled == 1) {
+				result += calcPointLight(pointLights[i], pointLights[i].position, norm, fs_in.FragPos, viewDir, diffuseTex, specularTex);
+			}
 		}
 
-		if (enableSpotLight == 1) {
-			result += calcSpotLight(spotLight, spotLight.position, spotLight.direction, norm, fs_in.FragPos, viewDir, diffuseTex, specularTex);
+		for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
+			if (enableSpotLight == 1) {
+				result += calcSpotLight(spotLights[i], spotLights[i].position, spotLights[i].direction, norm, fs_in.FragPos, viewDir, diffuseTex, specularTex);
+			}
 		}
+
+
 	}
 	FragColor = vec4(result, 1.0);
 }

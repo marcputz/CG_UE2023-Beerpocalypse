@@ -15,6 +15,9 @@
 #include "PxPhysicsAPI.h"
 #include "GameObjects/Cube/Cube.h"
 #include "INIReader.h"
+#include "Lights/DirectionalLight/MyDirectionalLight.h"
+#include "Lights/PointLight/MyPointLight.h"
+#include "Lights/SpotLight/MySpotLight.h"
 
 using namespace physx;
 using namespace std;
@@ -195,6 +198,45 @@ int main(int argc, char** argv) {
 	gameManager->addObject(&metalCube); 
 	gameManager->addObject(&pavingCube);
 
+	// Init lights
+	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
+		true, glm::vec3(-0.2f, -1.0f, 0.3f));
+	dirLight.addLightToShader(defaultShader);
+
+	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, pointLightPositions[0],
+		1.0f, 0.09f, 0.032f);
+	pointLightOne.addLightToShader(defaultShader);
+
+	MyPointLight pointLightTwo(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, pointLightPositions[1],
+		1.0f, 0.09f, 0.032f);
+	pointLightTwo.addLightToShader(defaultShader);
+
+	MyPointLight pointLightThree(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, pointLightPositions[2],
+		1.0f, 0.09f, 0.032f);
+	pointLightThree.addLightToShader(defaultShader);
+
+	MyPointLight pointLightFour(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, pointLightPositions[3],
+		1.0f, 0.09f, 0.032f);
+	pointLightFour.addLightToShader(defaultShader);
+
+	MySpotLight flashLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+		1.0f, 0.09f, 0.032f,
+		12.5f, 15.0f, camera);
+	flashLight.addLightToShader(defaultShader);
+
+	// Add lights to the game
+	gameManager->addLight(&dirLight);
+	gameManager->addLight(&pointLightOne);
+	gameManager->addLight(&pointLightTwo);
+	gameManager->addLight(&pointLightThree);
+	gameManager->addLight(&pointLightFour);
+	gameManager->setPlayerFlashLight(&flashLight);
+
 	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
 
@@ -285,7 +327,7 @@ int main(int argc, char** argv) {
 		{
 			defaultShader.use();
 			defaultShader.setVec3("viewPos", camera.position_);
-			setUniformsOfLights(defaultShader);
+			//setUniformsOfLights(defaultShader);
 			defaultShader.setBool("enableSpotLight", enableFlashLight);
 			defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 		}
@@ -363,12 +405,14 @@ void static setUniformsOfLights(MyShader &shader) {
 	shader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
 	shader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
 	shader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+	shader.setBool("dirLight.enabled", true);
 
 	// 4 point lights
 	shader.setVec3("pointLights[0].position", pointLightPositions[0]);
 	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
 	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
 	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+	shader.setBool("pointLights[0].enabled", true);
 	shader.setFloat("pointLights[0].constant", 1.0f);
 	shader.setFloat("pointLights[0].linear", 0.09f);
 	shader.setFloat("pointLights[0].quadratic", 0.032f);
@@ -377,6 +421,7 @@ void static setUniformsOfLights(MyShader &shader) {
 	shader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
 	shader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
 	shader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+	shader.setBool("pointLights[1].enabled", true);
 	shader.setFloat("pointLights[1].constant", 1.0f);
 	shader.setFloat("pointLights[1].linear", 0.09f);
 	shader.setFloat("pointLights[1].quadratic", 0.032f);
@@ -385,6 +430,7 @@ void static setUniformsOfLights(MyShader &shader) {
 	shader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
 	shader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
 	shader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+	shader.setBool("pointLights[2].enabled", true);
 	shader.setFloat("pointLights[2].constant", 1.0f);
 	shader.setFloat("pointLights[2].linear", 0.09f);
 	shader.setFloat("pointLights[2].quadratic", 0.032f);
@@ -393,21 +439,23 @@ void static setUniformsOfLights(MyShader &shader) {
 	shader.setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
 	shader.setVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
 	shader.setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+	shader.setBool("pointLights[3].enabled", true);
 	shader.setFloat("pointLights[3].constant", 1.0f);
 	shader.setFloat("pointLights[3].linear", 0.09f);
 	shader.setFloat("pointLights[3].quadratic", 0.032f);
 
 	// spotlight
-	shader.setVec3("spotLight.position", camera.position_);
-	shader.setVec3("spotLight.direction", camera.front_);
-	shader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-	shader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-	shader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-	shader.setFloat("spotLight.constant", 1.0f);
-	shader.setFloat("spotLight.linear", 0.09f);
-	shader.setFloat("spotLight.quadratic", 0.032f);
-	shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-	shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+	shader.setVec3("spotLights[0].position", camera.position_);
+	shader.setVec3("spotLights[0].direction", camera.front_);
+	shader.setVec3("spotLights[0].ambient", 0.0f, 0.0f, 0.0f);
+	shader.setVec3("spotLights[0].diffuse", 1.0f, 1.0f, 1.0f);
+	shader.setVec3("spotLights[0].specular", 1.0f, 1.0f, 1.0f);
+	shader.setBool("spotLights[0].enabled", true);
+	shader.setFloat("spotLights[0].constant", 1.0f);
+	shader.setFloat("spotLights[0].linear", 0.09f);
+	shader.setFloat("spotLights[0].quadratic", 0.032f);
+	shader.setFloat("spotLights[0].cutOff", glm::cos(glm::radians(12.5f)));
+	shader.setFloat("spotLights[0].outerCutOff", glm::cos(glm::radians(15.0f)));
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {

@@ -32,6 +32,20 @@ void GameManager::stepUpdate(float deltaTime) {
 	}
 	stepPhysics(deltaTime);
 
+	dirLight_->setUniforms(0);
+
+	int pointLightIdx = 0;
+	for (MyPointLight* pointLight : pointLights_) {
+		pointLight->setUniforms(pointLightIdx);
+		pointLightIdx++;
+	}
+
+	int spotLightIdx = 0;
+	for (MySpotLight* spotLight : spotLights_) {
+		spotLight->setUniforms(spotLightIdx);
+		spotLightIdx++;
+	}
+
 	camera_->update();
 }
 
@@ -71,4 +85,21 @@ void GameManager::addObject(GameObject* gameObject) {
 	gameObjects_.push_back(gameObject);
 	PxRigidActor* actor = gameObject->getActor();
 	physicsScene_->addActor(*actor);
+}
+
+void GameManager::addLight(MyDirectionalLight* dirLight) {
+	dirLight_ = dirLight;
+}
+
+void GameManager::addLight(MyPointLight* pointLight) {
+	pointLights_.push_back(pointLight);
+}
+
+void GameManager::addLight(MySpotLight* spotLight) {
+	spotLights_.push_back(spotLight);
+}
+
+void GameManager::setPlayerFlashLight(MySpotLight* spotLight) {
+	playerFlashLight_ = spotLight;
+	addLight(spotLight);
 }
