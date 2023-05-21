@@ -17,7 +17,7 @@ public:
 	static MyShader loadShader(const char* vertexShaderFileName, const char* fragmentShaderFileName, std::string shaderName);
 	static MyShader getShader(std::string shaderName);
 
-	static My2DTexture loadTexture(const char* textureFileName, My2DTextureTypes textureType, std::string textureName);
+	static My2DTexture loadTexture(const char* textureFileName, My2DTextureTypes textureType, bool textureAlpha, std::string textureName);
 	static My2DTexture getTexture(std::string textureName);
 
 	/*

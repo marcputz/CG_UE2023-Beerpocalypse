@@ -18,6 +18,7 @@
 #include "Lights/DirectionalLight/MyDirectionalLight.h"
 #include "Lights/PointLight/MyPointLight.h"
 #include "Lights/SpotLight/MySpotLight.h"
+#include "MyParticleGenerator.h"
 
 using namespace physx;
 using namespace std;
@@ -244,6 +245,12 @@ int main(int argc, char** argv) {
 	gameManager->setPlayerFlashLight(&flashLight);
 	gameManager->addLight(&spotLightOne);
 
+	MyShader particleShader = MyAssetManager::loadShader("particle.vert", "particle.frag", "particle");
+	My2DTexture particleTexture = MyAssetManager::loadTexture("assets/textures/particle.png", SPRITE, true, "particle");
+	MyParticleGenerator particleGen(particleShader, particleTexture, camera, 500);
+
+
+
 	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
 
@@ -348,6 +355,13 @@ int main(int argc, char** argv) {
 		gameManager->handleKeyboardInput(window, deltaTime);
 		gameManager->stepUpdate(deltaTime);
 		gameManager->draw();
+
+		particleShader.use();
+		particleShader.setMat4("projection", projection);
+		particleShader.setMat4("view", view);
+		particleGen.update(deltaTime);
+		particleGen.draw();
+
 
 		// Render Light-Cubes
 		{

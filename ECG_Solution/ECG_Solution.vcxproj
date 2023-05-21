@@ -13,6 +13,7 @@
     <ClCompile Include="src\MyFPSCamera.cpp" />
     <ClCompile Include="src\MyMesh.cpp" />
     <ClCompile Include="src\MyModel.cpp" />
+    <ClCompile Include="src\MyParticleGenerator.cpp" />
     <ClCompile Include="src\MyShader.cpp" />
     <ClCompile Include="src\MyTextRenderer.cpp" />
     <ClCompile Include="src\GameManager.cpp" />
@@ -37,6 +38,7 @@
     <ClInclude Include="src\MyGeometry.h" />
     <ClInclude Include="src\MyMesh.h" />
     <ClInclude Include="src\MyModel.h" />
+    <ClInclude Include="src\MyParticleGenerator.h" />
     <ClInclude Include="src\MyShader.h" />
     <ClInclude Include="src\MyTextRenderer.h" />
     <ClInclude Include="src\GameManager.h" />

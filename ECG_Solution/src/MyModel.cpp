@@ -144,7 +144,8 @@ std::vector<My2DTexture> MyModel::loadMaterialTextures(aiMaterial* mat, aiTextur
 		bool skip = false;
 
 		std::string pathToTextureFile = directory_ + '/' + std::string(str.C_Str());
-		My2DTexture tex = MyAssetManager::loadTexture(pathToTextureFile.c_str(), textureType, pathToTextureFile);
+		// alpha = false since we do not check in any way if the texture of a model should be translucent
+		My2DTexture tex = MyAssetManager::loadTexture(pathToTextureFile.c_str(), textureType, false, pathToTextureFile);
 
 		textures.push_back(tex);
 	}

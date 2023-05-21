@@ -9,6 +9,7 @@ enum My2DTextureTypes {
 	SPECULAR,
 	NORMAL,
 	HEIGHT,
+	SPRITE,
 	NOT_SET
 };
 

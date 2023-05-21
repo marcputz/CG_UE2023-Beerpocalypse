@@ -53,7 +53,7 @@ MyShader MyAssetManager::getShader(std::string shaderName) {
 	return shaders_[shaderName];
 }
 
-My2DTexture MyAssetManager::loadTexture(const char* textureFileName, My2DTextureTypes textureType, std::string textureName) {
+My2DTexture MyAssetManager::loadTexture(const char* textureFileName, My2DTextureTypes textureType, bool textureAlpha, std::string textureName) {
 	auto search = textures_.find(textureName);
 
 	if (search == textures_.end()) {
@@ -70,6 +70,12 @@ My2DTexture MyAssetManager::loadTexture(const char* textureFileName, My2DTexture
 				if (nrChannels == 4) {
 					format = GL_RGBA;
 				}
+			}
+		}
+
+		if (textureAlpha) {
+			if (format == GL_RGB) {
+				format = GL_RGBA;
 			}
 		}
 
