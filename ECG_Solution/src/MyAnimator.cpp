@@ -27,10 +27,12 @@ void MyAnimator::playAnimation(MyAnimation* animationToPlay) {
 }
 
 void MyAnimator::calculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform) {
-	std::string nodeName = node->name;
+	//std::string nodeName = node->name;
+	const std::string& nodeName = node->name;
 	glm::mat4 nodeTransform = node->transformation;
 	
 	MyBone* bone = currentAnimation_->findBone(nodeName);
+	//std::shared_ptr<MyBone> bone = currentAnimation_->findBone(nodeName);
 
 	if (bone) {
 		bone->update(currentTime_);
@@ -39,11 +41,14 @@ void MyAnimator::calculateBoneTransform(const AssimpNodeData* node, glm::mat4 pa
 
 	glm::mat4 globalTransformation = parentTransform * nodeTransform;
 
-	std::map<std::string, BoneInfo> boneInfoMap = currentAnimation_->getBoneInfoMap();
+	//std::map<std::string, BoneInfo> boneInfoMap = currentAnimation_->getBoneInfoMap();
+	const std::map<std::string, BoneInfo>& boneInfoMap = currentAnimation_->getBoneInfoMap();
 	if (boneInfoMap.find(nodeName) != boneInfoMap.end()) {
-		int index = boneInfoMap[nodeName].ID;
-		glm::mat4 offset = boneInfoMap[nodeName].offset;
-		finalBoneMatrices_[index] = globalTransformation * offset;
+		//int index = boneInfoMap[nodeName].ID;
+		//glm::mat4 offset = boneInfoMap[nodeName].offset;
+		//finalBoneMatrices_[index] = globalTransformation * offset;
+		int index = boneInfoMap.at(nodeName).ID;
+		finalBoneMatrices_[index] = globalTransformation * boneInfoMap.at(nodeName).offset;
 	}
 
 	for (int i = 0; i < node->childrenCount; i++) {

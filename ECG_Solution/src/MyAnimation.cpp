@@ -14,7 +14,23 @@ MyAnimation::MyAnimation(const std::string& animationPath, MyModel* model) {
 MyAnimation::~MyAnimation() {
 }
 
+
 MyBone* MyAnimation::findBone(const std::string& name) {
+	auto iter = std::find_if(bones_.begin(), bones_.end(),
+		// lambda
+		[&](const MyBone& bone) {
+			//return bone.getBoneName() == name;
+			return bone.name_ == name;
+		});
+	if (iter == bones_.end()) {
+		return nullptr;
+	} else {
+		return &(*iter);
+	}
+}
+
+/*
+std::shared_ptr<MyBone> MyAnimation::findBone(const std::string& name) {
 	auto iter = std::find_if(bones_.begin(), bones_.end(),
 		// lambda
 		[&](const MyBone& bone) {
@@ -23,9 +39,10 @@ MyBone* MyAnimation::findBone(const std::string& name) {
 	if (iter == bones_.end()) {
 		return nullptr;
 	} else {
-		return &(*iter);
+		return std::make_shared<MyBone>(iter._Ptr);
 	}
 }
+*/
 
 float MyAnimation::getTicksPerSecond() {
 	return ticksPerSecond_;

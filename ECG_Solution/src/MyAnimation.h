@@ -17,6 +17,7 @@ public:
 	~MyAnimation();
 	
 	MyBone* findBone(const std::string& name);
+	//std::shared_ptr<MyBone> findBone(const std::string& name);
 	float getTicksPerSecond();
 	float getDuration();
 	const AssimpNodeData& getRootNode();

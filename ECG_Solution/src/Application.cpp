@@ -44,6 +44,7 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void handleContinuousKeyboardInput(GLFWwindow* window);
+//void renderBloomQuad();
 
 // PhysX
 void static stepPhysics(float deltaTime);
@@ -77,11 +78,27 @@ unsigned int refreshRate = 0;
 string windowTitle = "";
 bool startFullscreen = false;
 
+/*
+// bloom
+unsigned int hdrFrameBuffer;
+unsigned int colorBuffers[2];
+
+unsigned int renderBufferDepth;
+unsigned int attachments[2];
+
+unsigned int pingPongFrameBuffer[2];
+unsigned int pingPongColorBuffers[2];
+
+unsigned int bloomQuadVAO = 0;
+unsigned int bloomQuadVBO;
+*/
+
 // Toggle-Flags
 bool enableWireframe = false;
 bool enableBackfaceCulling = true;
 bool enableHUD = true;
 bool enableNormalMapping = false;
+//bool enableBloom = true;
 //bool enableFlashLight = true;
 
 // Camera
@@ -94,7 +111,13 @@ float lastX = 0.0f;
 float lastY = 0.0f;
 
 // Shaders
+//MyShader bloomBlurShader;
+//MyShader bloomCombineShader;
+MyShader textShader;
 MyShader defaultShader;
+MyShader animationShader;
+MyShader particleShader;
+MyShader myLightSourceShader;
 
 // Game Logic
 GameManager* gameManager;
@@ -139,9 +162,70 @@ int main(int argc, char** argv) {
 	initPhysX();
 	std::cout << "PhysX initialized" << std::endl;
 
+	// setup for bloom
+	/*
+	{
+		glGenFramebuffers(1, &hdrFrameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
+		// 2 floating point color buffers, 1 for normal rendering, 2 for brightness thresholds
+		glGenTextures(2, colorBuffers);
+		for (unsigned int i = 0; i < 2; i++) {
+			glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			// attach texture to corresponding framebuffer
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+		}
+		// create and attach depthBuffer (renderBuffer)
+		glGenRenderbuffers(1, &renderBufferDepth);
+		glBindRenderbuffer(GL_RENDERBUFFER, renderBufferDepth);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, screenWidth, screenHeight);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferDepth);
+		// tell openGL which color attachments to use for rendering
+		attachments[0] = GL_COLOR_ATTACHMENT0;
+		attachments[1] = GL_COLOR_ATTACHMENT1;
+		glDrawBuffers(2, attachments);
+		// check framebuffer for completeness
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			std::cout << "Framebuffer (depth) not complete!" << std::endl;
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// ping-pong framebuffer for blurring (bloom effect around light)
+		glGenFramebuffers(2, pingPongFrameBuffer);
+		glGenTextures(2, pingPongColorBuffers);
+		for (unsigned int i = 0; i < 2; i++) {
+			glBindFramebuffer(GL_FRAMEBUFFER, pingPongFrameBuffer[i]);
+			glBindTexture(GL_TEXTURE_2D, pingPongColorBuffers[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongColorBuffers[i], 0);
+			// also check if framebuffers are complete (no need for depth buffer)
+			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+				std::cout << "Framebuffer (blur) not complete!" << std::endl;
+			}
+		}
+
+		bloomBlurShader = MyAssetManager::loadShader("bloomBlur.vert", "bloomBlur.frag", "bloomBlur");
+		bloomBlurShader.use();
+		bloomBlurShader.setInt("imageToBlur", 0);
+
+		bloomCombineShader = MyAssetManager::loadShader("bloomCombine.vert", "bloomCombine.frag", "bloomCombine");
+		bloomCombineShader.use();
+		bloomCombineShader.setInt("scene", 0);
+		bloomCombineShader.setInt("bloomBlur", 1);
+	}
+	*/
+
 	// Prepare Text Renderer and Shader
 	MyTextRenderer textRenderer("arial/arial.ttf");
-	MyShader textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
+	textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
 	{
 		// set the "camera" to be used for text rendering (static fixed orthogonal view-projection)
 		glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
@@ -149,9 +233,8 @@ int main(int argc, char** argv) {
 		textShader.setMat4("projection", textProjection);
 	}
 
-
 	// Load default shader for objects
-	MyShader defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
+	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
 
 	// Setup Game Objects
 	gameManager = new GameManager(gPhysics, camera);
@@ -248,7 +331,7 @@ int main(int argc, char** argv) {
 	gameManager->setPlayerFlashLight(&flashLight);
 	gameManager->addLight(&spotLightOne);
 
-	MyShader animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
+	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
 
 	GameObjectInfo vampireInfo;
 	vampireInfo.staticFriction = 0.5;
@@ -265,13 +348,13 @@ int main(int argc, char** argv) {
 	MyAnimator vampireDanceAnimator(&tutHipHopDanceAnim);
 	
 	/*
-	MyShader particleShader = MyAssetManager::loadShader("particle.vert", "particle.frag", "particle");
+	particleShader = MyAssetManager::loadShader("particle.vert", "particle.frag", "particle");
 	My2DTexture particleTexture = MyAssetManager::loadTexture("assets/textures/particle.png", SPRITE, true, "particle");
 	MyParticleGenerator particleGen(particleShader, particleTexture, camera, 500);
 	*/
 
 	// Setup lights shader
-	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
+	myLightSourceShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
 
 	// Prepare Light Cubes 
 	unsigned int VBO, lightVAO;
@@ -337,13 +420,15 @@ int main(int argc, char** argv) {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	
-
 	/*---- RENDER LOOP -----*/
 	float time = float(glfwGetTime());
 	float lastTime = time;
 
 	std::cout << "Render Loop START" << std::endl;
 	while (!glfwWindowShouldClose(window)) {
+		// 1. render scene into floating point frameBuffer for bloom
+		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
+
 		// Clear backbuffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -404,28 +489,55 @@ int main(int argc, char** argv) {
 		{
 			glBindVertexArray(lightVAO);
 
-			myLightShader.use();
-			myLightShader.setMat4("projection", projection);
-			myLightShader.setMat4("view", view);
+			myLightSourceShader.use();
+			myLightSourceShader.setMat4("projection", projection);
+			myLightSourceShader.setMat4("view", view);
 
 			glm::mat4 model = glm::mat4(1.0f);
 			for (unsigned int i = 0; i < 4; i++) {
 				model = glm::mat4(1.0f);
 				model = glm::translate(model, pointLightPositions[i]);
 				model = glm::scale(model, glm::vec3(0.2f));
-				myLightShader.setMat4("model", model);
+				myLightSourceShader.setMat4("model", model);
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 		}
 
 		renderHUD(textRenderer, textShader);
 
+		/*
+		// 2. blur bright fragments with two-pass Gaussian Blur
+		bool horizontal = true, firstIteration = true;
+		unsigned int amount = 10;
+		bloomBlurShader.use();
+		for (unsigned int i = 0; i < amount; i++) {
+			glBindFramebuffer(GL_FRAMEBUFFER, pingPongFrameBuffer[horizontal]);
+			bloomBlurShader.setInt("horizontal", horizontal);
+			glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[1] : pingPongFrameBuffer[horizontal]);
+			renderBloomQuad();
+			horizontal = !horizontal;
+			if (firstIteration) {
+				firstIteration = false;
+			}
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+		// 3. render floating point color buffer to 2D quad and tonemap HDR colors to the default frameBuffer's color range
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		bloomCombineShader.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, pingPongColorBuffers[!horizontal]);
+		bloomCombineShader.setInt("bloom", enableBloom);
+		bloomCombineShader.setFloat("exposure", 1.0f);
+		renderBloomQuad();
+		*/
 		// Swap buffers
 		glfwSwapBuffers(window);
 	}
 
-
-	
 	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &VBO);
 
@@ -455,6 +567,32 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	textRenderer.renderText(textShader, "Mouse - Look around", 0.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "ESC - Exit Application", 0.0f, (float)screenHeight - 108.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 }
+
+/*
+void renderBloomQuad() {
+	if (bloomQuadVAO == 0) {
+		float quadVertices[] = {
+			-1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+			 1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+			-1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
+			 1.0f,  1.0f, 0.0f,  1.0f, 1.0f
+		};
+
+		glGenVertexArrays(1, &bloomQuadVAO);
+		glGenBuffers(1, &bloomQuadVBO);
+		glBindVertexArray(bloomQuadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, bloomQuadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	}
+	glBindVertexArray(bloomQuadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0., 4);
+	glBindVertexArray(0);
+}
+*/
 
 void static setUniformsOfLights(MyShader &shader) {
 	// directional light
@@ -749,7 +887,7 @@ void static initOpenGL() {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Set standard values for OpenGL
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);

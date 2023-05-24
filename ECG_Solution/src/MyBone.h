@@ -24,6 +24,9 @@ struct KeyScale {
 
 class MyBone {
 public:
+
+	std::string name_;
+
 	MyBone(const std::string& name, int ID, const aiNodeAnim* channel);
 	void update(float animationTime);
 	glm::mat4 getLocalTransform();
@@ -46,7 +49,7 @@ private:
 	int numScales_;
 
 	glm::mat4 localTransform_;
-	std::string name_;
+	//std::string name_;
 	int ID_;
 
 	float getScaleFactor(float lastTimeStamp, float nextTimeStamp, float animationTime);
