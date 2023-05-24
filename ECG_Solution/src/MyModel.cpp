@@ -11,6 +11,14 @@ void MyModel::draw(MyShader& shader) {
 	}
 }
 
+std::map<std::string, BoneInfo>& MyModel::getBoneInfoMap() {
+	return boneInfoMap_;
+}
+
+int& MyModel::getBoneCount() {
+	return boneCounter_;
+}
+
 void MyModel::loadModel(std::string const &path) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace/* | aiProcess_GenBoundingBoxes*/); //GenNormals, SplitLargeMeshes/OptimizeMeshes
@@ -56,6 +64,9 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 	for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
 		// vertex positions
 		MyVertex vertex;
+
+		setVertexBoneDataToDefault(vertex);
+
 		glm::vec3 vector;
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
@@ -110,6 +121,8 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 		}
 	}
 
+	extractBoneWeightsForVertices(vertices, mesh, scene);
+
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 	std::vector<My2DTexture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, DIFFUSE);
@@ -151,5 +164,54 @@ std::vector<My2DTexture> MyModel::loadMaterialTextures(aiMaterial* mat, aiTextur
 	}
 
 	return textures;
+}
+
+void MyModel::setVertexBoneDataToDefault(MyVertex& vertex) {
+	for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
+		vertex.boneIDs[i] = -1;
+		vertex.weights[i] = 0.0f;
+	}
+}
+
+void MyModel::setVertexBoneData(MyVertex& vertex, int boneID, float weight) {
+	for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
+		if (vertex.boneIDs[i] < 0) {
+			vertex.boneIDs[i] = boneID;
+			vertex.weights[i] = weight;
+			break;
+		}
+	}
+}
+
+void MyModel::extractBoneWeightsForVertices(std::vector<MyVertex>& vertices, aiMesh* mesh, const aiScene* scene) {
+	for (int boneIndex = 0; boneIndex < mesh->mNumBones; boneIndex++) {
+		int boneID = -1;
+		std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+		if (boneInfoMap_.find(boneName) == boneInfoMap_.end()) {
+			BoneInfo newBoneInfo;
+			newBoneInfo.ID = boneCounter_;
+			newBoneInfo.offset = glm::mat4(
+				mesh->mBones[boneIndex]->mOffsetMatrix.a1, mesh->mBones[boneIndex]->mOffsetMatrix.b1, mesh->mBones[boneIndex]->mOffsetMatrix.c1, mesh->mBones[boneIndex]->mOffsetMatrix.d1,
+				mesh->mBones[boneIndex]->mOffsetMatrix.a2, mesh->mBones[boneIndex]->mOffsetMatrix.b2, mesh->mBones[boneIndex]->mOffsetMatrix.c2, mesh->mBones[boneIndex]->mOffsetMatrix.d2,
+				mesh->mBones[boneIndex]->mOffsetMatrix.a3, mesh->mBones[boneIndex]->mOffsetMatrix.b3, mesh->mBones[boneIndex]->mOffsetMatrix.c3, mesh->mBones[boneIndex]->mOffsetMatrix.d3,
+				mesh->mBones[boneIndex]->mOffsetMatrix.a4, mesh->mBones[boneIndex]->mOffsetMatrix.b4, mesh->mBones[boneIndex]->mOffsetMatrix.c4, mesh->mBones[boneIndex]->mOffsetMatrix.d4
+			);
+			boneInfoMap_[boneName] = newBoneInfo;
+			boneID = boneCounter_;
+			boneCounter_++;
+		} else {
+			boneID = boneInfoMap_[boneName].ID;
+		}
+		assert(boneID != -1);
+		auto weights = mesh->mBones[boneIndex]->mWeights;
+		int numWeights = mesh->mBones[boneIndex]->mNumWeights;
+
+		for (int weightIndex = 0; weightIndex < numWeights; weightIndex++) {
+			int vertexID = weights[weightIndex].mVertexId;
+			float weight = weights[weightIndex].mWeight;
+			assert(vertexID <= vertices.size());
+			setVertexBoneData(vertices[vertexID], boneID, weight);
+		}
+	}
 }
 

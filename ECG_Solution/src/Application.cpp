@@ -19,6 +19,8 @@
 #include "Lights/PointLight/MyPointLight.h"
 #include "Lights/SpotLight/MySpotLight.h"
 #include "MyParticleGenerator.h"
+#include "MyAnimator.h"
+#include "GameObjects/Vampire/Vampire.h"
 
 using namespace physx;
 using namespace std;
@@ -123,7 +125,8 @@ PxPvd* gPvd = nullptr;
 
 int main(int argc, char** argv) {
 	// tell stbi to load image y-flipped so its right for opengl texCoords
-	stbi_set_flip_vertically_on_load(true);
+	// disregard comment on top, we need to load textures non-flipped
+	stbi_set_flip_vertically_on_load(false);
 
 	// Read values from settings.ini
 	readINIFile();
@@ -245,11 +248,27 @@ int main(int argc, char** argv) {
 	gameManager->setPlayerFlashLight(&flashLight);
 	gameManager->addLight(&spotLightOne);
 
+	MyShader animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
+
+	GameObjectInfo vampireInfo;
+	vampireInfo.staticFriction = 0.5;
+	vampireInfo.dynamicFriction = 0.5;
+	vampireInfo.restitution = 0.5;
+	vampireInfo.modelPath = "vampire/Vampire.dae";
+	vampireInfo.location = PxVec3(0, -1.5, 0);
+	vampireInfo.actorType = TYPE_STATIC;
+	Vampire vampire(animationShader, gPhysics, vampireInfo);
+	gameManager->addObject(&vampire);
+	MyAnimation tutHipHopDanceAnim("assets/models/vampire/animations/TutHipHopDance.dae", vampire.getModel());
+	MyAnimation idleAnim("assets/models/vampire/animations/Idle.dae", vampire.getModel());
+	MyAnimator vampireIdleAnimator(&idleAnim);
+	MyAnimator vampireDanceAnimator(&tutHipHopDanceAnim);
+	
+	/*
 	MyShader particleShader = MyAssetManager::loadShader("particle.vert", "particle.frag", "particle");
 	My2DTexture particleTexture = MyAssetManager::loadTexture("assets/textures/particle.png", SPRITE, true, "particle");
 	MyParticleGenerator particleGen(particleShader, particleTexture, camera, 500);
-
-
+	*/
 
 	// Setup lights shader
 	MyShader myLightShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
@@ -351,17 +370,35 @@ int main(int argc, char** argv) {
 		defaultShader.setMat4("projection", projection);
 		defaultShader.setMat4("view", view);
 
+		animationShader.use();
+		animationShader.setMat4("projection", projection);
+		animationShader.setMat4("view", view);
+
+		std::vector<glm::mat4> vampireAnimationTransforms;
+		if (fmod(glfwGetTime(), 10.0) < 5.0) {
+			vampireIdleAnimator.updateAnimation(deltaTime);
+			vampireAnimationTransforms = vampireIdleAnimator.getFinalBoneMatrices();
+		} else {
+			vampireDanceAnimator.updateAnimation(deltaTime);
+			vampireAnimationTransforms = vampireDanceAnimator.getFinalBoneMatrices();
+		}
+
+		for (int i = 0; i < vampireAnimationTransforms.size(); i++) {
+			animationShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", vampireAnimationTransforms[i]);
+		}
+
 		// Update the game
 		gameManager->handleKeyboardInput(window, deltaTime);
 		gameManager->stepUpdate(deltaTime);
 		gameManager->draw();
-
+		
+		/*
 		particleShader.use();
 		particleShader.setMat4("projection", projection);
 		particleShader.setMat4("view", view);
 		particleGen.update(deltaTime);
 		particleGen.draw();
-
+		*/
 
 		// Render Light-Cubes
 		{

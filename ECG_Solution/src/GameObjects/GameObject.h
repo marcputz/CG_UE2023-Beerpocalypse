@@ -55,6 +55,7 @@ public:
 	void setPosition(float x, float y, float z);
 	PxVec3 getPosition();
 	glm::vec3 getGlmPosition();
+	MyModel* getModel();
 
 	// Movement
 	void move(physx::PxVec3 moveVector);

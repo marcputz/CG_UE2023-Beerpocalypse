@@ -106,6 +106,10 @@ glm::vec3 GameObject::getGlmPosition() {
 	return glm::vec3(pos.x, pos.y, pos.z);
 }
 
+MyModel* GameObject::getModel() {
+	return model_;
+}
+
 void GameObject::move(physx::PxVec3 moveVector) {
 	if (actorType_ == TYPE_DYNAMIC) {
 

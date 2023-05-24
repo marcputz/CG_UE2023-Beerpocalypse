@@ -16,10 +16,10 @@ struct MyVertex {
 	
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
-	/*
+	
 	int boneIDs[MAX_BONE_INFLUENCE];
 	float weights[MAX_BONE_INFLUENCE];
-	*/
+	
 };
 
 class MyMesh {
