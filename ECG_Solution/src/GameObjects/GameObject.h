@@ -3,13 +3,12 @@
 #include <stdio.h>
 #include <sstream>
 #include "../Utils.h"
-#include "../Shader.h"
-#include "../Geometry.h"
 #include "../Texture.h"
 #include "../MyModel.h"
 #include "../MyTransform.h"
 #include "GameObjectInfo.h"
 #include <PxPhysicsAPI.h>
+#include <list>
 
 using namespace physx;
 using namespace std;
@@ -37,6 +36,12 @@ public:
 
 //---------------------------------------------------------------
 /* FUNCTIONS */
+private:
+	// Helper Functions
+	glm::vec3 asGlmVec3(physx::PxVec3 vec);
+	physx::PxVec3 asPxVec3(glm::vec3 vec);
+	glm::quat asGlmQuat(physx::PxQuat quat);
+	physx::PxQuat asPxQuat(glm::quat quat);
 protected:
 	// Constructor
 	explicit GameObject(MyShader& shader, PxPhysics* physics, GameObjectInfo& goInfo);

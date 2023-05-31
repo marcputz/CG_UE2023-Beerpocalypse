@@ -43,11 +43,9 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void handleContinuousKeyboardInput(GLFWwindow* window);
 //void renderBloomQuad();
 
 // PhysX
-void static stepPhysics(float deltaTime);
 void static initPhysX();
 void static destroyPhysX();
 

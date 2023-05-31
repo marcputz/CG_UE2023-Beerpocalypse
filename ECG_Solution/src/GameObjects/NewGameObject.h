@@ -1,0 +1,87 @@
+#pragma once
+
+#include <stdio.h>
+#include <sstream>
+#include "../MyModel.h"
+#include "GameObjectInfo.h"
+#include <PxPhysicsAPI.h>
+#include "Transform.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+
+class NewGameObject {
+/* VARIABLES */
+protected:
+
+	// Transform (Position, Rotation, etc.)
+	Transform* transform_;
+
+	// Model data
+	MyModel* model_;
+
+	// Shader
+	MyShader* shader_;
+
+	// Physics
+	PxPhysics* physics_;
+	PxRigidActor* physicsActor_;
+	PxMaterial* physicsMaterial_;
+	PxShape* physicsShape_;
+
+/* FUNCTIONS */
+private:
+
+	/**
+	* This function takes the physics transform and copies it into the game object's transform
+	*/
+	void synchronizeTransforms();
+
+	// Helper Functions
+	glm::vec3 asGlmVec3(physx::PxVec3 vec);
+	physx::PxVec3 asPxVec3(glm::vec3 vec);
+	glm::quat asGlmQuat(physx::PxQuat quat);
+	physx::PxQuat asPxQuat(glm::quat quat);
+
+protected:
+	// Constructor
+	explicit NewGameObject(MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes);
+
+	/**
+	* These functions can be used by this class' derivates to define their functionality
+	*/
+	virtual void onBeforeUpdate() = 0;
+	virtual void onUpdate(float deltaTime) = 0;
+
+public:
+	void setParent(NewGameObject* newParent);
+
+	void setLocalPosition(glm::vec3 newPosition);
+	void setLocalRotation(glm::vec3 newRotation);
+	void setScale(glm::vec3 newScale);
+	glm::vec3 getLocalPosition();
+	glm::vec3 getLocalRotation();
+	glm::vec3 getWorldPosition();
+	glm::vec3 getWorldRotation();
+	glm::vec3 getScale();
+
+	MyModel* getModel();
+
+	/**
+	* This update function must be called BEFORE the physics update
+	*/
+	void beforeUpdate();
+
+	/**
+	* This update function must be called AFTER the physics update
+	*/
+	void update(float deltaTime);
+
+	//virtual void handleKeyboardInput(GLFWwindow* window, float deltaTime) = 0;
+	//virtual void handleMouseInput(float xOffset, float yOffset) = 0;
+
+	/**
+	* draws object on screen
+	*/
+	void draw();
+};

@@ -1,7 +1,5 @@
 #include "GameObject.h"
 
-
-
 // Constructor
 
 GameObject::GameObject(MyShader& shader, PxPhysics* physics, GameObjectInfo& goInfo) {
@@ -33,28 +31,11 @@ GameObject::GameObject(MyShader& shader, PxPhysics* physics, GameObjectInfo& goI
 
 // OpenGL Methods
 
-glm::mat4 pxMat44ToGlmMat4(PxMat44 mat) {
-	return glm::mat4{
-		mat.column0.x, mat.column0.y, mat.column0.z, mat.column0.w,
-		mat.column1.x, mat.column1.y, mat.column1.z, mat.column1.w,
-		mat.column2.x, mat.column2.y, mat.column2.z, mat.column2.w,
-		mat.column3.x, mat.column3.y, mat.column3.z, mat.column3.w,
-	};
-}
-
-glm::vec3 pxVec3ToGlmVec3(PxVec3 vec) {
-	return glm::vec3(vec.x, vec.y, vec.z);
-}
-
-glm::quat pxQuatToGlmQuat(PxQuat quat) {
-	return glm::quat(quat.w, quat.x, quat.y, quat.z);
-}
-
 void GameObject::draw() {
 	PxTransform transform = actor_->getGlobalPose();
-	glm::vec3 translate = pxVec3ToGlmVec3(transform.p);
-	glm::quat rotation = pxQuatToGlmQuat(transform.q);
-	glm::vec3 scale = pxVec3ToGlmVec3(scale_);
+	glm::vec3 translate = asGlmVec3(transform.p);
+	glm::quat rotation = asGlmQuat(transform.q);
+	glm::vec3 scale = asGlmVec3(scale_);
 
 	glm::mat4 transMatrix = glm::translate(glm::mat4(1.0f), translate);
 	glm::mat4 rotMatrix = glm::mat4_cast(rotation);
@@ -159,3 +140,18 @@ void GameObject::forceUpdateSelfAndChild() {
 }
 */
 
+glm::vec3 GameObject::asGlmVec3(physx::PxVec3 vec) {
+	return glm::vec3(vec.x, vec.y, vec.z);
+}
+
+physx::PxVec3 GameObject::asPxVec3(glm::vec3 vec) {
+	return physx::PxVec3(vec.x, vec.y, vec.z);
+}
+
+glm::quat GameObject::asGlmQuat(physx::PxQuat quat) {
+	return glm::quat(quat.w, quat.x, quat.y, quat.z);
+}
+
+physx::PxQuat GameObject::asPxQuat(glm::quat quat) {
+	return physx::PxQuat(quat.x, quat.y, quat.z, quat.w);
+}
