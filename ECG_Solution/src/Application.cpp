@@ -99,7 +99,7 @@ bool enableBackfaceCulling = true;
 bool enableHUD = true;
 bool enableNormalMapping = false;
 //bool enableBloom = true;
-//bool enableFlashLight = true;
+//bool enableFlashLight = true; // depracated
 
 // Camera
 MyFPSCamera camera(glm::vec3(0.0f, 0.0f, 3.0f));
