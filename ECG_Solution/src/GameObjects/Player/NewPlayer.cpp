@@ -17,6 +17,10 @@ void NewPlayer::onUpdate(float deltaTime) {
 
 }
 
+void NewPlayer::onCollision(NewGameObject* otherObject) {
+	std::cout << "Player collided with '" << otherObject->name_ << "'" << std::endl;
+}
+
 PlayerCamera* NewPlayer::getCamera() {
 	return camera;
 }

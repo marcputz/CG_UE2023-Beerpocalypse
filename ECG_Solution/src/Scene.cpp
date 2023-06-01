@@ -130,7 +130,25 @@ void Scene::onSleep(PxActor** actors, PxU32 count) {
 }
 
 void Scene::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {
-	std::printf("Scene::onContact\n");
+	//std::printf("onContact\n");
+
+	for (physx::PxU32 i = 0; i < nbPairs; i++)
+	{
+		const physx::PxContactPair& cp = pairs[i];
+		PxShape* shapeOne = cp.shapes[0];
+		PxShape* shapeTwo = cp.shapes[1];
+		NewGameObject* objectOne = static_cast<NewGameObject*>(shapeOne->userData);
+		NewGameObject* objectTwo = static_cast<NewGameObject*>(shapeTwo->userData);
+
+		if (objectOne != objectTwo) {
+			//std::cout << "Collision: '" << objectOne->name_ << "' collided with '" << objectTwo->name_ << "'" << std::endl;
+
+			objectOne->onCollision(objectTwo);
+			objectTwo->onCollision(objectOne);
+		}
+	}
+
+	return;
 }
 
 void Scene::onTrigger(PxTriggerPair* pairs, PxU32 count) {

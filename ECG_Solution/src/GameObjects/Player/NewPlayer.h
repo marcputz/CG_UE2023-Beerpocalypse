@@ -16,6 +16,8 @@ private:
 	void onBeforeUpdate();
 	void onUpdate(float deltaTime);
 
+	void onCollision(NewGameObject* otherObject);
+
 public:
 	// Constructors
 	NewPlayer(MyShader* shader, PxPhysics* physics);

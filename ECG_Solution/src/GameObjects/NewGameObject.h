@@ -95,6 +95,9 @@ public:
 	virtual void processWindowInput(GLFWwindow* window, float deltaTime) = 0;
 	virtual void processMouseInput(float offsetX, float offsetY) = 0;
 
+
+	virtual void onCollision(NewGameObject* otherObject) = 0;
+
 	//virtual void handleKeyboardInput(GLFWwindow* window, float deltaTime) = 0;
 	//virtual void handleMouseInput(float xOffset, float yOffset) = 0;
 
