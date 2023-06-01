@@ -1,7 +1,8 @@
 #include "NewPlayer.h"
 
 NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject(shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), true) {
-
+	camera = new PlayerCamera();
+	camera->setPlayerTransform(this->transform_);
 }
 
 void NewPlayer::onBeforeUpdate() {
@@ -10,6 +11,10 @@ void NewPlayer::onBeforeUpdate() {
 
 void NewPlayer::onUpdate(float deltaTime) {
 
+}
+
+PlayerCamera* NewPlayer::getCamera() {
+	return camera;
 }
 
 void NewPlayer::processWindowInput(GLFWwindow* window, float deltaTime) {

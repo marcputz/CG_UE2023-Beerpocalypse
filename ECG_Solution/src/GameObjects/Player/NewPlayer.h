@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../NewGameObject.h"
+#include "PlayerCamera.h"
 
 class NewPlayer : public NewGameObject {
 private:
@@ -9,6 +10,8 @@ private:
 
 	float facingAngle = 0.0f;
 
+	PlayerCamera* camera;
+
 private:
 	void onBeforeUpdate();
 	void onUpdate(float deltaTime);
@@ -16,6 +19,8 @@ private:
 public:
 	// Constructors
 	NewPlayer(MyShader* shader, PxPhysics* physics);
+
+	PlayerCamera* getCamera();
 
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);

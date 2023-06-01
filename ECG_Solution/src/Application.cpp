@@ -421,14 +421,14 @@ int main(int argc, char** argv) {
 		// Set Shader Attributes
 		{
 			defaultShader.use();
-			defaultShader.setVec3("viewPos", camera.position_);
+			defaultShader.setVec3("viewPos", newPlayer.getCamera()->getPosition());
 			//defaultShader.setBool("enableSpotLight", enableFlashLight);
 			defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 		}
 
 		// Prepare Camera (view-projection matrix)
-		glm::mat4 projection = glm::perspective(glm::radians(camera.fov_), float(screenWidth) / float(screenHeight), cameraNear, cameraFar);
-		glm::mat4 view = camera.getViewMatrix();
+		glm::mat4 projection = newPlayer.getCamera()->getProjectionMatrix();
+		glm::mat4 view = newPlayer.getCamera()->getViewMatrix();
 		defaultShader.setMat4("projection", projection);
 		defaultShader.setMat4("view", view);
 
