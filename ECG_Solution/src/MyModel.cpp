@@ -32,6 +32,15 @@ void MyModel::loadModel(std::string const &path) {
 
 	processNode(scene->mRootNode, scene);
 
+	// adjust bounding box for scaling saved into the mTransformation of the models skeleton
+	glm::vec3 modelLoadingScale = glm::vec3(scene->mRootNode->mTransformation.a1, scene->mRootNode->mTransformation.b2, scene->mRootNode->mTransformation.c3);
+	boundingBox_.max.x *= modelLoadingScale.x;
+	boundingBox_.min.x *= modelLoadingScale.x;
+	boundingBox_.max.y *= modelLoadingScale.y;
+	boundingBox_.min.y *= modelLoadingScale.y;
+	boundingBox_.max.z *= modelLoadingScale.z;
+	boundingBox_.min.z *= modelLoadingScale.z;
+
 	boundingBox_.absDiff = glm::vec3(std::abs(boundingBox_.max.x - boundingBox_.min.x), std::abs(boundingBox_.max.y - boundingBox_.min.y), std::abs(boundingBox_.max.z - boundingBox_.min.z));
 }
 
