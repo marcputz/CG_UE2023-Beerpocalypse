@@ -248,7 +248,8 @@ int main(int argc, char** argv) {
 
 	// Init Objects
 	StaticCube testCubeOne{ &defaultShader, gPhysics };
-	testCubeOne.setLocalPosition(glm::vec3(5.0f, 1.0f, 0));
+	testCubeOne.setLocalPosition(glm::vec3(0, -3.0f, 0));
+	testCubeOne.setScale(glm::vec3(15, 1, 8));
 	scene->addObject(&testCubeOne);
 	DynamicCube testCubeTwo{ &defaultShader, gPhysics };
 	testCubeTwo.setLocalPosition(glm::vec3(5.0f, 8.0f, 0));

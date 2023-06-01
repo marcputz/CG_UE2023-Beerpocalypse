@@ -69,8 +69,8 @@ void NewGameObject::setScale(glm::vec3 newScale) {
 	float boundingBoxX = model_->boundingBox_.absDiff.x / 2.0f;
 	float boundingBoxY = model_->boundingBox_.absDiff.y / 2.0f;
 	float boundingBoxZ = model_->boundingBox_.absDiff.z / 2.0f;
-	//physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_);
-	physicsShape_ = physics_->createShape(PxBoxGeometry(1, 1, 1), *physicsMaterial_);
+	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_);
+	//physicsShape_ = physics_->createShape(PxBoxGeometry(1, 1, 1), *physicsMaterial_);
 	physicsActor_->attachShape(*physicsShape_);
 }
 
