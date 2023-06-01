@@ -120,7 +120,6 @@ MyShader particleShader;
 MyShader myLightSourceShader;
 
 // Game Logic
-GameManager* gameManager;
 Scene* scene;
 float deltaTime = 0.0f;
 float framesPerSecond = 0.0f;
@@ -237,30 +236,18 @@ int main(int argc, char** argv) {
 	// Load default shader for objects
 	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
 
-	// Setup Game Objects
-	gameManager = new GameManager(gPhysics, camera);
+	// Setup Scene
 	scene = new Scene(gPhysics);
 
-	StaticCube testCube{ &defaultShader, gPhysics };
-	testCube.setLocalPosition(glm::vec3(1.0f, 1.0f, 0));
-	//scene->addObject(&testCube);
-
+	// Init Player
 	NewPlayer newPlayer{ &defaultShader, gPhysics };
 	newPlayer.setLocalPosition(glm::vec3(0.0f, 0.0f, -2.0f));
 	scene->addObject(&newPlayer);
 
-	// Init Player
-	GameObjectInfo playerInfo;
-	playerInfo.modelPath = "cube/brick_cube/cube.obj";
-	playerInfo.location = PxVec3(0, 2, 5);
-	playerInfo.staticFriction = playerInfo.dynamicFriction = 0.5;
-	playerInfo.restitution = 0.05;
-	playerInfo.actorType = TYPE_DYNAMIC;
-	Player player(defaultShader, gPhysics, playerInfo, camera);
-
-	gameManager->setPlayer(&player);
-
-	camera.attachToSubject(&player);
+	// Init Objects
+	StaticCube testCube{ &defaultShader, gPhysics };
+	testCube.setLocalPosition(glm::vec3(1.0f, 1.0f, 0));
+	scene->addObject(&testCube);
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
@@ -300,25 +287,19 @@ int main(int argc, char** argv) {
 	spotLightOne.addLightToShader(defaultShader);
 
 	// Add lights to the game
-	gameManager->addLight(&dirLight);
-	gameManager->addLight(&pointLightOne);
-	gameManager->addLight(&pointLightTwo);
-	gameManager->addLight(&pointLightThree);
-	gameManager->addLight(&pointLightFour);
-	gameManager->setPlayerFlashLight(&flashLight);
-	gameManager->addLight(&spotLightOne);
+	scene->addLight(&dirLight);
+	scene->addLight(&pointLightOne);
+	scene->addLight(&pointLightTwo);
+	scene->addLight(&pointLightThree);
+	scene->addLight(&pointLightFour);
+	//gameManager->setPlayerFlashLight(&flashLight);
+	scene->addLight(&spotLightOne);
 
 	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
 
-	GameObjectInfo vampireInfo;
-	vampireInfo.staticFriction = 0.5;
-	vampireInfo.dynamicFriction = 0.5;
-	vampireInfo.restitution = 0.5;
-	vampireInfo.modelPath = "vampire/Vampire.dae";
-	vampireInfo.location = PxVec3(0, -1.5, 0);
-	vampireInfo.actorType = TYPE_STATIC;
-	Vampire vampire(animationShader, gPhysics, vampireInfo);
-	gameManager->addObject(&vampire);
+	Vampire vampire(&animationShader, gPhysics);
+	vampire.setLocalPosition(glm::vec3(0, -1.5, 0));
+	scene->addObject(&vampire);
 	MyAnimation tutHipHopDanceAnim("assets/models/vampire/animations/TutHipHopDance.dae", vampire.getModel());
 	MyAnimation idleAnim("assets/models/vampire/animations/Idle.dae", vampire.getModel());
 	MyAnimator vampireIdleAnimator(&idleAnim);
@@ -450,10 +431,6 @@ int main(int argc, char** argv) {
 		}
 
 		// Update the game
-		gameManager->handleKeyboardInput(window, deltaTime);
-		gameManager->stepUpdate(deltaTime);
-		gameManager->draw();
-
 		scene->handleKeyboardInput(window, deltaTime);
 		scene->step(deltaTime);
 		scene->draw();
@@ -688,7 +665,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 		case GLFW_KEY_F:
 			//enableFlashLight = !enableFlashLight;
-			gameManager->toggleFlashlight();
+			//gameManager->toggleFlashlight();
 			break;
 		case GLFW_KEY_KP_ADD:
 			// increase illumination
@@ -736,7 +713,6 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
 	lastX = x;
 	lastY = y;
 
-	gameManager->handleMouseInput(xOffset, yOffset);
 	scene->handleMouseInput(xOffset, yOffset);
 }
 

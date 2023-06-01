@@ -15,6 +15,18 @@ void Scene::addObject(NewGameObject* gameObject) {
 	objects.push_back(gameObject);
 }
 
+void Scene::addLight(MyDirectionalLight* dirLight) {
+	directionLight = dirLight;
+}
+
+void Scene::addLight(MyPointLight* pointLight) {
+	pointLights.push_back(pointLight);
+}
+
+void Scene::addLight(MySpotLight* spotLight) {
+	spotLights.push_back(spotLight);
+}
+
 void Scene::handleKeyboardInput(GLFWwindow* window, float deltaTime) {
 	for (NewGameObject* go : objects) {
 		go->processWindowInput(window, deltaTime);
@@ -28,13 +40,31 @@ void Scene::handleMouseInput(float xOffset, float yOffset) {
 }
 
 void Scene::step(float deltaTime) {
+	// Make pre-update calls
 	for (NewGameObject* go : objects) {
 		go->beforeUpdate();
 	}
 
+	// Make Physics update
 	this->physicsScene->simulate(deltaTime);
 	this->physicsScene->fetchResults(true);
 
+	// Update Lights
+	directionLight->setUniforms(0);
+
+	int pointLightIdx = 0;
+	for (MyPointLight* pointLight : pointLights) {
+		pointLight->setUniforms(pointLightIdx);
+		pointLightIdx++;
+	}
+
+	int spotLightIdx = 0;
+	for (MySpotLight* spotLight : spotLights) {
+		spotLight->setUniforms(spotLightIdx);
+		spotLightIdx++;
+	}
+
+	// Call update methods
 	for (NewGameObject* go : objects) {
 		go->update(deltaTime);
 	}

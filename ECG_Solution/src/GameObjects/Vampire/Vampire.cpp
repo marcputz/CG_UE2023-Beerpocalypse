@@ -1,17 +1,19 @@
 #include "Vampire.h"
 
-Vampire::Vampire(MyShader& shader, PxPhysics* physics, GameObjectInfo goInfo) : GameObject(shader, physics, goInfo) {
+Vampire::Vampire(MyShader* shader, PxPhysics* physics) : NewGameObject(shader, physics, "vampire/Vampire.dae", glm::vec3(0.5, 0.5, 0.5), true) {
 
 }
 
-void Vampire::update(float deltaTime) {
-	updateChildren(deltaTime);
+void Vampire::onBeforeUpdate() {}
+
+void Vampire::onUpdate(float deltaTime) {
+	
 }
 
-void Vampire::handleKeyboardInput(GLFWwindow* window, float deltaTime) {
+void Vampire::processWindowInput(GLFWwindow* window, float deltaTime) {
 
 }
 
-void Vampire::handleMouseInput(float xOffset, float yOffset) {
+void Vampire::processMouseInput(float offsetX, float offsetY) {
 
 }

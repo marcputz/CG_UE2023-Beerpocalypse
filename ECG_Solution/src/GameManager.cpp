@@ -32,7 +32,9 @@ void GameManager::stepUpdate(float deltaTime) {
 	}
 	stepPhysics(deltaTime);
 
-	dirLight_->setUniforms(0);
+	if (dirLight_ != nullptr) {
+		dirLight_->setUniforms(0);
+	}
 
 	int pointLightIdx = 0;
 	for (MyPointLight* pointLight : pointLights_) {

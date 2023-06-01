@@ -1,16 +1,15 @@
 #pragma once
 
-#include "../GameObject.h"
+#include "../NewGameObject.h"
 
-class Vampire : public GameObject {
+class Vampire : public NewGameObject {
 private:
-
-protected:
+	void onBeforeUpdate();
+	void onUpdate(float deltaTime);
 
 public:
-	void update(float deltaTime);
-	void handleKeyboardInput(GLFWwindow* window, float deltaTime);
-	void handleMouseInput(float xOffset, float yOffset);
+	Vampire(MyShader* shader, PxPhysics* physics);
 
-	Vampire(MyShader& shader, PxPhysics* physics, GameObjectInfo goInfo);
+	void processWindowInput(GLFWwindow* window, float deltaTime);
+	void processMouseInput(float offsetX, float offsetY);
 };
