@@ -27,3 +27,13 @@ glm::vec3 PlayerCamera::getPosition() {
 	}
 	return glm::vec3(0, 0, 0);
 }
+
+glm::vec3 PlayerCamera::getDirection() {
+	if (playerTransform != nullptr) {
+		glm::vec3 playerPosition = playerTransform->getWorldPosition();
+		glm::vec3 cameraPosition = getPosition();
+
+		return glm::normalize(playerPosition - cameraPosition);
+	}
+	return glm::vec3(0, 0, 1);
+}

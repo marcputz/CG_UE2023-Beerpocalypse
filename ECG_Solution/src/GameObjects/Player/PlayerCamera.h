@@ -15,5 +15,9 @@ public:
 
 	glm::mat4 getViewMatrix();
 	glm::mat4 getProjectionMatrix();
+
+	float getFov() { return fov;  }
+
 	glm::vec3 getPosition();
+	glm::vec3 getDirection();
 };

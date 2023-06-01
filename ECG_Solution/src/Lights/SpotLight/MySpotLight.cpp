@@ -1,7 +1,7 @@
 #include "MySpotLight.h"
 
 MySpotLight::MySpotLight(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, bool enabled, const glm::vec3& position, const glm::vec3& direction,
-	float attenuationConstant, float attenuationLinear, float attenuationQuadratic, float cutOffAngle, float outerCutOffAngle, MyFPSCamera* camera) : MyLight(ambient, diffuse, specular, enabled) {
+	float attenuationConstant, float attenuationLinear, float attenuationQuadratic, float cutOffAngle, float outerCutOffAngle, NewPlayer* player) : MyLight(ambient, diffuse, specular, enabled) {
 	position_ = position;
 	direction_ = direction;
 	attenuationConstant_ = attenuationConstant;
@@ -9,7 +9,7 @@ MySpotLight::MySpotLight(const glm::vec3& ambient, const glm::vec3& diffuse, con
 	attenuationQuadratic_ = attenuationQuadratic;
 	cutOffAngle_ = cutOffAngle;
 	outerCutOffAngle_ = outerCutOffAngle;
-	camera_ = camera;
+	player_ = player;
 }
 
 void MySpotLight::setUniforms(unsigned int index) {
@@ -18,9 +18,9 @@ void MySpotLight::setUniforms(unsigned int index) {
 	for (MyShader* shader : shaders_) {
 		shader->use();
 
-		if (camera_ != nullptr) {
-			position_ = camera_->position_;
-			direction_ = camera_->front_;
+		if (player_ != nullptr) {
+			position_ = player_->getWorldPosition();
+			direction_ = player_->getForwardVector();
 		}
 
 		shader->setVec3(idxString + ".position", position_);

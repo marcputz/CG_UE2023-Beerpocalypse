@@ -103,7 +103,6 @@ bool enableNormalMapping = false;
 //bool enableFlashLight = true; // depracated
 
 // Camera
-MyFPSCamera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float cameraStartingFOV = 0.0f;
 float cameraNear = 0.0f;
 float cameraFar = 0.0f;
@@ -122,6 +121,8 @@ MyShader myLightSourceShader;
 
 // Game Logic
 Scene* scene;
+NewPlayer* player = nullptr;
+MySpotLight* playerFlashLight = nullptr;
 float deltaTime = 0.0f;
 float framesPerSecond = 0.0f;
 
@@ -241,9 +242,9 @@ int main(int argc, char** argv) {
 	scene = new Scene(gPhysics);
 
 	// Init Player
-	NewPlayer newPlayer{ &defaultShader, gPhysics };
-	newPlayer.setLocalPosition(glm::vec3(0.0f, 0.0f, -2.0f));
-	scene->addObject(&newPlayer);
+	player = new NewPlayer{ &defaultShader, gPhysics };
+	player->setLocalPosition(glm::vec3(0.0f, 0.0f, -2.0f));
+	scene->addObject(player);
 
 	// Init Objects
 	StaticCube testCubeOne{ &defaultShader, gPhysics };
@@ -281,11 +282,11 @@ int main(int argc, char** argv) {
 		1.0f, 0.09f, 0.032f);
 	pointLightFour.addLightToShader(defaultShader);
 
-	MySpotLight flashLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+	playerFlashLight = new MySpotLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, &camera);
-	flashLight.addLightToShader(defaultShader);
+		12.5f, 15.0f, player);
+	playerFlashLight->addLightToShader(defaultShader);
 
 	MySpotLight spotLightOne(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		true, glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(-0.3f, 0.0f, -1.0f),
@@ -299,7 +300,7 @@ int main(int argc, char** argv) {
 	scene->addLight(&pointLightTwo);
 	scene->addLight(&pointLightThree);
 	scene->addLight(&pointLightFour);
-	//gameManager->setPlayerFlashLight(&flashLight);
+	scene->addLight(playerFlashLight);
 	scene->addLight(&spotLightOne);
 
 	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
@@ -409,14 +410,14 @@ int main(int argc, char** argv) {
 		// Set Shader Attributes
 		{
 			defaultShader.use();
-			defaultShader.setVec3("viewPos", newPlayer.getCamera()->getPosition());
+			defaultShader.setVec3("viewPos", player->getCamera()->getPosition());
 			//defaultShader.setBool("enableSpotLight", enableFlashLight);
 			defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 		}
 
 		// Prepare Camera (view-projection matrix)
-		glm::mat4 projection = newPlayer.getCamera()->getProjectionMatrix();
-		glm::mat4 view = newPlayer.getCamera()->getViewMatrix();
+		glm::mat4 projection = player->getCamera()->getProjectionMatrix();
+		glm::mat4 view = player->getCamera()->getViewMatrix();
 		defaultShader.setMat4("projection", projection);
 		defaultShader.setMat4("view", view);
 
@@ -522,7 +523,7 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
-	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)camera.fov_), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)player->getCamera()->getFov()), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)screenHeight - 24.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
@@ -605,8 +606,8 @@ void static setUniformsOfLights(MyShader &shader) {
 	shader.setFloat("pointLights[3].quadratic", 0.032f);
 
 	// spotlight
-	shader.setVec3("spotLights[0].position", camera.position_);
-	shader.setVec3("spotLights[0].direction", camera.front_);
+	shader.setVec3("spotLights[0].position", player->getCamera()->getPosition());
+	shader.setVec3("spotLights[0].direction", player->getCamera()->getDirection());
 	shader.setVec3("spotLights[0].ambient", 0.0f, 0.0f, 0.0f);
 	shader.setVec3("spotLights[0].diffuse", 1.0f, 1.0f, 1.0f);
 	shader.setVec3("spotLights[0].specular", 1.0f, 1.0f, 1.0f);
@@ -682,9 +683,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			// decrease illumination
 			std::cout << "Press -" << std::endl;
 			break;
-		case GLFW_KEY_T:
-			camera.detach();
-			break;
 	}
 }
 
@@ -724,7 +722,7 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	camera.handleMouseScrolling(yoffset);
+	//camera.handleMouseScrolling(yoffset);
 
 	//std::cout << "Mouse scroll event" << std::endl;
 }
@@ -752,7 +750,7 @@ void readINIFile() {
 	cameraNear = iniReader.GetReal("camera", "near", CAMERA_NEAR_DEFAULT);
 	cameraFar = iniReader.GetReal("camera", "far", CAMERA_FAR_DEFAULT);
 
-	camera.fov_ = cameraStartingFOV;
+	//camera.fov_ = cameraStartingFOV;
 	lastX = screenWidth / 2.0f;
 	lastY = screenHeight / 2.0f;
 }

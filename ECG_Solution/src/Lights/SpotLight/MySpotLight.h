@@ -1,14 +1,15 @@
 #pragma once
 
 #include "../MyLight.h"
-#include "../../MyFPSCamera.h"
+#include "GameObjects/Player/PlayerCamera.h"
+#include <GameObjects/Player/NewPlayer.h>
 
 class MySpotLight : public MyLight {
 public:
 	MySpotLight(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, bool enabled,
 		const glm::vec3& position, const glm::vec3& direction,
 		float attenuationConstant, float attenuationLinear, float attenuationQuadratic,
-		float cutOffAngle, float outerCutOffAngle, MyFPSCamera* camera);
+		float cutOffAngle, float outerCutOffAngle, NewPlayer* player = nullptr);
 
 	void setUniforms(unsigned int index);
 
@@ -20,7 +21,7 @@ protected:
 	float attenuationQuadratic_;
 	float cutOffAngle_;
 	float outerCutOffAngle_;
-	MyFPSCamera* camera_;
+	NewPlayer* player_;
 
 private:
 
