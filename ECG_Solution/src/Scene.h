@@ -21,7 +21,8 @@ private:
 public:
 	Scene(PxPhysics* physics);
 
-	void addObject(NewGameObject* gameObject);
+
+	void addObject(NewGameObject* gameObject, bool addToPhysics = true);
 	void addLight(MyDirectionalLight* dirLight);
 	void addLight(MyPointLight* pointLight);
 	void addLight(MySpotLight* spotLight);

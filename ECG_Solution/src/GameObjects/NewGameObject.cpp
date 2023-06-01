@@ -13,15 +13,20 @@ NewGameObject::NewGameObject(MyShader* shader, PxPhysics* physics, string modelP
 	else {
 		physicsActor_ = physics_->createRigidDynamic(PxTransform(PxVec3(0, 0, 0)));
 	}
+	this->isStatic_ = isStatic;
 
 	physicsMaterial_ = physics->createMaterial(materialAttributes.x, materialAttributes.y, materialAttributes.z);
-	//PxShape* shape = physics->createShape(PxBoxGeometry(1, 1, 1), *material);
+	//physicsShape_ = physics->createShape(PxBoxGeometry(1, 1, 1), *physicsMaterial_);
 	float boundingBoxX = model_->boundingBox_.absDiff.x / 2.0f;
 	float boundingBoxY = model_->boundingBox_.absDiff.y / 2.0f;
 	float boundingBoxZ = model_->boundingBox_.absDiff.z / 2.0f;
+	//std::cout << boundingBoxX << "/" << boundingBoxY << "/" << boundingBoxZ << std::endl;
 	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_);
-
 	physicsActor_->attachShape(*physicsShape_);
+
+	physicsMaterial_->userData = this;
+	physicsShape_->userData = this;
+	physicsActor_->userData = this;
 }
 
 void NewGameObject::synchronizeTransforms() {
@@ -64,7 +69,8 @@ void NewGameObject::setScale(glm::vec3 newScale) {
 	float boundingBoxX = model_->boundingBox_.absDiff.x / 2.0f;
 	float boundingBoxY = model_->boundingBox_.absDiff.y / 2.0f;
 	float boundingBoxZ = model_->boundingBox_.absDiff.z / 2.0f;
-	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_);
+	//physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_);
+	physicsShape_ = physics_->createShape(PxBoxGeometry(1, 1, 1), *physicsMaterial_);
 	physicsActor_->attachShape(*physicsShape_);
 }
 

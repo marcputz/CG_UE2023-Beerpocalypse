@@ -13,6 +13,9 @@
 
 class NewGameObject {
 /* VARIABLES */
+private:
+	bool isStatic_ = false;
+
 protected:
 
 	// Transform (Position, Rotation, etc.)
@@ -57,6 +60,8 @@ protected:
 public:
 	void setParent(NewGameObject* newParent);
 
+	bool isStatic() { return isStatic_; }
+
 	void setLocalPosition(glm::vec3 newPosition);
 	void setLocalRotation(glm::quat newRotation);
 	void setScale(glm::vec3 newScale);
@@ -68,6 +73,8 @@ public:
 	glm::vec3 getForwardVector();
 
 	MyModel* getModel();
+
+	PxRigidActor* getRigidActor() { return this->physicsActor_; }
 
 	/**
 	* This update function must be called BEFORE the physics update

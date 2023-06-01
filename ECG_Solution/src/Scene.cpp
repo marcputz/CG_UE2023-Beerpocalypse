@@ -11,8 +11,12 @@ Scene::Scene(PxPhysics* physics) {
 	this->physics = physics;
 }
 
-void Scene::addObject(NewGameObject* gameObject) {
+void Scene::addObject(NewGameObject* gameObject, bool addToPhysics) {
 	objects.push_back(gameObject);
+
+	if (addToPhysics) {
+		physicsScene->addActor(*(gameObject->getRigidActor()));
+	}
 }
 
 void Scene::addLight(MyDirectionalLight* dirLight) {

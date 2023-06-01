@@ -20,9 +20,10 @@
 #include "MyParticleGenerator.h"
 #include "MyAnimator.h"
 #include "GameObjects/Vampire/Vampire.h"
-#include <Scene.h>
-#include <GameObjects/Cube/StaticCube.h>
-#include <GameObjects/Player/NewPlayer.h>
+#include "Scene.h"
+#include "GameObjects/Cube/StaticCube.h"
+#include "GameObjects/Cube/DynamicCube.h"
+#include "GameObjects/Player/NewPlayer.h"
 
 using namespace physx;
 using namespace std;
@@ -245,9 +246,15 @@ int main(int argc, char** argv) {
 	scene->addObject(&newPlayer);
 
 	// Init Objects
-	StaticCube testCube{ &defaultShader, gPhysics };
-	testCube.setLocalPosition(glm::vec3(1.0f, 1.0f, 0));
-	scene->addObject(&testCube);
+	StaticCube testCubeOne{ &defaultShader, gPhysics };
+	testCubeOne.setLocalPosition(glm::vec3(5.0f, 1.0f, 0));
+	scene->addObject(&testCubeOne);
+	DynamicCube testCubeTwo{ &defaultShader, gPhysics };
+	testCubeTwo.setLocalPosition(glm::vec3(5.0f, 8.0f, 0));
+	scene->addObject(&testCubeTwo);
+	DynamicCube testCubeThree{ &defaultShader, gPhysics };
+	testCubeThree.setLocalPosition(glm::vec3(5.6f, 10.0f, 0.1f));
+	scene->addObject(&testCubeThree);
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
@@ -299,7 +306,7 @@ int main(int argc, char** argv) {
 
 	Vampire vampire(&animationShader, gPhysics);
 	vampire.setLocalPosition(glm::vec3(0, -1.5, 0));
-	scene->addObject(&vampire);
+	scene->addObject(&vampire, false);
 	MyAnimation tutHipHopDanceAnim("assets/models/vampire/animations/TutHipHopDance.dae", vampire.getModel());
 	MyAnimation idleAnim("assets/models/vampire/animations/Idle.dae", vampire.getModel());
 	MyAnimator vampireIdleAnimator(&idleAnim);
