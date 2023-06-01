@@ -1,13 +1,18 @@
 #include "NewGameObject.h"
 
-NewGameObject::NewGameObject(MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes)
+NewGameObject::NewGameObject(MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic)
   : shader_ { shader }, 
 	physics_ { physics },
 	transform_ { new Transform(glm::vec3(0,0,0), glm::vec3(0,0,0), glm::vec3(1,1,1)) } 
 {
 	model_ = new MyModel(modelPath);
 
-	physicsActor_ = physics_->createRigidDynamic(PxTransform(PxVec3(0,0,0)));
+	if (isStatic) {
+		physicsActor_ = physics_->createRigidStatic(PxTransform(PxVec3(0, 0, 0)));
+	}
+	else {
+		physicsActor_ = physics_->createRigidDynamic(PxTransform(PxVec3(0, 0, 0)));
+	}
 
 	physicsMaterial_ = physics->createMaterial(materialAttributes.x, materialAttributes.y, materialAttributes.z);
 	//PxShape* shape = physics->createShape(PxBoxGeometry(1, 1, 1), *material);
@@ -23,7 +28,7 @@ void NewGameObject::synchronizeTransforms() {
 	// Get the transform coordinates of the physics object and put them into the object's transform
 	PxTransform physicsTransform = physicsActor_->getGlobalPose();
 	transform_->setWorldPosition(asGlmVec3(physicsTransform.p));
-	transform_->setWorldRotation(glm::eulerAngles(asGlmQuat(physicsTransform.q)));
+	transform_->setWorldRotation(asGlmQuat(physicsTransform.q));
 }
 
 void NewGameObject::setParent(NewGameObject* newParent) {
@@ -43,11 +48,11 @@ void NewGameObject::setLocalPosition(glm::vec3 newPosition) {
 	physicsActor_->setGlobalPose(transf);
 }
 
-void NewGameObject::setLocalRotation(glm::vec3 newRotation) {
+void NewGameObject::setLocalRotation(glm::quat newRotation) {
 	this->transform_->setLocalRotation(newRotation);
 
 	PxTransform transf = physicsActor_->getGlobalPose();
-	transf.q = asPxQuat(glm::quat((this->transform_->getWorldPosition())));
+	transf.q = asPxQuat(this->transform_->getLocalRotation());
 	physicsActor_->setGlobalPose(transf);
 }
 
@@ -67,7 +72,7 @@ glm::vec3 NewGameObject::getLocalPosition() {
 	return this->transform_->getLocalPosition();
 }
 
-glm::vec3 NewGameObject::getLocalRotation() {
+glm::quat NewGameObject::getLocalRotation() {
 	return this->transform_->getLocalRotation();
 }
 
@@ -75,12 +80,16 @@ glm::vec3 NewGameObject::getWorldPosition() {
 	return this->transform_->getWorldPosition();
 }
 
-glm::vec3 NewGameObject::getWorldRotation() {
+glm::quat NewGameObject::getWorldRotation() {
 	return this->transform_->getWorldRotation();
 }
 
 glm::vec3 NewGameObject::getScale() {
 	return this->transform_->getScale();
+}
+
+glm::vec3 NewGameObject::getForwardVector() {
+	return this->transform_->getForwardVector();
 }
 
 MyModel* NewGameObject::getModel() {
@@ -111,7 +120,8 @@ void NewGameObject::update(float deltaTime) {
 
 void NewGameObject::draw() {
 	glm::vec3 position = transform_->getWorldPosition();
-	glm::quat rotation = glm::quat(transform_->getWorldRotation());
+	// TODO: Replace with world rotation and check if it's working
+	glm::quat rotation = transform_->getLocalRotation();
 	glm::vec3 scale = transform_->getScale();
 
 	glm::mat4 transMatrix = glm::translate(glm::mat4(1.0f), position);

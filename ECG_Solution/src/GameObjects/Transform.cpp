@@ -1,6 +1,6 @@
 #include "Transform.h"
 
-Transform::Transform(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale) {
+Transform::Transform(glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
 	this->localPosition = position;
 	this->localRotation = rotation;
 	this->scale = scale;
@@ -14,7 +14,7 @@ void Transform::setLocalPosition(glm::vec3 newPosition) {
 	this->localPosition = newPosition;
 }
 
-void Transform::setLocalRotation(glm::vec3 newRotation) {
+void Transform::setLocalRotation(glm::quat newRotation) {
 	this->localRotation = newRotation;
 }
 
@@ -26,7 +26,7 @@ glm::vec3 Transform::getLocalPosition() {
 	return localPosition;
 }
 
-glm::vec3 Transform::getLocalRotation() {
+glm::quat Transform::getLocalRotation() {
 	return localRotation;
 }
 
@@ -43,9 +43,9 @@ void Transform::setWorldPosition(glm::vec3 newPosition) {
 	}
 }
 
-void Transform::setWorldRotation(glm::vec3 newRotation) {
+void Transform::setWorldRotation(glm::quat newRotation) {
 	if (parent != nullptr) {
-		localPosition = newRotation - parent->getWorldRotation();
+		localRotation = newRotation * glm::inverse(parent->getWorldRotation());
 	}
 	else {
 		localRotation = newRotation;
@@ -60,11 +60,17 @@ glm::vec3 Transform::getWorldPosition() {
 		return localPosition;
 	}
 }
-glm::vec3 Transform::getWorldRotation() {
+glm::quat Transform::getWorldRotation() {
 	if (parent != nullptr) {
-		return parent->getWorldRotation() + localRotation;
+		return localRotation * parent->getWorldRotation();
 	}
 	else {
 		return localRotation;
 	}
+}
+
+glm::vec3 Transform::getForwardVector() {
+	glm::vec3 forward = glm::vec3(0, 0, 1) * localRotation;
+	forward.x *= -1;
+	return forward;
 }

@@ -8,6 +8,7 @@
 #include "Transform.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <GLFW/glfw3.h>
 
 
 class NewGameObject {
@@ -37,15 +38,9 @@ private:
 	*/
 	void synchronizeTransforms();
 
-	// Helper Functions
-	glm::vec3 asGlmVec3(physx::PxVec3 vec);
-	physx::PxVec3 asPxVec3(glm::vec3 vec);
-	glm::quat asGlmQuat(physx::PxQuat quat);
-	physx::PxQuat asPxQuat(glm::quat quat);
-
 protected:
 	// Constructor
-	explicit NewGameObject(MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes);
+	explicit NewGameObject(MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic);
 
 	/**
 	* These functions can be used by this class' derivates to define their functionality
@@ -53,17 +48,24 @@ protected:
 	virtual void onBeforeUpdate() = 0;
 	virtual void onUpdate(float deltaTime) = 0;
 
+	// Helper Functions
+	glm::vec3 asGlmVec3(physx::PxVec3 vec);
+	physx::PxVec3 asPxVec3(glm::vec3 vec);
+	glm::quat asGlmQuat(physx::PxQuat quat);
+	physx::PxQuat asPxQuat(glm::quat quat);
+
 public:
 	void setParent(NewGameObject* newParent);
 
 	void setLocalPosition(glm::vec3 newPosition);
-	void setLocalRotation(glm::vec3 newRotation);
+	void setLocalRotation(glm::quat newRotation);
 	void setScale(glm::vec3 newScale);
 	glm::vec3 getLocalPosition();
-	glm::vec3 getLocalRotation();
+	glm::quat getLocalRotation();
 	glm::vec3 getWorldPosition();
-	glm::vec3 getWorldRotation();
+	glm::quat getWorldRotation();
 	glm::vec3 getScale();
+	glm::vec3 getForwardVector();
 
 	MyModel* getModel();
 
@@ -76,6 +78,12 @@ public:
 	* This update function must be called AFTER the physics update
 	*/
 	void update(float deltaTime);
+
+	/**
+	* This function can be called from outside to handle keyboard (and window) inputs
+	**/
+	virtual void processWindowInput(GLFWwindow* window, float deltaTime) = 0;
+	virtual void processMouseInput(float offsetX, float offsetY) = 0;
 
 	//virtual void handleKeyboardInput(GLFWwindow* window, float deltaTime) = 0;
 	//virtual void handleMouseInput(float xOffset, float yOffset) = 0;

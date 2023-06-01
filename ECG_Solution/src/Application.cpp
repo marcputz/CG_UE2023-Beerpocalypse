@@ -13,7 +13,6 @@
 #include "MyTransform.h"
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
-#include "GameObjects/Cube/Cube.h"
 #include "INIReader.h"
 #include "Lights/DirectionalLight/MyDirectionalLight.h"
 #include "Lights/PointLight/MyPointLight.h"
@@ -21,6 +20,9 @@
 #include "MyParticleGenerator.h"
 #include "MyAnimator.h"
 #include "GameObjects/Vampire/Vampire.h"
+#include <Scene.h>
+#include <GameObjects/Cube/StaticCube.h>
+#include <GameObjects/Player/NewPlayer.h>
 
 using namespace physx;
 using namespace std;
@@ -119,6 +121,7 @@ MyShader myLightSourceShader;
 
 // Game Logic
 GameManager* gameManager;
+Scene* scene;
 float deltaTime = 0.0f;
 float framesPerSecond = 0.0f;
 
@@ -236,6 +239,15 @@ int main(int argc, char** argv) {
 
 	// Setup Game Objects
 	gameManager = new GameManager(gPhysics, camera);
+	scene = new Scene(gPhysics);
+
+	StaticCube testCube{ &defaultShader, gPhysics };
+	testCube.setLocalPosition(glm::vec3(1.0f, 1.0f, 0));
+	//scene->addObject(&testCube);
+
+	NewPlayer newPlayer{ &defaultShader, gPhysics };
+	newPlayer.setLocalPosition(glm::vec3(0.0f, 0.0f, -2.0f));
+	scene->addObject(&newPlayer);
 
 	// Init Player
 	GameObjectInfo playerInfo;
@@ -249,39 +261,6 @@ int main(int argc, char** argv) {
 	gameManager->setPlayer(&player);
 
 	camera.attachToSubject(&player);
-
-	// Init Objects
-	GameObjectInfo brickCubeInfo;
-	brickCubeInfo.modelPath = "cube/brick_cube/cube.obj";
-	brickCubeInfo.location = PxVec3(-2.0, 10, -2);
-	brickCubeInfo.actorType = TYPE_DYNAMIC;
-	brickCubeInfo.staticFriction = 0.5;
-	brickCubeInfo.dynamicFriction = 0.5;
-	brickCubeInfo.restitution = 0.5;
-	Cube brickCube1(defaultShader, gPhysics, brickCubeInfo);
-	brickCubeInfo.location = PxVec3(0, 2, 0);
-	brickCubeInfo.actorType = TYPE_STATIC;
-	Cube brickCube2(defaultShader, gPhysics, brickCubeInfo);
-
-	GameObjectInfo cubeInfo;
-	cubeInfo.staticFriction = 0.5;
-	cubeInfo.dynamicFriction = 0.5;
-	cubeInfo.restitution = 0.5;
-	cubeInfo.modelPath = "cube/metal_cube/cube.obj";
-	cubeInfo.location = PxVec3(-3, 3, -1.5);
-	cubeInfo.actorType = TYPE_STATIC;
-	Cube metalCube(defaultShader, gPhysics, cubeInfo);
-
-	cubeInfo.modelPath = "cube/paving_cube/cube.obj";
-	cubeInfo.location = PxVec3(0, -3, 0);
-	cubeInfo.scale = PxVec3(4, 1, 6.5);
-	Cube pavingCube(defaultShader, gPhysics, cubeInfo);
-
-	// Add to game
-	gameManager->addObject(&brickCube1);
-	gameManager->addObject(&brickCube2);
-	gameManager->addObject(&metalCube); 
-	gameManager->addObject(&pavingCube);
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
@@ -474,6 +453,10 @@ int main(int argc, char** argv) {
 		gameManager->handleKeyboardInput(window, deltaTime);
 		gameManager->stepUpdate(deltaTime);
 		gameManager->draw();
+
+		scene->handleKeyboardInput(window, deltaTime);
+		scene->step(deltaTime);
+		scene->draw();
 		
 		/*
 		particleShader.use();
@@ -754,6 +737,7 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
 	lastY = y;
 
 	gameManager->handleMouseInput(xOffset, yOffset);
+	scene->handleMouseInput(xOffset, yOffset);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
