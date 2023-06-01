@@ -1,8 +1,12 @@
 #include "NewPlayer.h"
 
-NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject(shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), true) {
+NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject(shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), false) {
 	camera = new PlayerCamera();
 	camera->setPlayerTransform(this->transform_);
+
+	// Lock rotation axis
+	PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
+	dyn->setRigidDynamicLockFlags(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
 }
 
 void NewPlayer::onBeforeUpdate() {
