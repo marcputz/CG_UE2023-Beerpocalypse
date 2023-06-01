@@ -27,13 +27,6 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 		pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND; // enable this if you want to persitantly call the callback while the touch is persisting: | PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
 
 	return physx::PxFilterFlag::eDEFAULT;
-
-	//  // all initial and persisting reports for everything, with per-point data
-	//  pairFlags = physx::PxPairFlag::eSOLVE_CONTACT | physx::PxPairFlag::eDETECT_DISCRETE_CONTACT
-	//        |	physx::PxPairFlag::eNOTIFY_TOUCH_FOUND
-	//        | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS
-	//        | physx::PxPairFlag::eNOTIFY_CONTACT_POINTS;
-	//  return physx::PxFilterFlag::eNOTIFY; //:eCALLBACK; //physx::PxFilterFlag::eDEFAULT;
 }
 
 Scene::Scene(PxPhysics* physics) {
