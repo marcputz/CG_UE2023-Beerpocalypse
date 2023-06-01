@@ -1,7 +1,8 @@
 #include "NewGameObject.h"
 
-NewGameObject::NewGameObject(MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic)
+NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic)
   : shader_ { shader }, 
+	name_ {name},
 	physics_ { physics },
 	transform_ { new Transform(glm::vec3(0,0,0), glm::vec3(0,0,0), glm::vec3(1,1,1)) } 
 {
@@ -21,7 +22,13 @@ NewGameObject::NewGameObject(MyShader* shader, PxPhysics* physics, string modelP
 	float boundingBoxY = model_->boundingBox_.absDiff.y / 2.0f;
 	float boundingBoxZ = model_->boundingBox_.absDiff.z / 2.0f;
 	//std::cout << boundingBoxX << "/" << boundingBoxY << "/" << boundingBoxZ << std::endl;
-	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_);
+	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_, true);
+
+	PxFilterData collissionFilterData;
+	collissionFilterData.word0 = (1 << 1);
+	collissionFilterData.word1 = (1 << 1);
+	physicsShape_->setSimulationFilterData(collissionFilterData);
+
 	physicsActor_->attachShape(*physicsShape_);
 
 	physicsMaterial_->userData = this;
@@ -66,10 +73,11 @@ void NewGameObject::setScale(glm::vec3 newScale) {
 
 	// Update Bounding boxes to use new scale
 	physicsActor_->detachShape(*physicsShape_);
+	physicsShape_->release();
 	float boundingBoxX = model_->boundingBox_.absDiff.x / 2.0f;
 	float boundingBoxY = model_->boundingBox_.absDiff.y / 2.0f;
 	float boundingBoxZ = model_->boundingBox_.absDiff.z / 2.0f;
-	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_);
+	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_, true);
 	//physicsShape_ = physics_->createShape(PxBoxGeometry(1, 1, 1), *physicsMaterial_);
 	physicsActor_->attachShape(*physicsShape_);
 }

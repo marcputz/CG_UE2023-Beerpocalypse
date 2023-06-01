@@ -1,6 +1,6 @@
 #include "DynamicCube.h"
 
-DynamicCube::DynamicCube(MyShader* shader, PxPhysics* physics) : NewGameObject(shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), false) {
+DynamicCube::DynamicCube(MyShader* shader, PxPhysics* physics) : NewGameObject("Dynamic Cube", shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), false) {
 
 }
 

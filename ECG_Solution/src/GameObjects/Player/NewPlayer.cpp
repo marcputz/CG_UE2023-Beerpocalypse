@@ -1,6 +1,6 @@
 #include "NewPlayer.h"
 
-NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject(shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), false) {
+NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject("Player", shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), false) {
 	camera = new PlayerCamera();
 	camera->setPlayerTransform(this->transform_);
 
