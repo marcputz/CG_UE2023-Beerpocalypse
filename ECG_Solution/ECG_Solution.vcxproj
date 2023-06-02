@@ -25,7 +25,6 @@
     <ClCompile Include="src\MyParticleGenerator.cpp" />
     <ClCompile Include="src\MyShader.cpp" />
     <ClCompile Include="src\MyTextRenderer.cpp" />
-    <ClCompile Include="src\GameManager.cpp" />
     <ClCompile Include="src\MyTransform.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
@@ -58,7 +57,6 @@
     <ClInclude Include="src\MyParticleGenerator.h" />
     <ClInclude Include="src\MyShader.h" />
     <ClInclude Include="src\MyTextRenderer.h" />
-    <ClInclude Include="src\GameManager.h" />
     <ClInclude Include="src\INIReader.h" />
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\MyTransform.h" />

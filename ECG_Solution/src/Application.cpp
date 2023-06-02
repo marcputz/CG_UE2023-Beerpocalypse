@@ -2,12 +2,11 @@
 #include <sstream>
 #include <iostream>
 #include <stdio.h>
+#include <string>
+#include <map>
 
-#include "GameObjects/GameObject.h"
-#include "GameManager.h"
 #include "MyShader.h"
 #include "stb/stb_image.h"
-#include "MyFPSCamera.h"
 #include "MyModel.h"
 #include "MyTextRenderer.h"
 #include "MyTransform.h"
@@ -26,7 +25,8 @@
 #include "GameObjects/Player/NewPlayer.h"
 
 using namespace physx;
-using namespace std;
+using std::cout;
+using std::endl;
 
 
 /* ------------------------- */
@@ -54,7 +54,6 @@ void static destroyPhysX();
 
 // Game-Logic and Rendering
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader);
-void static setUniformsOfLights(MyShader& shader);
 
 /* ------------------------- */
 /*     GLOBAL VARIABLES      */
@@ -67,7 +66,7 @@ const unsigned int REFRESH_RATE_DEFAULT = 60;
 const string WINDOW_TITLE_DEFAULT = "Beerpocalypse (CG SS2023)";
 const bool START_FULLSCREEN_DEFAULT = false;
 
-const float CAMERA_STARTING_FOV_DEFAULT = 60.0f;
+const float CAMERA_FOV_DEFAULT = 60.0f;
 const float CAMERA_NEAR_DEFAULT = 0.1f;
 const float CAMERA_FAR_DEFAULT = 100.0f;
 
@@ -100,48 +99,36 @@ bool enableBackfaceCulling = true;
 bool enableHUD = true;
 bool enableNormalMapping = false;
 //bool enableBloom = true;
-//bool enableFlashLight = true; // depracated
 
 // Camera
-float cameraStartingFOV = 0.0f;
+float cameraFov = 0.0f;
 float cameraNear = 0.0f;
 float cameraFar = 0.0f;
-bool firstMouse = true;
-float lastX = 0.0f;
-float lastY = 0.0f;
 
 // Shaders
+std::map<string, MyShader*> shaders;
 //MyShader bloomBlurShader;
 //MyShader bloomCombineShader;
 MyShader textShader;
 MyShader defaultShader;
 MyShader animationShader;
 MyShader particleShader;
-MyShader myLightSourceShader;
+MyShader lightSourceShader;
 
 // Game Logic
 Scene* scene;
 NewPlayer* player = nullptr;
 MySpotLight* playerFlashLight = nullptr;
+
+// Frame Processing
 float deltaTime = 0.0f;
 float framesPerSecond = 0.0f;
-
-// Light Positions
-glm::vec3 pointLightPositions[] = {
-	glm::vec3( 0.7f,  0.2f,  2.0f),
-	glm::vec3( 2.3f, -3.3f, -4.0f),
-	glm::vec3(-4.0f,  2.0f, -12.0f),
-	glm::vec3( 0.0f,  0.0f, -3.0f)
-};
 
 // PhysX
 PxDefaultAllocator gAllocator;
 PxDefaultErrorCallback gErrorCallback;
 PxFoundation* gFoundation = nullptr;
 PxPhysics* gPhysics = nullptr;
-PxDefaultCpuDispatcher* gDispatcher = nullptr;
-PxScene* physicsScene = nullptr;
-PxMaterial* gMaterial = nullptr;
 PxPvd* gPvd = nullptr;
 
 /* ------------------------- */
@@ -225,18 +212,18 @@ int main(int argc, char** argv) {
 	}
 	*/
 
+	// Load default shader for objects
+	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
+	shaders["Default"] = &defaultShader;
+
 	// Prepare Text Renderer and Shader
 	MyTextRenderer textRenderer("arial/arial.ttf");
 	textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
-	{
-		// set the "camera" to be used for text rendering (static fixed orthogonal view-projection)
-		glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
-		textShader.use();
-		textShader.setMat4("projection", textProjection);
-	}
-
-	// Load default shader for objects
-	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
+	shaders["Text Shader"] = &textShader;
+	// set the "camera" to be used for text rendering (static fixed orthogonal view-projection)
+	glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
+	textShader.use();
+	textShader.setMat4("projection", textProjection);
 
 	// Setup Scene
 	scene = new Scene(gPhysics);
@@ -264,22 +251,22 @@ int main(int argc, char** argv) {
 	dirLight.addLightToShader(defaultShader);
 
 	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightPositions[0],
+		true, glm::vec3(0.7f, 0.2f, 2.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
 
 	MyPointLight pointLightTwo(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightPositions[1],
+		true, glm::vec3(2.3f, -3.3f, -4.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightTwo.addLightToShader(defaultShader);
 
 	MyPointLight pointLightThree(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightPositions[2],
+		true, glm::vec3(-4.0f, 2.0f, -12.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightThree.addLightToShader(defaultShader);
 
 	MyPointLight pointLightFour(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightPositions[3],
+		true, glm::vec3(0.0f, 0.0f, -3.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightFour.addLightToShader(defaultShader);
 
@@ -305,6 +292,7 @@ int main(int argc, char** argv) {
 	scene->addLight(&spotLightOne);
 
 	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
+	shaders["Animation Shader"] = &animationShader;
 
 	Vampire vampire(&animationShader, gPhysics);
 	vampire.setLocalPosition(glm::vec3(0, -1.5, 0));
@@ -321,7 +309,8 @@ int main(int argc, char** argv) {
 	*/
 
 	// Setup lights shader
-	myLightSourceShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
+	lightSourceShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
+	shaders["Light Source Shader"] = &lightSourceShader;
 
 	// Prepare Light Cubes 
 	unsigned int VBO, lightVAO;
@@ -409,12 +398,9 @@ int main(int argc, char** argv) {
 		framesPerSecond = 1.0f / deltaTime;
 
 		// Set Shader Attributes
-		{
-			defaultShader.use();
-			defaultShader.setVec3("viewPos", player->getCamera()->getPosition());
-			//defaultShader.setBool("enableSpotLight", enableFlashLight);
-			defaultShader.setBool("enableNormalMapping", enableNormalMapping);
-		}
+		defaultShader.use();
+		defaultShader.setVec3("viewPos", player->getCamera()->getPosition());
+		defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 
 		// Prepare Camera (view-projection matrix)
 		glm::mat4 projection = player->getCamera()->getProjectionMatrix();
@@ -453,22 +439,20 @@ int main(int argc, char** argv) {
 		*/
 
 		// Render Light-Cubes
-		{
-			glBindVertexArray(lightVAO);
+		//glBindVertexArray(lightVAO);
 
-			myLightSourceShader.use();
-			myLightSourceShader.setMat4("projection", projection);
-			myLightSourceShader.setMat4("view", view);
+		/*lightSourceShader.use();
+		lightSourceShader.setMat4("projection", projection);
+		lightSourceShader.setMat4("view", view);
 
-			glm::mat4 model = glm::mat4(1.0f);
-			for (unsigned int i = 0; i < 4; i++) {
-				model = glm::mat4(1.0f);
-				model = glm::translate(model, pointLightPositions[i]);
-				model = glm::scale(model, glm::vec3(0.2f));
-				myLightSourceShader.setMat4("model", model);
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-			}
-		}
+		glm::mat4 model = glm::mat4(1.0f);
+		for (unsigned int i = 0; i < 4; i++) {
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, pointLightPositions[i]);
+			model = glm::scale(model, glm::vec3(0.2f));
+			myLightSourceShader.setMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}*/
 
 		renderHUD(textRenderer, textShader);
 
@@ -501,6 +485,7 @@ int main(int argc, char** argv) {
 		bloomCombineShader.setFloat("exposure", 1.0f);
 		renderBloomQuad();
 		*/
+
 		// Swap buffers
 		glfwSwapBuffers(window);
 	}
@@ -561,65 +546,6 @@ void renderBloomQuad() {
 }
 */
 
-void static setUniformsOfLights(MyShader &shader) {
-	// directional light
-	shader.setVec3("dirLight.direction", -0.2f, -1.0f, 0.3f);
-	shader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-	shader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-	shader.setBool("dirLight.enabled", true);
-
-	// 4 point lights
-	shader.setVec3("pointLights[0].position", pointLightPositions[0]);
-	shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-	shader.setBool("pointLights[0].enabled", true);
-	shader.setFloat("pointLights[0].constant", 1.0f);
-	shader.setFloat("pointLights[0].linear", 0.09f);
-	shader.setFloat("pointLights[0].quadratic", 0.032f);
-
-	shader.setVec3("pointLights[1].position", pointLightPositions[1]);
-	shader.setVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
-	shader.setBool("pointLights[1].enabled", true);
-	shader.setFloat("pointLights[1].constant", 1.0f);
-	shader.setFloat("pointLights[1].linear", 0.09f);
-	shader.setFloat("pointLights[1].quadratic", 0.032f);
-
-	shader.setVec3("pointLights[2].position", pointLightPositions[2]);
-	shader.setVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
-	shader.setBool("pointLights[2].enabled", true);
-	shader.setFloat("pointLights[2].constant", 1.0f);
-	shader.setFloat("pointLights[2].linear", 0.09f);
-	shader.setFloat("pointLights[2].quadratic", 0.032f);
-
-	shader.setVec3("pointLights[3].position", pointLightPositions[3]);
-	shader.setVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
-	shader.setVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
-	shader.setVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
-	shader.setBool("pointLights[3].enabled", true);
-	shader.setFloat("pointLights[3].constant", 1.0f);
-	shader.setFloat("pointLights[3].linear", 0.09f);
-	shader.setFloat("pointLights[3].quadratic", 0.032f);
-
-	// spotlight
-	shader.setVec3("spotLights[0].position", player->getCamera()->getPosition());
-	shader.setVec3("spotLights[0].direction", player->getCamera()->getDirection());
-	shader.setVec3("spotLights[0].ambient", 0.0f, 0.0f, 0.0f);
-	shader.setVec3("spotLights[0].diffuse", 1.0f, 1.0f, 1.0f);
-	shader.setVec3("spotLights[0].specular", 1.0f, 1.0f, 1.0f);
-	shader.setBool("spotLights[0].enabled", true);
-	shader.setFloat("spotLights[0].constant", 1.0f);
-	shader.setFloat("spotLights[0].linear", 0.09f);
-	shader.setFloat("spotLights[0].quadratic", 0.032f);
-	shader.setFloat("spotLights[0].cutOff", glm::cos(glm::radians(12.5f)));
-	shader.setFloat("spotLights[0].outerCutOff", glm::cos(glm::radians(15.0f)));
-}
-
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// F1 - Wireframe
 	// F2 - Culling
@@ -672,10 +598,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			// reload
 			std::cout << "Press R" << std::endl;
 			break;
-		case GLFW_KEY_F:
-			//enableFlashLight = !enableFlashLight;
-			//gameManager->toggleFlashlight();
-			break;
 		case GLFW_KEY_KP_ADD:
 			// increase illumination
 			std::cout << "Press +" << std::endl;
@@ -705,6 +627,10 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
+	static bool firstMouse = true;
+	static float lastX = 0.0f;
+	static float lastY = 0.0f;
+	
 	float x = static_cast<float>(xpos);
 	float y = static_cast<float>(ypos);
 
@@ -747,13 +673,9 @@ void readINIFile() {
 	windowTitle = iniReader.Get("window", "title", WINDOW_TITLE_DEFAULT);
 	startFullscreen = iniReader.GetBoolean("window", "fullscreen", START_FULLSCREEN_DEFAULT);
 
-	cameraStartingFOV = iniReader.GetReal("camera", "fov", CAMERA_STARTING_FOV_DEFAULT);
+	cameraFov = iniReader.GetReal("camera", "fov", CAMERA_FOV_DEFAULT);
 	cameraNear = iniReader.GetReal("camera", "near", CAMERA_NEAR_DEFAULT);
 	cameraFar = iniReader.GetReal("camera", "far", CAMERA_FAR_DEFAULT);
-
-	//camera.fov_ = cameraStartingFOV;
-	lastX = screenWidth / 2.0f;
-	lastY = screenHeight / 2.0f;
 }
 
 void static initOpenGL() {
