@@ -1,7 +1,13 @@
 #pragma once
 
 #include "../NewGameObject.h"
-#include "PlayerCamera.h"
+#include "Camera/PlayerCameraThirdPerson.h"
+#include "Camera/PlayerCameraFirstPerson.h"
+
+enum PlayerCameraType {
+	CAMERA_FIRST_PERSON,
+	CAMERA_THIRD_PERSON
+};
 
 class NewPlayer : public NewGameObject {
 private:
@@ -10,7 +16,9 @@ private:
 
 	float facingAngle = 0.0f;
 
-	PlayerCamera* camera;
+	PlayerCameraType activeCameraType = PlayerCameraType::CAMERA_FIRST_PERSON;
+	PlayerCameraFirstPerson* firstPersonCamera;
+	PlayerCameraThirdPerson* thirdPersonCamera;
 
 private:
 	void onBeforeUpdate();
@@ -22,7 +30,8 @@ public:
 	// Constructors
 	NewPlayer(MyShader* shader, PxPhysics* physics);
 
-	PlayerCamera* getCamera();
+	PlayerCamera* getActiveCamera();
+	void swapCamera();
 
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);

@@ -399,12 +399,12 @@ int main(int argc, char** argv) {
 
 		// Set Shader Attributes
 		defaultShader.use();
-		defaultShader.setVec3("viewPos", player->getCamera()->getPosition());
+		defaultShader.setVec3("viewPos", player->getActiveCamera()->getPosition());
 		defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 
 		// Prepare Camera (view-projection matrix)
-		glm::mat4 projection = player->getCamera()->getProjectionMatrix();
-		glm::mat4 view = player->getCamera()->getViewMatrix();
+		glm::mat4 projection = player->getActiveCamera()->getProjectionMatrix();
+		glm::mat4 view = player->getActiveCamera()->getViewMatrix();
 		defaultShader.setMat4("projection", projection);
 		defaultShader.setMat4("view", view);
 
@@ -509,7 +509,7 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
-	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)player->getCamera()->getFov()), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)player->getActiveCamera()->getFov()), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)screenHeight - 24.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
@@ -594,6 +594,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			// interact
 			std::cout << "Press E" << std::endl;
 			break;
+		case GLFW_KEY_C:
+			// swap camera
+			player->swapCamera();
 		case GLFW_KEY_R:
 			// reload
 			std::cout << "Press R" << std::endl;

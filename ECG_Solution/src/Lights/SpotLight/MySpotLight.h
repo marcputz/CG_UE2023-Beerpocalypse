@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../MyLight.h"
-#include "GameObjects/Player/PlayerCamera.h"
-#include <GameObjects/Player/NewPlayer.h>
+#include "GameObjects/Player/NewPlayer.h"
+#include "GameObjects/Player/Camera/PlayerCamera.h"
 
 class MySpotLight : public MyLight {
 public:

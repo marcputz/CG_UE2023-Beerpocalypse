@@ -1,8 +1,15 @@
 #include "NewPlayer.h"
 
 NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject("Player", shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), false) {
-	camera = new PlayerCamera();
-	camera->setPlayerTransform(this->transform_);
+	thirdPersonCamera = new PlayerCameraThirdPerson(this->transform_);
+	firstPersonCamera = new PlayerCameraFirstPerson(this->transform_);
+
+	if (activeCameraType == PlayerCameraType::CAMERA_FIRST_PERSON) {
+		setVisible(false);
+	}
+	else {
+		setVisible(true);
+	}
 
 	// Lock rotation axis
 	PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
@@ -21,8 +28,26 @@ void NewPlayer::onCollision(NewGameObject* otherObject) {
 	std::cout << "Player collided with '" << otherObject->name_ << "'" << std::endl;
 }
 
-PlayerCamera* NewPlayer::getCamera() {
-	return camera;
+void NewPlayer::swapCamera() {
+	if (activeCameraType == PlayerCameraType::CAMERA_FIRST_PERSON) {
+		activeCameraType = PlayerCameraType::CAMERA_THIRD_PERSON;
+		setVisible(true);
+	}
+	else {
+		activeCameraType = PlayerCameraType::CAMERA_FIRST_PERSON;
+		setVisible(false);
+	}
+}
+
+PlayerCamera* NewPlayer::getActiveCamera() {
+	switch (activeCameraType) {
+	case PlayerCameraType::CAMERA_FIRST_PERSON:
+		return firstPersonCamera;
+	case PlayerCameraType::CAMERA_THIRD_PERSON:
+		return thirdPersonCamera;
+	}
+
+	return thirdPersonCamera;
 }
 
 void NewPlayer::processWindowInput(GLFWwindow* window, float deltaTime) {

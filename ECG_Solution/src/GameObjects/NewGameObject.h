@@ -15,6 +15,7 @@ class NewGameObject {
 /* VARIABLES */
 private:
 	bool isStatic_ = false;
+	bool isVisible_ = true;
 
 protected:
 
@@ -64,6 +65,9 @@ public:
 	void setParent(NewGameObject* newParent);
 
 	bool isStatic() { return isStatic_; }
+
+	bool isVisible() { return isVisible_; }
+	void setVisible(bool isVisible) { isVisible_ = isVisible; }
 
 	void setLocalPosition(glm::vec3 newPosition);
 	void setLocalRotation(glm::quat newRotation);

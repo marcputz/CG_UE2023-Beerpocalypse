@@ -134,6 +134,10 @@ void NewGameObject::update(float deltaTime) {
 //virtual void handleMouseInput(float xOffset, float yOffset) = 0;
 
 void NewGameObject::draw() {
+	if (!isVisible_) {
+		return;
+	}
+
 	glm::vec3 position = transform_->getWorldPosition();
 	// TODO: Replace with world rotation and check if it's working
 	glm::quat rotation = transform_->getLocalRotation();

@@ -3,21 +3,24 @@
 
 class PlayerCamera {
 private:
-	const float playerDistance = 7.0f;
-	const float playerYOffset = 2.0f;
 
 	float fov = 90.0f;
 
+protected:
 	Transform* playerTransform;
 
 public:
+	PlayerCamera(Transform* playerTransform) : playerTransform{ playerTransform } {}
+
 	void setPlayerTransform(Transform* playerTransform) { this->playerTransform = playerTransform; }
 
 	glm::mat4 getViewMatrix();
 	glm::mat4 getProjectionMatrix();
 
-	float getFov() { return fov;  }
+	float getFov() { return fov; }
 
-	glm::vec3 getPosition();
-	glm::vec3 getDirection();
+	virtual glm::vec3 getPosition() = 0;
+	virtual glm::vec3 getDirection() = 0;
+
+	glm::vec3 getUp();
 };
