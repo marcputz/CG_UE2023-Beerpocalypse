@@ -29,7 +29,14 @@ void Zombie::onUpdate(float deltaTime) {
 			direction.y = 0;
 			direction = glm::normalize(direction);
 
-			this->setWorldPosition(zombiePosition + (direction * deltaTime * movementSpeed));
+			// give targetPosition a little safety distance to avoid clipping into it completely
+			const float safetyDistance = 0.8f;
+			targetPosition = targetPosition - (direction * safetyDistance);
+			glm::vec3 correctedDirection = targetPosition - zombiePosition;
+			correctedDirection.y = 0;
+			correctedDirection = glm::normalize(correctedDirection);
+
+			this->setWorldPosition(zombiePosition + (correctedDirection * deltaTime * movementSpeed));
 
 			direction.x *= (-1.0f);
 			glm::mat4 rotationMatrix = glm::lookAt(zombiePosition, zombiePosition - direction, glm::vec3(0, 1, 0));
