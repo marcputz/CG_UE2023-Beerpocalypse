@@ -249,7 +249,7 @@ int main(int argc, char** argv) {
 	// Init Ground
 	Ground ground{ &defaultShader, gPhysics };
 	ground.setLocalPosition(glm::vec3(0, -0.5f, 0));
-	ground.setScale(glm::vec3(10, 1, 10));
+	ground.setScale(glm::vec3(100, 1, 100));
 	scene->addObject(&ground);
 
 	// Init Beers
