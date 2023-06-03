@@ -19,7 +19,7 @@ private:
 	float facingAngle = 0.0f;
 
 	float damageCooldown = 0.0f;
-	const float targetDamageCooldown = 5.0f;
+	const float targetDamageCooldown = 2.0f;
 
 	PlayerCameraType activeCameraType = PlayerCameraType::CAMERA_FIRST_PERSON;
 	PlayerCameraFirstPerson* firstPersonCamera;
