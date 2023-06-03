@@ -28,7 +28,14 @@ void Zombie::onUpdate(float deltaTime) {
 			glm::vec3 direction = targetPosition - zombiePosition;
 			direction.y = 0;
 			direction = glm::normalize(direction);
+
 			this->setWorldPosition(zombiePosition + (direction * deltaTime * movementSpeed));
+
+			direction.x *= (-1.0f);
+			glm::mat4 rotationMatrix = glm::lookAt(zombiePosition, zombiePosition - direction, glm::vec3(0, 1, 0));
+			glm::quat rotation = glm::quat(rotationMatrix);
+
+			this->setLocalRotation(rotation);
 		}
 	}
 }
