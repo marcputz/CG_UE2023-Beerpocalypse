@@ -47,7 +47,7 @@ private:
 
 protected:
 	// Constructor
-	explicit NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic);
+	explicit NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic, bool useAdvancedCollissionDetection = false);
 
 	/**
 	* These functions can be used by this class' derivates to define their functionality

@@ -23,6 +23,7 @@
 #include "GameObjects/Cube/StaticCube.h"
 #include "GameObjects/Cube/DynamicCube.h"
 #include "GameObjects/Player/NewPlayer.h"
+#include <GameObjects/Beer/Beer.h>
 
 using namespace physx;
 using std::cout;
@@ -119,6 +120,9 @@ MyShader lightSourceShader;
 Scene* scene;
 NewPlayer* player = nullptr;
 MySpotLight* playerFlashLight = nullptr;
+
+int score = 0;
+const int maxScore = 5;
 
 // Frame Processing
 float deltaTime = 0.0f;
@@ -244,6 +248,10 @@ int main(int argc, char** argv) {
 	DynamicCube testCubeThree{ &defaultShader, gPhysics };
 	testCubeThree.setLocalPosition(glm::vec3(5.6f, 10.0f, 0.1f));
 	scene->addObject(&testCubeThree);
+
+	Beer beerOne{ &defaultShader, gPhysics };
+	beerOne.setLocalPosition(glm::vec3(-5, -0.2f, 2));
+	scene->addObject(&beerOne);
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
@@ -518,6 +526,8 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	textRenderer.renderText(textShader, "F - Flashlight", 0.0f, (float)screenHeight - 84.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "Mouse - Look around", 0.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 	textRenderer.renderText(textShader, "ESC - Exit Application", 0.0f, (float)screenHeight - 108.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+
+	textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 }
 
 /*

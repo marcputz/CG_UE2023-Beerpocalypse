@@ -1,4 +1,7 @@
 #include "NewPlayer.h"
+#include <GameObjects/Beer/Beer.h>
+
+extern int score;
 
 NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject("Player", shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), false) {
 	thirdPersonCamera = new PlayerCameraThirdPerson(this->transform_);
@@ -25,7 +28,16 @@ void NewPlayer::onUpdate(float deltaTime) {
 }
 
 void NewPlayer::onCollision(NewGameObject* otherObject) {
-	std::cout << "Player collided with '" << otherObject->name_ << "'" << std::endl;
+	//std::cout << "Player collided with '" << otherObject->name_ << "'" << std::endl;
+
+	Beer* beer = dynamic_cast<Beer*>(otherObject);
+	if (beer != nullptr) {
+		// Collided with beer
+		if (beer->isVisible()) {
+			score++;
+			beer->setVisible(false);
+		}
+	}
 }
 
 void NewPlayer::swapCamera() {

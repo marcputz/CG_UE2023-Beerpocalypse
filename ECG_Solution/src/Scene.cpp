@@ -19,12 +19,16 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	}
 
 	// generate contacts for all that were not filtered above
-	pairFlags = physx::PxPairFlag::eCONTACT_DEFAULT | PxPairFlag::eNOTIFY_CONTACT_POINTS | PxPairFlag::eDETECT_DISCRETE_CONTACT;
+	pairFlags = PxPairFlag::eNOTIFY_CONTACT_POINTS | PxPairFlag::eDETECT_DISCRETE_CONTACT;
 
 	// trigger the contact callback for pairs (A,B) where
 	// the filtermask of A contains the ID of B and vice versa.
-	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1))
+	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1)) {
 		pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND; // enable this if you want to persitantly call the callback while the touch is persisting: | PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
+	}
+	else {
+		pairFlags |= physx::PxPairFlag::eCONTACT_DEFAULT;
+	}
 
 	return physx::PxFilterFlag::eDEFAULT;
 }

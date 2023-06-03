@@ -1,10 +1,10 @@
 #include "NewGameObject.h"
 
-NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic)
-  : shader_ { shader }, 
-	name_ {name},
-	physics_ { physics },
-	transform_ { new Transform(glm::vec3(0,0,0), glm::vec3(0,0,0), glm::vec3(1,1,1)) } 
+NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic, bool useAdvancedCollissionDetection)
+	: shader_{ shader },
+	name_{ name },
+	physics_{ physics },
+	transform_{ new Transform(glm::vec3(0,0,0), glm::vec3(0,0,0), glm::vec3(1,1,1)) }
 {
 	model_ = new MyModel(modelPath);
 
@@ -25,8 +25,14 @@ NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, 
 	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_, true);
 
 	PxFilterData collissionFilterData;
-	collissionFilterData.word0 = (1 << 1);
-	collissionFilterData.word1 = (1 << 1);
+	if (useAdvancedCollissionDetection) {
+		collissionFilterData.word0 = (1 << 2); // Own ID
+		collissionFilterData.word1 = (1 << 1); // ID's to collide with
+	}
+	else {
+		collissionFilterData.word0 = (1 << 1); // Own ID
+		collissionFilterData.word1 = (1 << 2); // ID's to collide with
+	}
 	physicsShape_->setSimulationFilterData(collissionFilterData);
 
 	physicsActor_->attachShape(*physicsShape_);
