@@ -116,8 +116,11 @@ Scene* scene;
 NewPlayer* player = nullptr;
 MySpotLight* playerFlashLight = nullptr;
 
-int score = 0;
 const int maxScore = 5;
+int score = 0;
+
+const int maxBullets = 4;
+int bullets = maxBullets;
 
 bool isPaused = false;
 bool enableWireframe = false;
@@ -542,6 +545,9 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		// Health
 		textRenderer.renderText(textShader, "Health: " + std::to_string(player->getHealth()) + "/" + std::to_string(player->maxHealth), 14.0f, 38.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
+		// Ammo
+		textRenderer.renderText(textShader, "Ammo: " + std::to_string(bullets) + "/" + std::to_string(maxBullets), 14.0f, 62.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
+
 
 		if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
 			// display crosshair
@@ -666,7 +672,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 		case GLFW_KEY_R:
 			// reload
-			std::cout << "Press R" << std::endl;
+			bullets = maxBullets;
 			break;
 		case GLFW_KEY_KP_ADD:
 			// increase illumination

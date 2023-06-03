@@ -1,6 +1,8 @@
 #include "Scene.h"
 #include "GameObjects/Zombie/Zombie.h"
 
+extern int bullets;
+
 physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes attributes0,
 	physx::PxFilterData filterData0,
 	physx::PxFilterObjectAttributes attributes1,
@@ -86,6 +88,12 @@ void Scene::handleMouseInput(float xOffset, float yOffset) {
 void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		// player wants to shoot
+
+		if (bullets-- <= 0) {
+			bullets = 0;
+			return;
+		}
+
 		// make a raycast and see what you've hit
 		static const PxReal maxShootDistance = 20.0f;
 		
@@ -198,6 +206,10 @@ void Scene::onWake(PxActor** actors, PxU32 count) {
 
 void Scene::onSleep(PxActor** actors, PxU32 count) {
 
+}
+
+PxScene* Scene::getPhysicsScene() {
+	return physicsScene;
 }
 
 void Scene::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {

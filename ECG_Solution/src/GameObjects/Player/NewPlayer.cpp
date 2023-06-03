@@ -37,6 +37,24 @@ void NewPlayer::onUpdate(float deltaTime) {
 	if (damageCooldown > 0.01f) {
 		damageCooldown -= deltaTime;
 	}
+
+	// check if player is on the ground
+	/*PxVec3 groundRayDirection = PxVec3(0, -1, 0);
+	PxVec3 groundRayOrigin = asPxVec3(getWorldPosition());
+	const PxU32 hitBufferSize = 2;
+	PxRaycastHit hitBuffer[hitBufferSize];
+	PxRaycastBuffer buf(hitBuffer, hitBufferSize);
+	bool raycastStatus = scene->getPhysicsScene()->raycast(groundRayOrigin, groundRayDirection, 1.1f, buf);
+	if (raycastStatus) {
+		// Raycast has hit something
+		for (PxU32 i = 0; i < buf.nbTouches; i++) {
+			NewGameObject* object = static_cast<NewGameObject*>(buf.touches[i].actor->userData);
+			std::cout << object->name_ << std::endl;
+		}
+	}
+	else {
+		onGround = false;
+	}*/
 }
 
 void NewPlayer::onCollision(NewGameObject* otherObject) {
@@ -116,6 +134,14 @@ void NewPlayer::processWindowInput(GLFWwindow* window, float deltaTime) {
 		position += right * (movementSpeed * deltaTime);
 		setLocalPosition(position);
 	}
+
+	/*if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		// jump
+		if (onGround) {
+			PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
+			dyn->addForce(PxVec3(0, 1, 0) * jumpForce, PxForceMode::eIMPULSE);
+		}
+	}*/
 }
 
 void NewPlayer::processMouseInput(float offsetX, float offsetY) {

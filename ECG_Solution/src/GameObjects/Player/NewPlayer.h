@@ -15,8 +15,10 @@ class NewPlayer : public NewGameObject {
 private:
 	const float movementSpeed = 4.0f;
 	const float turningSpeed = 5.0f;
+	const float jumpForce = 0.8f;
 
 	float facingAngle = 0.0f;
+	//bool onGround = false;
 
 	float damageCooldown = 0.0f;
 	const float targetDamageCooldown = 2.0f;
