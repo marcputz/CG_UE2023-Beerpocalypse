@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "GameObjects/Zombie/Zombie.h"
 
 physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes attributes0,
 	physx::PxFilterData filterData0,
@@ -82,6 +83,64 @@ void Scene::handleMouseInput(float xOffset, float yOffset) {
 	}
 }
 
+void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		// player wants to shoot
+		// make a raycast and see what you've hit
+		static const PxReal maxShootDistance = 20.0f;
+		
+		// Find player
+		NewGameObject* playerGo = nullptr;
+		for (NewGameObject* go : objects) {
+			if (go->name_ == "Player") {
+				playerGo = go;
+				break;
+			}
+		}
+
+		if (playerGo != nullptr) {
+			NewPlayer* player = static_cast<NewPlayer*>(playerGo);
+			
+			// Define Ray
+			PxVec3 rayOrigin = asPxVec3(player->getWorldPosition());
+			PxVec3 rayDirection = asPxVec3(player->getForwardVector()).getNormalized();
+			const PxU32 hitBufferSize = 32;
+			PxRaycastHit hitBuffer[hitBufferSize];
+			PxRaycastBuffer buf(hitBuffer, hitBufferSize);
+
+			// Make Raycast
+			bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, maxShootDistance, buf);
+			if (raycastStatus) {
+				// Raycast has hit something
+				for (PxU32 i = 0; i < buf.nbTouches; i++) {
+					PxRaycastHit currentHit = buf.touches[i];
+					NewGameObject* object = static_cast<NewGameObject*>(currentHit.actor->userData);
+					if (object != nullptr) {
+						// Raycast hit game object
+						// Skip player as it is always hit
+						NewPlayer* player = dynamic_cast<NewPlayer*>(object);
+						if (player == nullptr) {
+							//std::cout << "Hit '" << object->name_ << "'" << std::endl;
+
+							// If object is zombie, deal damage
+							Zombie* zombie = dynamic_cast<Zombie*>(object);
+							if (zombie != nullptr) {
+								if (zombie->isVisible()) {
+									zombie->damage(40);
+									return; // skip the rest of this function, as only the first hit should be processed.
+								}
+								else {
+									// zombie is invisible, so skip it (most likely it was defeated before)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 void Scene::step(float deltaTime) {
 	// Make pre-update calls
 	for (NewGameObject* go : objects) {
@@ -161,4 +220,8 @@ void Scene::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 
 void Scene::onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) {
 	
+}
+
+physx::PxVec3 Scene::asPxVec3(glm::vec3 vec) {
+	return PxVec3(vec.x, vec.y, vec.z);
 }

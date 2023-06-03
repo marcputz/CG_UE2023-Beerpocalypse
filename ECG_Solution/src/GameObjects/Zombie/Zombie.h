@@ -4,6 +4,9 @@
 
 class Zombie : public NewGameObject {
 private:
+	float healthPoints = 100.0f;
+
+private:
 	void onBeforeUpdate();
 	void onUpdate(float deltaTime);
 
@@ -14,4 +17,6 @@ public:
 
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);
+
+	void damage(float damagePoints);
 };

@@ -635,6 +635,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	scene->handleMouseButtonInput(window, button, action, mods);
+	
 	// nothing for now
 	/*
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {

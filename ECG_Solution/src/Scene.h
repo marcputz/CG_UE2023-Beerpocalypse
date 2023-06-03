@@ -18,6 +18,10 @@ private:
 	PxPhysics* physics;
 	PxScene* physicsScene;
 
+private:
+	// helper functions
+	physx::PxVec3 asPxVec3(glm::vec3 vec);
+
 public:
 	Scene(PxPhysics* physics);
 
@@ -29,6 +33,7 @@ public:
 
 	void handleKeyboardInput(GLFWwindow* window, float deltaTime);
 	void handleMouseInput(float xOffset, float yOffset);
+	void handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods);
 
 	void step(float deltaTime);
 	void draw();

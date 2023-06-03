@@ -4,6 +4,15 @@ Zombie::Zombie(MyShader* shader, PxPhysics* physics) : NewGameObject("Zombie", s
 
 }
 
+void Zombie::damage(float damagePoints) {
+	healthPoints -= damagePoints;
+	
+	if (healthPoints <= 0.0f) {
+		// zombie was defeated
+		this->setVisible(false);
+	}
+}
+
 void Zombie::onBeforeUpdate() {}
 
 void Zombie::onUpdate(float deltaTime) {
