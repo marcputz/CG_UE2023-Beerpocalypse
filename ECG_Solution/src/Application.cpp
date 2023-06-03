@@ -571,7 +571,16 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	}
 
 	if (enableDebugHUD) {
-		textRenderer.renderText(textShader, "FPS: " + std::to_string((double)framesPerSecond), 14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		static int delayFrameCounter = 0;
+		static float previousFPS = framesPerSecond;
+		if (delayFrameCounter-- == 0) {
+			textRenderer.renderText(textShader, "FPS: " + std::to_string((double)framesPerSecond), 14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+			previousFPS = framesPerSecond;
+			delayFrameCounter += 4; // draw only every few frames, because otherwise it's unreadable
+		}
+		else {
+			textRenderer.renderText(textShader, "FPS: " + std::to_string((double)previousFPS), 14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		}
 		textRenderer.renderText(textShader, "[F1] Wireframe Mode: " + std::string(enableWireframe ? "ON" : "OFF"), 14.0f, (float)screenHeight - 34.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F2] Backface Culling: " + std::string(enableBackfaceCulling ? "ON" : "OFF"), 14.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
