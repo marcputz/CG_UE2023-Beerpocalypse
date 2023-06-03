@@ -3,9 +3,9 @@
 #include "GameObjects/NewGameObject.h"
 #include <stdlib.h>
 #include <GLFW/glfw3.h>
-#include <Lights/PointLight/MyPointLight.h>
-#include <Lights/SpotLight/MySpotLight.h>
-#include <Lights/DirectionalLight/MyDirectionalLight.h>
+#include "Lights/PointLight/MyPointLight.h"
+#include "Lights/SpotLight/MySpotLight.h"
+#include "Lights/DirectionalLight/MyDirectionalLight.h"
 
 class Scene : public PxSimulationEventCallback {
 private:

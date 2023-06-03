@@ -1,5 +1,4 @@
 #include "NewPlayer.h"
-#include <GameObjects/Beer/Beer.h>
 
 extern int score;
 
@@ -16,7 +15,7 @@ NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject("Play
 
 	// Lock rotation axis
 	PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
-	dyn->setRigidDynamicLockFlags(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z);
+	dyn->setRigidDynamicLockFlags(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z | PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
 }
 
 void NewPlayer::onBeforeUpdate() {

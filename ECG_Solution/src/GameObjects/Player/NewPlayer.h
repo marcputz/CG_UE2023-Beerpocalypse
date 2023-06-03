@@ -3,6 +3,7 @@
 #include "../NewGameObject.h"
 #include "Camera/PlayerCameraThirdPerson.h"
 #include "Camera/PlayerCameraFirstPerson.h"
+#include "../Beer/Beer.h"
 
 enum PlayerCameraType {
 	CAMERA_FIRST_PERSON,

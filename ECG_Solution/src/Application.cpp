@@ -23,7 +23,8 @@
 #include "GameObjects/Cube/StaticCube.h"
 #include "GameObjects/Cube/DynamicCube.h"
 #include "GameObjects/Player/NewPlayer.h"
-#include <GameObjects/Beer/Beer.h>
+#include "GameObjects/Beer/Beer.h"
+#include "GameObjects/Ground/Ground.h"
 
 using namespace physx;
 using std::cout;
@@ -234,14 +235,10 @@ int main(int argc, char** argv) {
 
 	// Init Player
 	player = new NewPlayer{ &defaultShader, gPhysics };
-	player->setLocalPosition(glm::vec3(0.0f, 0.0f, -2.0f));
+	player->setLocalPosition(glm::vec3(0.0f, 0.5f, -2.0f));
 	scene->addObject(player);
 
 	// Init Objects
-	StaticCube testCubeOne{ &defaultShader, gPhysics };
-	testCubeOne.setLocalPosition(glm::vec3(0, -3.0f, 0));
-	testCubeOne.setScale(glm::vec3(15, 1, 8));
-	scene->addObject(&testCubeOne);
 	DynamicCube testCubeTwo{ &defaultShader, gPhysics };
 	testCubeTwo.setLocalPosition(glm::vec3(5.0f, 8.0f, 0));
 	scene->addObject(&testCubeTwo);
@@ -249,8 +246,15 @@ int main(int argc, char** argv) {
 	testCubeThree.setLocalPosition(glm::vec3(5.6f, 10.0f, 0.1f));
 	scene->addObject(&testCubeThree);
 
+	// Init Ground
+	Ground ground{ &defaultShader, gPhysics };
+	ground.setLocalPosition(glm::vec3(0, -0.5f, 0));
+	ground.setScale(glm::vec3(10, 1, 10));
+	scene->addObject(&ground);
+
+	// Init Beers
 	Beer beerOne{ &defaultShader, gPhysics };
-	beerOne.setLocalPosition(glm::vec3(-5, -0.2f, 2));
+	beerOne.setLocalPosition(glm::vec3(-5, 1.0f, 2));
 	scene->addObject(&beerOne);
 
 	// Init lights
