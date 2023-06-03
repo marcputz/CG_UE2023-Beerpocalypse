@@ -50,6 +50,27 @@ void MyMesh::draw(MyShader& shader) {
 	glActiveTexture(GL_TEXTURE0);
 }
 
+void MyMesh::applyTilingScaleToUVCoordinates(float wScale, float hScale) {
+	for (int i = 0; i < vertices_.size(); i++) {
+		vertices_[i].texCoords.x = vertices_[i].texCoords.x * wScale;
+		vertices_[i].texCoords.y = vertices_[i].texCoords.y * hScale;
+	}
+
+	glBindVertexArray(VAO_);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_);
+
+	glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(MyVertex), &vertices_[0], GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_.size() * sizeof(unsigned int), &indices_[0], GL_STATIC_DRAW);
+	// vertex texture coords 
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MyVertex), (void*)offsetof(MyVertex, texCoords));
+
+	glBindVertexArray(0);
+	
+}
+
 void MyMesh::setupMesh() {
 	glGenVertexArrays(1, &VAO_);
 	glGenBuffers(1, &VBO_);

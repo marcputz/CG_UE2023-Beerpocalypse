@@ -30,7 +30,7 @@ public:
 
 	void generate(unsigned int width, unsigned int height, unsigned char* textureData, My2DTextureTypes type,
 					unsigned int internalFormat = GL_RGB, unsigned int imageFormat = GL_RGB,
-					unsigned int wrapS = GL_REPEAT, unsigned int wrapT = GL_REPEAT, unsigned int minFilter = GL_LINEAR,
+					unsigned int wrapS = GL_REPEAT, unsigned int wrapT = GL_REPEAT, unsigned int minFilter = GL_LINEAR_MIPMAP_LINEAR,
 					unsigned int magFilter = GL_LINEAR);
 	void bind() const;
 

@@ -29,6 +29,8 @@ public:
 	std::map<std::string, BoneInfo>& getBoneInfoMap();
 	int& getBoneCount();
 
+	void applyTilingScale(float wScale, float hScale);
+
 	//void create(const aiScene* scene, std::string& directory);
 
 private:

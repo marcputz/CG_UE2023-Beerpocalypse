@@ -19,6 +19,12 @@ int& MyModel::getBoneCount() {
 	return boneCounter_;
 }
 
+void MyModel::applyTilingScale(float wScale, float hScale) {
+	for (int i = 0; i < meshes_.size(); i++) {
+		meshes_[i].applyTilingScaleToUVCoordinates(wScale, hScale);
+	}
+}
+
 void MyModel::loadModel(std::string const &path) {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace/* | aiProcess_GenBoundingBoxes*/); //GenNormals, SplitLargeMeshes/OptimizeMeshes

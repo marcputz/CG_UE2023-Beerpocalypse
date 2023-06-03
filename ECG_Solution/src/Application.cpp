@@ -251,6 +251,7 @@ int main(int argc, char** argv) {
 	Ground ground{ &defaultShader, gPhysics };
 	ground.setLocalPosition(glm::vec3(0, -0.5f, 0));
 	ground.setScale(glm::vec3(100, 1, 100));
+	ground.getModel()->applyTilingScale(100.0f, 100.0f);
 	scene->addObject(&ground);
 
 	// Init Beers
