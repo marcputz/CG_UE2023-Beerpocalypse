@@ -14,6 +14,7 @@
     <ClCompile Include="src\GameObjects\Player\Camera\PlayerCamera.cpp" />
     <ClCompile Include="src\GameObjects\Transform.cpp" />
     <ClCompile Include="src\GameObjects\Vampire\Vampire.cpp" />
+    <ClCompile Include="src\GameObjects\Zombie\Zombie.cpp" />
     <ClCompile Include="src\Lights\DirectionalLight\MyDirectionalLight.cpp" />
     <ClCompile Include="src\Lights\MyLight.cpp" />
     <ClCompile Include="src\Lights\PointLight\MyPointLight.cpp" />
@@ -45,6 +46,7 @@
     <ClInclude Include="src\GameObjects\Player\Camera\PlayerCamera.h" />
     <ClInclude Include="src\GameObjects\Transform.h" />
     <ClInclude Include="src\GameObjects\Vampire\Vampire.h" />
+    <ClInclude Include="src\GameObjects\Zombie\Zombie.h" />
     <ClInclude Include="src\Lights\DirectionalLight\MyDirectionalLight.h" />
     <ClInclude Include="src\Lights\MyLight.h" />
     <ClInclude Include="src\Lights\PointLight\MyPointLight.h" />

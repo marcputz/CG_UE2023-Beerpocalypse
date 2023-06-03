@@ -25,6 +25,7 @@
 #include "GameObjects/Player/NewPlayer.h"
 #include "GameObjects/Beer/Beer.h"
 #include "GameObjects/Ground/Ground.h"
+#include "GameObjects/Zombie/Zombie.h"
 
 using namespace physx;
 using std::cout;
@@ -256,6 +257,13 @@ int main(int argc, char** argv) {
 	Beer beerOne{ &defaultShader, gPhysics };
 	beerOne.setLocalPosition(glm::vec3(-5, 1.0f, 2));
 	scene->addObject(&beerOne);
+
+	// Init Zombies
+	MyShader animationShaderZombieOne = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
+	shaders["Animation Shader (Zombie 1)"] = &animationShaderZombieOne;
+	Zombie zombieOne{ &animationShaderZombieOne, gPhysics };
+	zombieOne.setLocalPosition(glm::vec3(2, 0.5, 2));
+	scene->addObject(&zombieOne, false);
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
