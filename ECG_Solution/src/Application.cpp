@@ -96,13 +96,6 @@ unsigned int bloomQuadVAO = 0;
 unsigned int bloomQuadVBO;
 */
 
-// Toggle-Flags
-bool enableWireframe = false;
-bool enableBackfaceCulling = true;
-bool enableHUD = true;
-bool enableNormalMapping = false;
-//bool enableBloom = true;
-
 // Camera
 float cameraFov = 0.0f;
 float cameraNear = 0.0f;
@@ -125,6 +118,13 @@ MySpotLight* playerFlashLight = nullptr;
 
 int score = 0;
 const int maxScore = 5;
+
+bool isPaused = false;
+bool enableWireframe = false;
+bool enableBackfaceCulling = true;
+bool enableDebugHUD = true;
+bool enableNormalMapping = false;
+//bool enableBloom = true;
 
 // Frame Processing
 float deltaTime = 0.0f;
@@ -432,22 +432,27 @@ int main(int argc, char** argv) {
 		animationShader.setMat4("projection", projection);
 		animationShader.setMat4("view", view);
 
-		std::vector<glm::mat4> vampireAnimationTransforms;
-		if (fmod(glfwGetTime(), 10.0) < 5.0) {
-			vampireIdleAnimator.updateAnimation(deltaTime);
-			vampireAnimationTransforms = vampireIdleAnimator.getFinalBoneMatrices();
-		} else {
-			vampireDanceAnimator.updateAnimation(deltaTime);
-			vampireAnimationTransforms = vampireDanceAnimator.getFinalBoneMatrices();
-		}
+		if (!isPaused) {
+			std::vector<glm::mat4> vampireAnimationTransforms;
+			if (fmod(glfwGetTime(), 10.0) < 5.0) {
+				vampireIdleAnimator.updateAnimation(deltaTime);
+				vampireAnimationTransforms = vampireIdleAnimator.getFinalBoneMatrices();
+			}
+			else {
+				vampireDanceAnimator.updateAnimation(deltaTime);
+				vampireAnimationTransforms = vampireDanceAnimator.getFinalBoneMatrices();
+			}
 
-		for (int i = 0; i < vampireAnimationTransforms.size(); i++) {
-			animationShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", vampireAnimationTransforms[i]);
+			for (int i = 0; i < vampireAnimationTransforms.size(); i++) {
+				animationShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", vampireAnimationTransforms[i]);
+			}
 		}
 
 		// Update the game
-		scene->handleKeyboardInput(window, deltaTime);
-		scene->step(deltaTime);
+		if (!isPaused) {
+			scene->handleKeyboardInput(window, deltaTime);
+			scene->step(deltaTime);
+		}
 		scene->draw();
 		
 		/*
@@ -529,21 +534,38 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
-	textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)player->getActiveCamera()->getFov()), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-	textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)screenHeight - 24.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-	textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-	textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-	textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)screenHeight - 60.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-	textRenderer.renderText(textShader, "WASD - Movement", 0.0f, (float)screenHeight - 72.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-	textRenderer.renderText(textShader, "F - Flashlight", 0.0f, (float)screenHeight - 84.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-	textRenderer.renderText(textShader, "Mouse - Look around", 0.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-	textRenderer.renderText(textShader, "ESC - Exit Application", 0.0f, (float)screenHeight - 108.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+	if (!isPaused) {
+		// Scoreboard
+		textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-	textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
+			// display crosshair
+			textRenderer.renderText(textShader, "+", ((float)screenWidth / 2.0f) - (48.0f * 0.2f), ((float)screenHeight / 2.0f) - (48.0f * 0.2f), 0.8f, glm::vec3(1, 1, 1), enableWireframe);
+		}
+	}
+	else {
+		// Pause Menu
+		textRenderer.renderText(textShader, "GAME PAUSED", 20.0f, (float) screenHeight - 62.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "PRESS [X] TO QUIT", 24.0f, (float)screenHeight - 90.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+	}
 
-	if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
-		// display crosshair
-		textRenderer.renderText(textShader, "+", ((float)screenWidth / 2.0f) - (48.0f * 0.2f), ((float)screenHeight / 2.0f) - (48.0f * 0.2f), 0.8f, glm::vec3(1, 1, 1), enableWireframe);
+	if (enableDebugHUD) {
+		textRenderer.renderText(textShader, "FPS: " + std::to_string((double)framesPerSecond), 14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F1] Wireframe Mode: " + std::string(enableWireframe ? "ON" : "OFF"), 14.0f, (float)screenHeight - 34.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F2] Backface Culling: " + std::string(enableBackfaceCulling ? "ON" : "OFF"), 14.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F3] Close Debug HUD", 14.0f, (float)screenHeight - 82.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+
+		/*textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)player->getActiveCamera()->getFov()), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)screenHeight - 24.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)screenHeight - 60.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		textRenderer.renderText(textShader, "WASD - Movement", 0.0f, (float)screenHeight - 72.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		textRenderer.renderText(textShader, "F - Flashlight", 0.0f, (float)screenHeight - 84.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		textRenderer.renderText(textShader, "Mouse - Look around", 0.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		textRenderer.renderText(textShader, "ESC - Exit Application", 0.0f, (float)screenHeight - 108.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
+		*/
 	}
 }
 
@@ -582,41 +604,49 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	// Esc - Exit
 	// E - Interact with Object
 	// R - Reload
+	// C - Switch First/Third Person Camera
 	// F - Toggle flashlight
 	// +/- - increase/decrease illumination
 
 	if (action != GLFW_PRESS) {
 		return;
 	}
-	
+
 	switch (key) {
-		case GLFW_KEY_F1:
-			enableWireframe = !enableWireframe;
-			glPolygonMode(GL_FRONT_AND_BACK, enableWireframe ? GL_LINE : GL_FILL);
-			break;
-		case GLFW_KEY_F2:
-			enableBackfaceCulling = !enableBackfaceCulling;
-			if (enableBackfaceCulling) {
-				glEnable(GL_CULL_FACE);
-			} else {
-				glDisable(GL_CULL_FACE);
-			}
-			break;
-		case GLFW_KEY_F3:
-			// toggle hud
-			enableHUD = !enableHUD;
-			break;
-		case GLFW_KEY_F4:
-			// toggle normal mapping
-			enableNormalMapping = !enableNormalMapping;
-			break;
-		case GLFW_KEY_F8:
-			// toggle view-frustum culling
-			std::cout << "Toggle view-frustum culling" << std::endl;
-			break;
-		case GLFW_KEY_ESCAPE:
-			glfwSetWindowShouldClose(window, true);
-			break;
+	case GLFW_KEY_ESCAPE:
+		// Pause game
+		isPaused = !isPaused;
+		break;
+	case GLFW_KEY_F1:
+		enableWireframe = !enableWireframe;
+		glPolygonMode(GL_FRONT_AND_BACK, enableWireframe ? GL_LINE : GL_FILL);
+		break;
+	case GLFW_KEY_F2:
+		enableBackfaceCulling = !enableBackfaceCulling;
+		if (enableBackfaceCulling) {
+			glEnable(GL_CULL_FACE);
+		}
+		else {
+			glDisable(GL_CULL_FACE);
+		}
+		break;
+	case GLFW_KEY_F3:
+		// toggle hud
+		enableDebugHUD = !enableDebugHUD;
+		break;
+	case GLFW_KEY_F4:
+		// toggle normal mapping
+		enableNormalMapping = !enableNormalMapping;
+		break;
+	case GLFW_KEY_F8:
+		// toggle view-frustum culling
+		std::cout << "Toggle view-frustum culling" << std::endl;
+		break;
+	}
+
+	if (!isPaused) {
+		// these buttons only work if the game is unpaused
+		switch (key) {
 		case GLFW_KEY_E:
 			// interact
 			std::cout << "Press E" << std::endl;
@@ -636,6 +666,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			// decrease illumination
 			std::cout << "Press -" << std::endl;
 			break;
+		}
+	}
+	else {
+		switch (key) {
+		case GLFW_KEY_X:
+			glfwSetWindowShouldClose(window, true);
+			break;
+		}
 	}
 }
 
@@ -662,7 +700,9 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
 	lastX = x;
 	lastY = y;
 
-	scene->handleMouseInput(xOffset, yOffset);
+	if (!isPaused) {
+		scene->handleMouseInput(xOffset, yOffset);
+	}
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
