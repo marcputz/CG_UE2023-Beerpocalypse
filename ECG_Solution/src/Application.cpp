@@ -547,6 +547,16 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		// Pause Menu
 		textRenderer.renderText(textShader, "GAME PAUSED", 20.0f, (float) screenHeight - 62.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		textRenderer.renderText(textShader, "PRESS [X] TO QUIT", 24.0f, (float)screenHeight - 90.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+
+		textRenderer.renderText(textShader, "CONTROLS", 24.0f, (float)screenHeight - 150.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "WASD", 24.0f, (float)screenHeight - 170.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "Move", 120.0f, (float)screenHeight - 170.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "Mouse", 24.0f, (float)screenHeight - 190.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "Look Around", 120.0f, (float)screenHeight - 190.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "LMB", 24.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "Shoot", 120.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "Escape", 24.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "Pause / Unpause", 120.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 	}
 
 	if (enableDebugHUD) {
@@ -555,17 +565,6 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		textRenderer.renderText(textShader, "[F2] Backface Culling: " + std::string(enableBackfaceCulling ? "ON" : "OFF"), 14.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F3] Close Debug HUD", 14.0f, (float)screenHeight - 82.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-
-		/*textRenderer.renderText(textShader, "FPS: " + std::to_string((int)framesPerSecond) + ", FOV: " + std::to_string((int)player->getActiveCamera()->getFov()), 0.0f, (float)screenHeight - 12.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		textRenderer.renderText(textShader, "F1 Wireframe: " + std::string(enableWireframe ? "on" : "off"), 0.0f, (float)screenHeight - 24.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		textRenderer.renderText(textShader, "F2 Backface-culling: " + std::string(enableBackfaceCulling ? "on" : "off"), 0.0f, (float)screenHeight - 36.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		textRenderer.renderText(textShader, "F3 HUD (not implemented): " + std::string(enableHUD ? "on" : "off"), 0.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		textRenderer.renderText(textShader, "F4 Normal mapping: " + std::string(enableNormalMapping ? "on" : "off"), 0.0f, (float)screenHeight - 60.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		textRenderer.renderText(textShader, "WASD - Movement", 0.0f, (float)screenHeight - 72.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		textRenderer.renderText(textShader, "F - Flashlight", 0.0f, (float)screenHeight - 84.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		textRenderer.renderText(textShader, "Mouse - Look around", 0.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		textRenderer.renderText(textShader, "ESC - Exit Application", 0.0f, (float)screenHeight - 108.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
-		*/
 	}
 }
 
