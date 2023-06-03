@@ -4,7 +4,8 @@ My2DTexture::My2DTexture() : type_(NOT_SET), width_(0), height_(0), internalForm
 	ID_ = 0;
 }
 
-void My2DTexture::generate(unsigned int width, unsigned int height, unsigned char* textureData, My2DTextureTypes type, unsigned int internalFormat, unsigned int imageFormat, unsigned int wrapS, unsigned int wrapT, unsigned int minFilter, unsigned int magFilter) {
+void My2DTexture::generate(std::string& name, unsigned int width, unsigned int height, unsigned char* textureData, My2DTextureTypes type, unsigned int internalFormat, unsigned int imageFormat, unsigned int wrapS, unsigned int wrapT, unsigned int minFilter, unsigned int magFilter) {
+	this->name_ = name;
 	width_ = width;
 	height_ = height;
 	type_ = type;

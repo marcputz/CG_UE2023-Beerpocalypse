@@ -80,7 +80,7 @@ My2DTexture MyAssetManager::loadTexture(const char* textureFileName, My2DTexture
 		}
 
 		My2DTexture texture;
-		texture.generate(width, height, textureData, textureType, format, format);
+		texture.generate(textureName, width, height, textureData, textureType, format, format);
 
 		stbi_image_free(textureData);
 
