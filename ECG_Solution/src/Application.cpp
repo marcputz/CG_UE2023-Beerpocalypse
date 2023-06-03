@@ -543,7 +543,7 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 
 	if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
 		// display crosshair
-		textRenderer.renderText(textShader, "+", ((float)screenWidth / 2.0f) - (48.0f * 0.8f / 2.0f), ((float)screenHeight / 2.0f) - (48.0f * 0.8f / 2.0f), 0.8f, glm::vec3(1, 1, 1), enableWireframe);
+		textRenderer.renderText(textShader, "+", ((float)screenWidth / 2.0f) - (48.0f * 0.2f), ((float)screenHeight / 2.0f) - (48.0f * 0.2f), 0.8f, glm::vec3(1, 1, 1), enableWireframe);
 	}
 }
 
