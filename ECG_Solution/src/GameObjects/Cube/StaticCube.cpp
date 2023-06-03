@@ -1,7 +1,12 @@
 #include "StaticCube.h"
 
-StaticCube::StaticCube(MyShader* shader, PxPhysics* physics) : NewGameObject("Static Cube", shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), true) {
+StaticCube::StaticCube(MyShader* shader, PxPhysics* physics) : NewGameObject("Static Cube", shader, physics, "cube/brick_cube/cube.obj", true) 
+{
+	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
+	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
+	PxShape* collider = physics->createShape(geometry, *material);
 
+	setCollider(collider);
 }
 
 void StaticCube::onBeforeUpdate() {

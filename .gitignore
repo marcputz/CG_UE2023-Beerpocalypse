@@ -3,3 +3,6 @@ build/*
 bin/Release/*
 bin/Debug/Beerpocalypse.pdb
 bin/Debug/Beerpocalypse.exe
+/ECG_Solution/.vs/ECG_Solution/FileContentIndex
+/ECG_Solution/.vs/ECG_Solution/v17
+/ECG_Solution/.vs

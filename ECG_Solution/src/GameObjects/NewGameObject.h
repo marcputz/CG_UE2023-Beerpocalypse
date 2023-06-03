@@ -11,6 +11,12 @@
 #include <GLFW/glfw3.h>
 #include "../MyAnimator.h"
 
+enum CollisionLayer : PxU32 {
+	LAYER_DEFAULT = (1 << 0),
+	LAYER_PLAYER = (1 << 1),
+	LAYER_COLLECTABLES = (1 << 2),
+	LAYER_ENEMIES = (1 << 3)
+};
 
 class NewGameObject {
 /* VARIABLES */
@@ -50,8 +56,14 @@ private:
 	void synchronizeTransforms();
 
 protected:
-	// Constructor
-	explicit NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic, bool useAdvancedCollissionDetection = false);
+	// Constructors
+	explicit NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, bool isStatic = false);
+	NewGameObject(NewGameObject&&) = delete; // move constructor
+	NewGameObject(const NewGameObject&) = delete; // copy constructor
+
+	// operators
+	NewGameObject& NewGameObject::operator=(const NewGameObject&) = delete;
+	bool operator==(const NewGameObject&) const = delete;
 
 	/**
 	* These functions can be used by this class' derivates to define their functionality
@@ -86,6 +98,8 @@ public:
 	MyModel* getModel();
 	void setAnimator(MyAnimator& newAnimator);
 
+	void setCollider(PxShape* colliderShape);
+	PxShape* getCollider() { return physicsShape_; }
 	PxRigidActor* getRigidActor() { return this->physicsActor_; }
 
 	/**

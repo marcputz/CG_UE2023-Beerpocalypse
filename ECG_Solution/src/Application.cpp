@@ -237,14 +237,17 @@ int main(int argc, char** argv) {
 	// Init Player
 	player = new NewPlayer{ &defaultShader, gPhysics };
 	player->setLocalPosition(glm::vec3(0.0f, 0.5f, -2.0f));
+	player->setScale(glm::vec3(0.5, 1, 0.5));
 	scene->addObject(player);
 
 	// Init Objects
 	DynamicCube testCubeTwo{ &defaultShader, gPhysics };
 	testCubeTwo.setLocalPosition(glm::vec3(5.0f, 8.0f, 0));
+	testCubeTwo.setScale(glm::vec3(0.5, 0.5, 0.5));
 	scene->addObject(&testCubeTwo);
 	DynamicCube testCubeThree{ &defaultShader, gPhysics };
 	testCubeThree.setLocalPosition(glm::vec3(5.6f, 10.0f, 0.1f));
+	testCubeThree.setScale(glm::vec3(0.5, 0.5, 0.5));
 	scene->addObject(&testCubeThree);
 
 	// Init Ground
@@ -273,7 +276,7 @@ int main(int argc, char** argv) {
 	//shaders["Animation Shader (Zombie 1)"] = &animationShaderZombieOne;
 	Zombie zombieOne{ &animationShader, gPhysics };
 	scene->addObject(&zombieOne, true);
-	zombieOne.setLocalPosition(glm::vec3(2, 0.5, 2));
+	zombieOne.setLocalPosition(glm::vec3(2, 1.5, 2));
 
 	MyAnimation zombieIdleAnim("assets/models/zombie/animations/ZombieIdle.dae", zombieOne.getModel());
 	MyAnimator idleAnimator(&zombieIdleAnim);

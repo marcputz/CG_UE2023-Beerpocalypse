@@ -1,6 +1,6 @@
 #include "NewGameObject.h"
 
-NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, glm::vec3 materialAttributes, bool isStatic, bool useAdvancedCollissionDetection)
+NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, bool isStatic)
 	: shader_{ shader },
 	name_{ name },
 	physics_{ physics },
@@ -16,29 +16,6 @@ NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, 
 	}
 	this->isStatic_ = isStatic;
 
-	physicsMaterial_ = physics->createMaterial(materialAttributes.x, materialAttributes.y, materialAttributes.z);
-	//physicsShape_ = physics->createShape(PxBoxGeometry(1, 1, 1), *physicsMaterial_);
-	float boundingBoxX = model_->boundingBox_.absDiff.x / 2.0f;
-	float boundingBoxY = model_->boundingBox_.absDiff.y / 2.0f;
-	float boundingBoxZ = model_->boundingBox_.absDiff.z / 2.0f;
-	//std::cout << boundingBoxX << "/" << boundingBoxY << "/" << boundingBoxZ << std::endl;
-	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_, true);
-
-	PxFilterData collissionFilterData;
-	if (useAdvancedCollissionDetection) {
-		collissionFilterData.word0 = (1 << 2); // Own ID
-		collissionFilterData.word1 = (1 << 1); // ID's to collide with
-	}
-	else {
-		collissionFilterData.word0 = (1 << 1); // Own ID
-		collissionFilterData.word1 = (1 << 2); // ID's to collide with
-	}
-	physicsShape_->setSimulationFilterData(collissionFilterData);
-
-	physicsActor_->attachShape(*physicsShape_);
-
-	physicsMaterial_->userData = this;
-	physicsShape_->userData = this;
 	physicsActor_->userData = this;
 }
 
@@ -47,6 +24,26 @@ void NewGameObject::synchronizeTransforms() {
 	PxTransform physicsTransform = physicsActor_->getGlobalPose();
 	transform_->setWorldPosition(asGlmVec3(physicsTransform.p));
 	transform_->setWorldRotation(asGlmQuat(physicsTransform.q));
+}
+
+void NewGameObject::setCollider(PxShape* colliderShape) {
+	physicsShape_ = colliderShape;
+
+	if (physicsShape_ != nullptr) {
+		// apply scale
+		PxGeometryHolder geometryHolder = colliderShape->getGeometry();
+		PxGeometry& geometry = geometryHolder.any();
+		if (geometryHolder.any().getType() == PxGeometryType::eBOX) {
+			PxBoxGeometry& boxGeometry = static_cast<PxBoxGeometry&>(geometry);
+			boxGeometry.halfExtents.x *= getScale().x;
+			boxGeometry.halfExtents.y *= getScale().y;
+			boxGeometry.halfExtents.z *= getScale().z;
+			colliderShape->setGeometry(boxGeometry);
+		}
+
+		physicsShape_->userData = this;
+		physicsActor_->attachShape(*physicsShape_);
+	}
 }
 
 void NewGameObject::setParent(NewGameObject* newParent) {
@@ -77,16 +74,20 @@ void NewGameObject::setLocalRotation(glm::quat newRotation) {
 void NewGameObject::setScale(glm::vec3 newScale) {
 	this->transform_->setScale(newScale);
 
-	// Update Bounding boxes to use new scale
-	physicsActor_->detachShape(*physicsShape_);
-	physicsShape_->release();
-	float boundingBoxX = model_->boundingBox_.absDiff.x / 2.0f;
-	float boundingBoxY = model_->boundingBox_.absDiff.y / 2.0f;
-	float boundingBoxZ = model_->boundingBox_.absDiff.z / 2.0f;
-	physicsShape_ = physics_->createShape(PxBoxGeometry(boundingBoxX * transform_->getScale().x, boundingBoxY * transform_->getScale().y, boundingBoxZ * transform_->getScale().z), *physicsMaterial_, true);
-	//physicsShape_ = physics_->createShape(PxBoxGeometry(1, 1, 1), *physicsMaterial_);
-	physicsShape_->userData = this;
-	physicsActor_->attachShape(*physicsShape_);
+	if (physicsShape_ != nullptr) {
+		PxGeometryHolder geometryHolder = physicsShape_->getGeometry();
+		PxGeometry& geometry = geometryHolder.any();
+		if (geometry.getType() == PxGeometryType::eBOX) {
+			PxBoxGeometry& boxGeometry = static_cast<PxBoxGeometry&>(geometry);
+			boxGeometry.halfExtents.x *= getScale().x;
+			boxGeometry.halfExtents.y *= getScale().y;
+			boxGeometry.halfExtents.z *= getScale().z;
+
+			physicsActor_->detachShape(*physicsShape_);
+			physicsShape_->setGeometry(boxGeometry);
+			physicsActor_->attachShape(*physicsShape_);
+		}
+	}
 }
 
 glm::vec3 NewGameObject::getLocalPosition() {

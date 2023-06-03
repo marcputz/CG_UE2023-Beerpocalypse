@@ -2,7 +2,18 @@
 
 extern int score;
 
-NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject("Player", shader, physics, "cube/brick_cube/cube.obj", glm::vec3(0.5, 0.5, 0.5), false) {
+NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject("Player", shader, physics, "cube/brick_cube/cube.obj", false) {
+	
+	PxMaterial* material = physics->createMaterial(0.5, 0.5, 0.1);
+	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
+	PxShape* collider = physics->createShape(geometry, *material);
+	PxFilterData filterData;
+	filterData.word0 = CollisionLayer::LAYER_PLAYER; // own ID
+	filterData.word1 = CollisionLayer::LAYER_COLLECTABLES | CollisionLayer::LAYER_ENEMIES; // IDs to do collision callback with
+	collider->setSimulationFilterData(filterData);
+
+	setCollider(collider);
+	
 	thirdPersonCamera = new PlayerCameraThirdPerson(this->transform_);
 	firstPersonCamera = new PlayerCameraFirstPerson(this->transform_);
 
