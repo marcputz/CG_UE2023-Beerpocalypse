@@ -4,6 +4,7 @@
 #include "Camera/PlayerCameraThirdPerson.h"
 #include "Camera/PlayerCameraFirstPerson.h"
 #include "../Beer/Beer.h"
+#include "../Zombie/Zombie.h"
 
 enum PlayerCameraType {
 	CAMERA_FIRST_PERSON,
@@ -16,6 +17,9 @@ private:
 	const float turningSpeed = 5.0f;
 
 	float facingAngle = 0.0f;
+
+	float damageCooldown = 0.0f;
+	const float targetDamageCooldown = 5.0f;
 
 	PlayerCameraType activeCameraType = PlayerCameraType::CAMERA_FIRST_PERSON;
 	PlayerCameraFirstPerson* firstPersonCamera;

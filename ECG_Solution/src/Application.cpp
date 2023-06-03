@@ -119,9 +119,6 @@ MySpotLight* playerFlashLight = nullptr;
 int score = 0;
 const int maxScore = 5;
 
-const int maxPlayerHealth = 100;
-int playerHealth = maxPlayerHealth;
-
 bool isPaused = false;
 bool enableWireframe = false;
 bool enableBackfaceCulling = true;
@@ -538,7 +535,7 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		// Scoreboard
 		textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		// Health
-		textRenderer.renderText(textShader, "Health: " + std::to_string(playerHealth) + "/" + std::to_string(maxPlayerHealth), 14.0f, 38.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
+		textRenderer.renderText(textShader, "Health: " + std::to_string(player->getHealth()) + "/" + std::to_string(player->maxHealth), 14.0f, 38.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
 
 		if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
 			// display crosshair

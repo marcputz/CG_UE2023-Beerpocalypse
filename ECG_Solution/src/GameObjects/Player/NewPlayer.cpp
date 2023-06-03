@@ -34,7 +34,9 @@ void NewPlayer::onBeforeUpdate() {
 }
 
 void NewPlayer::onUpdate(float deltaTime) {
-
+	if (damageCooldown > 0.01f) {
+		damageCooldown -= deltaTime;
+	}
 }
 
 void NewPlayer::onCollision(NewGameObject* otherObject) {
@@ -46,6 +48,18 @@ void NewPlayer::onCollision(NewGameObject* otherObject) {
 		if (beer->isVisible()) {
 			score++;
 			beer->setVisible(false);
+		}
+		return;
+	}
+
+	Zombie* zombie = dynamic_cast<Zombie*>(otherObject);
+	if (zombie != nullptr) {
+		// Collided with zombie
+		if (zombie->isVisible()) {
+			if (damageCooldown <= 0.01f) {
+				setHealth(getHealth() - 10);
+				damageCooldown = targetDamageCooldown;
+			}
 		}
 	}
 }
