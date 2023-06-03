@@ -117,6 +117,10 @@ MyModel* NewGameObject::getModel() {
 	return this->model_;
 }
 
+void NewGameObject::setAnimator(MyAnimator& newAnimator) {
+	this->animator_ = &newAnimator;
+}
+
 /**
 * This update function must be called BEFORE the physics update
 */
@@ -131,6 +135,10 @@ void NewGameObject::beforeUpdate() {
 void NewGameObject::update(float deltaTime) {
 	// synchronize physcis transform into object's transform
 	synchronizeTransforms();
+
+	if (this->animator_ != nullptr && isVisible_) {
+		this->animator_->updateAnimation(deltaTime);
+	}
 
 	// Call custom code
 	onUpdate(deltaTime);
@@ -157,6 +165,15 @@ void NewGameObject::draw() {
 	modelMatrix = transMatrix * rotMatrix * scaleMatrix;
 
 	shader_->use();
+
+	if (this->animator_ != nullptr) {
+		std::vector<glm::mat4> finalBoneTransforms = animator_->getFinalBoneMatrices();
+
+		for (int i = 0; i < finalBoneTransforms.size(); i++) {
+			shader_->setMat4("finalBonesMatrices[" + std::to_string(i) + "]", finalBoneTransforms[i]);
+		}
+	}
+
 	shader_->setMat4("model", modelMatrix);
 	model_->draw(*shader_);
 }

@@ -258,13 +258,38 @@ int main(int argc, char** argv) {
 	beerOne.setLocalPosition(glm::vec3(-5, 1.0f, 2));
 	scene->addObject(&beerOne);
 
-	// Init Zombies
-	MyShader animationShaderZombieOne = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
-	shaders["Animation Shader (Zombie 1)"] = &animationShaderZombieOne;
-	Zombie zombieOne{ &animationShaderZombieOne, gPhysics };
-	zombieOne.setLocalPosition(glm::vec3(2, 0.5, 2));
-	scene->addObject(&zombieOne, false);
+	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
+	shaders["Animation Shader"] = &animationShader;
 
+	/*
+	Vampire vampire(&animationShader, gPhysics);
+	vampire.setLocalPosition(glm::vec3(0, -1.5, 0));
+	scene->addObject(&vampire, false);
+	*/
+
+	// Init Zombies
+	//MyShader animationShaderZombieOne = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
+	//shaders["Animation Shader (Zombie 1)"] = &animationShaderZombieOne;
+	Zombie zombieOne{ &animationShader, gPhysics };
+	scene->addObject(&zombieOne, true);
+	zombieOne.setLocalPosition(glm::vec3(2, 0.5, 2));
+
+	MyAnimation zombieIdleAnim("assets/models/zombie/animations/ZombieIdle.dae", zombieOne.getModel());
+	MyAnimator idleAnimator(&zombieIdleAnim);
+	zombieOne.setAnimator(idleAnimator);
+
+	Zombie zombieTwo{ &animationShader, gPhysics };
+	scene->addObject(&zombieTwo, true);
+	zombieTwo.setLocalPosition(glm::vec3(5, 0.5, 8));
+	MyAnimation zombieAttackAnim("assets/models/zombie/animations/ZombieAttack.dae", zombieOne.getModel());
+	MyAnimator attackAnimator(&zombieAttackAnim);
+	zombieTwo.setAnimator(attackAnimator);
+
+
+	/*
+	MyAnimation walkAnim("assets/models/zombie/animations/walk.dae", zombieOne.getModel());
+	MyAnimator walkAnimator(&walkAnim);
+	*/
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
 		true, glm::vec3(-0.2f, -1.0f, 0.3f));
@@ -310,17 +335,6 @@ int main(int argc, char** argv) {
 	scene->addLight(&pointLightFour);
 	scene->addLight(playerFlashLight);
 	scene->addLight(&spotLightOne);
-
-	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
-	shaders["Animation Shader"] = &animationShader;
-
-	Vampire vampire(&animationShader, gPhysics);
-	vampire.setLocalPosition(glm::vec3(0, -1.5, 0));
-	scene->addObject(&vampire, false);
-	MyAnimation tutHipHopDanceAnim("assets/models/vampire/animations/TutHipHopDance.dae", vampire.getModel());
-	MyAnimation idleAnim("assets/models/vampire/animations/Idle.dae", vampire.getModel());
-	MyAnimator vampireIdleAnimator(&idleAnim);
-	MyAnimator vampireDanceAnimator(&tutHipHopDanceAnim);
 	
 	/*
 	particleShader = MyAssetManager::loadShader("particle.vert", "particle.frag", "particle");
@@ -432,18 +446,21 @@ int main(int argc, char** argv) {
 		animationShader.setMat4("projection", projection);
 		animationShader.setMat4("view", view);
 
-		std::vector<glm::mat4> vampireAnimationTransforms;
+		/*
+
+		std::vector<glm::mat4> zombieAnimTransforms;
 		if (fmod(glfwGetTime(), 10.0) < 5.0) {
-			vampireIdleAnimator.updateAnimation(deltaTime);
-			vampireAnimationTransforms = vampireIdleAnimator.getFinalBoneMatrices();
+			idleAnimator.updateAnimation(deltaTime);
+			zombieAnimTransforms = idleAnimator.getFinalBoneMatrices();
 		} else {
-			vampireDanceAnimator.updateAnimation(deltaTime);
-			vampireAnimationTransforms = vampireDanceAnimator.getFinalBoneMatrices();
+			idleAnimator.updateAnimation(deltaTime);
+			zombieAnimTransforms = idleAnimator.getFinalBoneMatrices();
 		}
 
-		for (int i = 0; i < vampireAnimationTransforms.size(); i++) {
-			animationShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", vampireAnimationTransforms[i]);
+		for (int i = 0; i < zombieAnimTransforms.size(); i++) {
+			animationShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", zombieAnimTransforms[i]);
 		}
+		*/
 
 		// Update the game
 		scene->handleKeyboardInput(window, deltaTime);
@@ -621,9 +638,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			// interact
 			std::cout << "Press E" << std::endl;
 			break;
+		case GLFW_KEY_F:
+			playerFlashLight->setEnabled(!playerFlashLight->isEnabled());
+			break;
 		case GLFW_KEY_C:
 			// swap camera
 			player->swapCamera();
+		case GLFW_KEY_SPACE:
+			std::cout << "Press Spacebar" << std::endl;
+			break;
 		case GLFW_KEY_R:
 			// reload
 			std::cout << "Press R" << std::endl;

@@ -8,7 +8,7 @@ public:
 	void updateAnimation(float deltaTime);
 	void playAnimation(MyAnimation* animationToPlay);
 	void calculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform);
-	std::vector<glm::mat4> getFinalBoneMatrices();
+	std::vector<glm::mat4>& getFinalBoneMatrices();
 
 protected:
 

@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <GLFW/glfw3.h>
+#include "../MyAnimator.h"
 
 
 class NewGameObject {
@@ -24,6 +25,9 @@ protected:
 
 	// Model data
 	MyModel* model_;
+
+	// Animator of the gameObject
+	MyAnimator* animator_;
 
 	// Shader
 	MyShader* shader_;
@@ -80,6 +84,7 @@ public:
 	glm::vec3 getForwardVector();
 
 	MyModel* getModel();
+	void setAnimator(MyAnimator& newAnimator);
 
 	PxRigidActor* getRigidActor() { return this->physicsActor_; }
 
