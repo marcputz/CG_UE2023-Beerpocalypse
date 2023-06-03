@@ -28,9 +28,9 @@ void Beer::onBeforeUpdate()
 void Beer::onUpdate(float deltaTime)
 {
 	if (animateRotation) {
-		static int animationFrame = 0;
-		static float rotationAngle = 0;
-		static const int totalAnimationFrames = 120;
+		static float animationTime = 0.0f;
+		static float rotationAngle = 0.0f;
+		static const float totalAnimationTime = 4.0f;
 
 		// first correct the rotation of the model to make the bottle stand up
 		glm::quat modelCorrection = glm::quat(glm::vec3(glm::radians(-90.0f), 0.0f, 0.0f));
@@ -39,13 +39,13 @@ void Beer::onUpdate(float deltaTime)
 		glm::quat sidewaysTurn = glm::quat(glm::vec3(glm::radians(15.0f), 0.0f, 0.0f));
 
 		// spin the bottle around the Y axis
-		rotationAngle = ((float) animationFrame / (float) totalAnimationFrames) * 360.0f;
+		rotationAngle = (animationTime / totalAnimationTime) * 360.0f;
 		glm::quat rotation = asGlmQuat(PxQuat(glm::radians(rotationAngle), PxVec3(0, 1, 0)));
 
 		// prepare next rotation
-		animationFrame++;
-		if (animationFrame >= totalAnimationFrames) {
-			animationFrame = 0;
+		animationTime += deltaTime;
+		if (animationTime >= totalAnimationTime) {
+			animationTime = 0.0f;
 		}
 
 		glm::quat newRotation = rotation * (modelCorrection * sidewaysTurn);
