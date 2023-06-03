@@ -94,6 +94,9 @@ void NewPlayer::processWindowInput(GLFWwindow* window, float deltaTime) {
 }
 
 void NewPlayer::processMouseInput(float offsetX, float offsetY) {
+	firstPersonCamera->processMouseInput(offsetX, offsetY);
+	thirdPersonCamera->processMouseInput(offsetX, offsetY);
+
 	facingAngle += -offsetX / 200.0f * turningSpeed;
 
 	if (facingAngle < 0) {

@@ -22,5 +22,7 @@ public:
 	virtual glm::vec3 getPosition() = 0;
 	virtual glm::vec3 getDirection() = 0;
 
+	virtual void processMouseInput(float offsetX, float offsetY) = 0;
+
 	glm::vec3 getUp();
 };

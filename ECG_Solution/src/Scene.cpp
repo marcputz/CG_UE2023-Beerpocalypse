@@ -103,10 +103,18 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 			
 			// Define Ray
 			PxVec3 rayOrigin = asPxVec3(player->getWorldPosition());
-			PxVec3 rayDirection = asPxVec3(player->getForwardVector()).getNormalized();
+			PxVec3 rayDirection;
 			const PxU32 hitBufferSize = 32;
 			PxRaycastHit hitBuffer[hitBufferSize];
 			PxRaycastBuffer buf(hitBuffer, hitBufferSize);
+
+			// If first person camera, use camera direction, if third person, use player forward vector
+			if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
+				rayDirection = asPxVec3(player->getActiveCamera()->getDirection()).getNormalized();
+			}
+			else {
+				rayDirection = asPxVec3(player->getForwardVector()).getNormalized();
+			}
 
 			// Make Raycast
 			bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, maxShootDistance, buf);
@@ -120,7 +128,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 						// Skip player as it is always hit
 						NewPlayer* player = dynamic_cast<NewPlayer*>(object);
 						if (player == nullptr) {
-							//std::cout << "Hit '" << object->name_ << "'" << std::endl;
+							std::cout << "Hit '" << object->name_ << "'" << std::endl;
 
 							// If object is zombie, deal damage
 							Zombie* zombie = dynamic_cast<Zombie*>(object);

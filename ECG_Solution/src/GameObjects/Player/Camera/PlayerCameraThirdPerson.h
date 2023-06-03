@@ -12,4 +12,6 @@ public:
 
 	glm::vec3 getPosition() override;
 	glm::vec3 getDirection() override;
+
+	void processMouseInput(float offsetX, float offsetY) override {};
 };
