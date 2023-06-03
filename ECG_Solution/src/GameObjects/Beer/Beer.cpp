@@ -6,7 +6,7 @@ Beer::Beer(MyShader* shader, PxPhysics* physics)
 	setScale(glm::vec3(0.07f, 0.07f, 0.07f));
 
 	PxMaterial* material = physics->createMaterial(1, 1, 0.01f);
-	PxBoxGeometry geometry = PxBoxGeometry(3, 30, 3);
+	PxBoxGeometry geometry = PxBoxGeometry(3, 3, 30);
 	PxShape* collider = physics->createShape(geometry, *material);
 	PxFilterData collissionFilterData;
 	collissionFilterData.word0 = CollisionLayer::LAYER_COLLECTABLES; // Own ID
