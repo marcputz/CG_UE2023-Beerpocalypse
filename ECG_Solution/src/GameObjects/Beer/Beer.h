@@ -17,4 +17,7 @@ public:
 	void processWindowInput(GLFWwindow* window, float deltaTime) override;
 	void processMouseInput(float offsetX, float offsetY) override;
 	void onCollision(NewGameObject* otherObject) override;
+
+	// Inherited via NewGameObject
+	virtual void onHealthChange(int oldHealth, int newHealth) override;
 };

@@ -14,15 +14,6 @@ Zombie::Zombie(MyShader* shader, PxPhysics* physics) : NewGameObject("Zombie", s
 	setCollider(collider);
 }
 
-void Zombie::damage(float damagePoints) {
-	healthPoints -= damagePoints;
-	
-	if (healthPoints <= 0.0f) {
-		// zombie was defeated
-		this->setVisible(false);
-	}
-}
-
 void Zombie::onBeforeUpdate() {}
 
 void Zombie::onUpdate(float deltaTime) {
@@ -35,4 +26,11 @@ void Zombie::processWindowInput(GLFWwindow* window, float deltaTime) {
 
 void Zombie::processMouseInput(float offsetX, float offsetY) {
 
+}
+
+void Zombie::onHealthChange(int oldHealth, int newHealth)
+{
+	if (newHealth <= 0) {
+		setVisible(false);
+	}
 }

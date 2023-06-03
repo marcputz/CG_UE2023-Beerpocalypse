@@ -12,8 +12,8 @@ enum PlayerCameraType {
 
 class NewPlayer : public NewGameObject {
 private:
-	const float movementSpeed = 3.0f;
-	const float turningSpeed = 3.0f;
+	const float movementSpeed = 4.0f;
+	const float turningSpeed = 5.0f;
 
 	float facingAngle = 0.0f;
 
@@ -37,5 +37,8 @@ public:
 
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);
+
+	// Inherited via NewGameObject
+	virtual void onHealthChange(int oldHealth, int newHealth) override;
 };
 

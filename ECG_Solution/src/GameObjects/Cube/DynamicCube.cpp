@@ -10,6 +10,10 @@ DynamicCube::DynamicCube(MyShader* shader, PxPhysics* physics)
 	setCollider(collider);
 }
 
+void DynamicCube::onHealthChange(int oldHealth, int newHealth)
+{
+}
+
 void DynamicCube::onBeforeUpdate() {
 
 }

@@ -120,7 +120,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 			bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, maxShootDistance, buf);
 			if (raycastStatus) {
 				// Raycast has hit something
-				for (PxU32 i = 0; i < buf.nbTouches && i <= 1; i++) {
+				for (PxU32 i = 0; i < buf.nbTouches; i++) {
 					PxRaycastHit currentHit = buf.touches[i];
 					NewGameObject* object = static_cast<NewGameObject*>(currentHit.actor->userData);
 					if (object != nullptr) {
@@ -134,7 +134,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 							Zombie* zombie = dynamic_cast<Zombie*>(object);
 							if (zombie != nullptr) {
 								if (zombie->isVisible()) {
-									zombie->damage(40);
+									zombie->setHealth(zombie->getHealth() - 40);
 									return; // skip the rest of this function, as only the first hit should be processed.
 								}
 								else {

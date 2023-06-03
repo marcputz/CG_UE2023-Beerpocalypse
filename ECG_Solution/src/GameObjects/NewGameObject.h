@@ -24,6 +24,8 @@ private:
 	bool isStatic_ = false;
 	bool isVisible_ = true;
 
+	int health = 100;
+
 protected:
 
 	// Transform (Position, Rotation, etc.)
@@ -46,6 +48,8 @@ protected:
 
 public:
 	string name_;
+
+	const int maxHealth = 100;
 
 /* FUNCTIONS */
 private:
@@ -118,11 +122,11 @@ public:
 	virtual void processWindowInput(GLFWwindow* window, float deltaTime) = 0;
 	virtual void processMouseInput(float offsetX, float offsetY) = 0;
 
-
 	virtual void onCollision(NewGameObject* otherObject) = 0;
 
-	//virtual void handleKeyboardInput(GLFWwindow* window, float deltaTime) = 0;
-	//virtual void handleMouseInput(float xOffset, float yOffset) = 0;
+	void setHealth(int newHealth);
+	int getHealth();
+	virtual void onHealthChange(int oldHealth, int newHealth) = 0;
 
 	/**
 	* draws object on screen

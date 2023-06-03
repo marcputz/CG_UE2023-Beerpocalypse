@@ -121,3 +121,7 @@ void NewPlayer::processMouseInput(float offsetX, float offsetY) {
 	glm::quat newRotation = asGlmQuat(PxQuat(glm::radians(facingAngle), asPxVec3(rotationAxis).getNormalized()));
 	setLocalRotation(newRotation);
 }
+
+void NewPlayer::onHealthChange(int oldHealth, int newHealth)
+{
+}

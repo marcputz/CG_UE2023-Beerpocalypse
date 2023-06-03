@@ -9,6 +9,10 @@ StaticCube::StaticCube(MyShader* shader, PxPhysics* physics) : NewGameObject("St
 	setCollider(collider);
 }
 
+void StaticCube::onHealthChange(int oldHealth, int newHealth)
+{
+}
+
 void StaticCube::onBeforeUpdate() {
 
 }

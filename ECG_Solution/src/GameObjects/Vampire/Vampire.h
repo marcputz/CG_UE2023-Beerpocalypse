@@ -14,4 +14,7 @@ public:
 
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);
+
+	// Inherited via NewGameObject
+	virtual void onHealthChange(int oldHealth, int newHealth) override;
 };

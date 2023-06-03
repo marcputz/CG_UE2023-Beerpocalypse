@@ -9,6 +9,10 @@ Ground::Ground(MyShader* shader, PxPhysics* physics) : NewGameObject("Ground", s
 
 }
 
+void Ground::onHealthChange(int oldHealth, int newHealth)
+{
+}
+
 void Ground::onBeforeUpdate() {
 
 }

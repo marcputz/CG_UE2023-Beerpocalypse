@@ -66,3 +66,7 @@ void Beer::onCollision(NewGameObject* otherObject)
 {
 }
 
+void Beer::onHealthChange(int oldHealth, int newHealth)
+{
+}
+

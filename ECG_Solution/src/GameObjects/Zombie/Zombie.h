@@ -3,8 +3,6 @@
 #include "../NewGameObject.h"
 
 class Zombie : public NewGameObject {
-private:
-	float healthPoints = 100.0f;
 
 private:
 	void onBeforeUpdate();
@@ -18,5 +16,5 @@ public:
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);
 
-	void damage(float damagePoints);
+	virtual void onHealthChange(int oldHealth, int newHealth) override;
 };

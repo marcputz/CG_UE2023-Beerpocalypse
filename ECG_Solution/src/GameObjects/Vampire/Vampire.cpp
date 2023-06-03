@@ -17,3 +17,7 @@ void Vampire::processWindowInput(GLFWwindow* window, float deltaTime) {
 void Vampire::processMouseInput(float offsetX, float offsetY) {
 
 }
+
+void Vampire::onHealthChange(int oldHealth, int newHealth)
+{
+}
