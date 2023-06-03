@@ -29,6 +29,7 @@ public:
 	std::map<std::string, BoneInfo>& getBoneInfoMap();
 	int& getBoneCount();
 
+	// only if you want to upscale and reduce blurryness
 	void applyTilingScale(float wScale, float hScale);
 
 	//void create(const aiScene* scene, std::string& directory);
