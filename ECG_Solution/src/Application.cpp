@@ -288,6 +288,7 @@ int main(int argc, char** argv) {
 	MyAnimation zombieAttackAnim("assets/models/zombie/animations/ZombieAttack.dae", zombieOne.getModel());
 	MyAnimator attackAnimator(&zombieAttackAnim);
 	zombieTwo.setAnimator(attackAnimator);
+	zombieTwo.follow(player);
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),

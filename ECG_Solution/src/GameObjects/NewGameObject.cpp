@@ -89,6 +89,14 @@ void NewGameObject::setLocalRotation(glm::quat newRotation) {
 	physicsActor_->setGlobalPose(transf);
 }
 
+void NewGameObject::setWorldPosition(glm::vec3 newPosition) {
+	this->transform_->setWorldPosition(newPosition);
+
+	PxTransform transf = physicsActor_->getGlobalPose();
+	transf.p = asPxVec3(this->transform_->getWorldPosition());
+	physicsActor_->setGlobalPose(transf);
+}
+
 void NewGameObject::setScale(glm::vec3 newScale) {
 	this->transform_->setScale(newScale);
 

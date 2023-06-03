@@ -3,6 +3,9 @@
 #include "../NewGameObject.h"
 
 class Zombie : public NewGameObject {
+private:
+	const float movementSpeed = 2.0f;
+	NewGameObject* followObject = nullptr;
 
 private:
 	void onBeforeUpdate();
@@ -17,4 +20,8 @@ public:
 	void processMouseInput(float offsetX, float offsetY);
 
 	virtual void onHealthChange(int oldHealth, int newHealth) override;
+
+	bool isFollowing();
+	NewGameObject* getFollowing();
+	void follow(NewGameObject* objectToFollow);
 };

@@ -12,12 +12,37 @@ Zombie::Zombie(MyShader* shader, PxPhysics* physics) : NewGameObject("Zombie", s
 	collider->setLocalPose(PxTransform(PxVec3(0, 0.7, 0)));
 
 	setCollider(collider);
+
+	// Lock rotation axis
+	PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
+	dyn->setRigidDynamicLockFlags(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z | PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
 }
 
 void Zombie::onBeforeUpdate() {}
 
 void Zombie::onUpdate(float deltaTime) {
+	if (isVisible()) {
+		if (isFollowing()) {
+			glm::vec3 targetPosition = followObject->getWorldPosition();
+			glm::vec3 zombiePosition = getWorldPosition();
+			glm::vec3 direction = targetPosition - zombiePosition;
+			direction.y = 0;
+			direction = glm::normalize(direction);
+			this->setWorldPosition(zombiePosition + (direction * deltaTime * movementSpeed));
+		}
+	}
+}
 
+bool Zombie::isFollowing() {
+	return followObject != nullptr;
+}
+
+NewGameObject* Zombie::getFollowing() {
+	return followObject;
+}
+
+void Zombie::follow(NewGameObject* objectToFollow) {
+	followObject = objectToFollow;
 }
 
 void Zombie::processWindowInput(GLFWwindow* window, float deltaTime) {
