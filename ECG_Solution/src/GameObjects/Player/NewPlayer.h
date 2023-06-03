@@ -32,6 +32,7 @@ public:
 	NewPlayer(MyShader* shader, PxPhysics* physics);
 
 	PlayerCamera* getActiveCamera();
+	PlayerCameraType getActiveCameraType();
 	void swapCamera();
 
 	void processWindowInput(GLFWwindow* window, float deltaTime);

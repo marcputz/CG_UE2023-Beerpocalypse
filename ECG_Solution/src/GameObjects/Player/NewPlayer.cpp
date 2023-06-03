@@ -61,6 +61,10 @@ PlayerCamera* NewPlayer::getActiveCamera() {
 	return thirdPersonCamera;
 }
 
+PlayerCameraType NewPlayer::getActiveCameraType() {
+	return activeCameraType;
+}
+
 void NewPlayer::processWindowInput(GLFWwindow* window, float deltaTime) {
 	glm::vec3 forward = getForwardVector();
 	glm::vec3 backward = -forward;

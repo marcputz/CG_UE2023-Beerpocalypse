@@ -540,6 +540,11 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	textRenderer.renderText(textShader, "ESC - Exit Application", 0.0f, (float)screenHeight - 108.0f, 0.25f, glm::vec3(0.9f, 0.9f, 0.9f), enableWireframe);
 
 	textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+
+	if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
+		// display crosshair
+		textRenderer.renderText(textShader, "+", ((float)screenWidth / 2.0f) - (48.0f * 0.8f / 2.0f), ((float)screenHeight / 2.0f) - (48.0f * 0.8f / 2.0f), 0.8f, glm::vec3(1, 1, 1), enableWireframe);
+	}
 }
 
 /*
@@ -636,21 +641,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	scene->handleMouseButtonInput(window, button, action, mods);
-	
-	// nothing for now
-	/*
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		_dragging = true;
-	} else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-		_dragging = false;
-	} else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-		_strafing = true;
-	} else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-		_strafing = false;
-	}
-	*/
-
-	//std::cout << "Mouse button event" << std::endl;
 }
 
 void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
