@@ -445,6 +445,11 @@ int main(int argc, char** argv) {
 		animationShader.setMat4("projection", projection);
 		animationShader.setMat4("view", view);
 
+		// Fail Condition
+		if (player->getHealth() <= 0) {
+			exit(100);
+		}
+
 		// Update the game
 		if (!isPaused) {
 			scene->handleKeyboardInput(window, deltaTime);
