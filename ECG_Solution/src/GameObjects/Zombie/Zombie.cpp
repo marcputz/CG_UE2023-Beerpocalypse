@@ -16,6 +16,9 @@ Zombie::Zombie(MyShader* shader, PxPhysics* physics) : NewGameObject("Zombie", s
 	// Lock rotation axis
 	PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
 	dyn->setRigidDynamicLockFlags(PxRigidDynamicLockFlag::eLOCK_ANGULAR_X | PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z | PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y);
+
+	highlightColor_ = glm::vec3(0.8f, 0.3, 0.3f);
+	highlightDuration_ = 0.25f;
 }
 
 void Zombie::onBeforeUpdate() {}
@@ -67,9 +70,10 @@ void Zombie::processMouseInput(float offsetX, float offsetY) {
 
 }
 
-void Zombie::onHealthChange(int oldHealth, int newHealth)
-{
+void Zombie::onHealthChange(int oldHealth, int newHealth) {
 	if (newHealth <= 0) {
 		setVisible(false);
 	}
+	this->highlighted_ = true;
+	this->remainingHighlightDuration_ = this->highlightDuration_;
 }

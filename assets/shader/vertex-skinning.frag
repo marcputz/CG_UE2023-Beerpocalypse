@@ -7,9 +7,17 @@ in vec2 TexCoords;
 
 uniform sampler2D texture_diffuse1;
 
-void main()
-{    
-    FragColor = texture(texture_diffuse1, TexCoords);
+uniform int isHighlighted;
+uniform vec3 highlightColor;
+
+void main(){    
+	vec4 result = texture(texture_diffuse1, TexCoords);
+
+	if (isHighlighted == 1) {
+		result.rgb = result.rgb * highlightColor;
+	}
+
+    FragColor = result;
 
 	// for bloom
     float brightness = dot(FragColor.rgb, vec3(0.2126, 0.7152, 0.0722));

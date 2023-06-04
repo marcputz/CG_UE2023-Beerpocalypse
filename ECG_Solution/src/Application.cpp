@@ -282,15 +282,18 @@ int main(int argc, char** argv) {
 	zombieOne.setLocalPosition(glm::vec3(2, 1.5, 2));
 
 	MyAnimation zombieIdleAnim("assets/models/zombie/animations/ZombieIdle.dae", zombieOne.getModel());
-	MyAnimator idleAnimator(&zombieIdleAnim);
-	zombieOne.setAnimator(idleAnimator);
+	MyAnimation zombieAttackAnim("assets/models/zombie/animations/ZombieAttack.dae", zombieOne.getModel());
+	MyAnimation zombieWalkAnim("assets/models/zombie/animations/ZombieWalk.dae", zombieOne.getModel());
+
+	MyAnimator zombieOneAnimator(&zombieIdleAnim);
+	zombieOne.setAnimator(zombieOneAnimator);
 
 	Zombie zombieTwo{ &animationShader, gPhysics };
 	scene->addObject(&zombieTwo, true);
 	zombieTwo.setLocalPosition(glm::vec3(5, 0.5, 8));
-	MyAnimation zombieAttackAnim("assets/models/zombie/animations/ZombieAttack.dae", zombieOne.getModel());
-	MyAnimator attackAnimator(&zombieAttackAnim);
-	zombieTwo.setAnimator(attackAnimator);
+	MyAnimator zombieTwoAnimator(&zombieWalkAnim);
+	zombieTwoAnimator.setAnimationSpeedMultiplier(2.0f);
+	zombieTwo.setAnimator(zombieTwoAnimator);
 	zombieTwo.follow(player);
 
 	// Init lights

@@ -167,6 +167,14 @@ void NewGameObject::update(float deltaTime) {
 		this->animator_->updateAnimation(deltaTime);
 	}
 
+	if (this->highlighted_) {
+		this->remainingHighlightDuration_ -= deltaTime;
+		if (this->remainingHighlightDuration_ <= 0.0f) {
+			this->highlighted_ = false;
+			this->remainingHighlightDuration_ = 0.0f;
+		}
+	}
+
 	// Call custom code
 	onUpdate(deltaTime);
 }
@@ -200,6 +208,9 @@ void NewGameObject::draw() {
 			shader_->setMat4("finalBonesMatrices[" + std::to_string(i) + "]", finalBoneTransforms[i]);
 		}
 	}
+
+	shader_->setInt("isHighlighted", this->highlighted_);
+	shader_->setVec3("highlightColor", this->highlightColor_);
 
 	shader_->setMat4("model", modelMatrix);
 	model_->draw(*shader_);

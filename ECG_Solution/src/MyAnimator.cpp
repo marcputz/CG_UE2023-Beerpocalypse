@@ -3,6 +3,7 @@
 MyAnimator::MyAnimator(MyAnimation* animation) {
 	currentTime_ = 0.0f;
 	currentAnimation_ = animation;
+	animationSpeedMultiplier_ = 1.0f;
 
 	finalBoneMatrices_.reserve(100);
 
@@ -15,7 +16,7 @@ void MyAnimator::updateAnimation(float deltaTime) {
 	deltaTime_ = deltaTime;
 
 	if (currentAnimation_) {
-		currentTime_ += currentAnimation_->getTicksPerSecond() * deltaTime;
+		currentTime_ += currentAnimation_->getTicksPerSecond() * (deltaTime * animationSpeedMultiplier_);
 		currentTime_ = fmod(currentTime_, currentAnimation_->getDuration());
 		calculateBoneTransform(&currentAnimation_->getRootNode(), glm::mat4(1.0f));
 	}
@@ -58,4 +59,12 @@ void MyAnimator::calculateBoneTransform(const AssimpNodeData* node, glm::mat4 pa
 
 std::vector<glm::mat4>& MyAnimator::getFinalBoneMatrices() {
 	return finalBoneMatrices_;
+}
+
+void MyAnimator::setAnimationSpeedMultiplier(float newAnimationSpeedMultiplier) {
+	this->animationSpeedMultiplier_ = newAnimationSpeedMultiplier;
+}
+
+float& MyAnimator::getAnimationSpeedMultiplier() {
+	return this->animationSpeedMultiplier_;
 }

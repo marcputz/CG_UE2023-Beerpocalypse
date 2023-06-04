@@ -46,6 +46,11 @@ protected:
 	PxMaterial* physicsMaterial_;
 	PxShape* physicsShape_;
 
+	bool highlighted_ = false;
+	glm::vec3 highlightColor_ = glm::vec3(1.0f, 1.0f, 1.0f);
+	float highlightDuration_ = 0.0f;
+	float remainingHighlightDuration_ = 0.0f;
+
 public:
 	string name_;
 
