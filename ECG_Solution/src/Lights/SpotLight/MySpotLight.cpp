@@ -20,7 +20,11 @@ void MySpotLight::setUniforms(unsigned int index) {
 
 		if (player_ != nullptr) {
 			position_ = player_->getWorldPosition();
-			direction_ = player_->getForwardVector();
+			if (player_->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
+				direction_ = player_->getActiveCamera()->getDirection();
+			} else {
+				direction_ = player_->getForwardVector();
+			}
 		}
 
 		shader->setVec3(idxString + ".position", position_);
