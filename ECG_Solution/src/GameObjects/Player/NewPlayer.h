@@ -17,11 +17,8 @@ private:
 	const float turningSpeed = 9.0f;
 	const float jumpForce = 5.0f;
 
-	bool isJumping = false;
-	bool onGround = true;
-
 	float facingAngle = 0.0f;
-	//bool onGround = false;
+	bool onGround = true;
 
 	float damageCooldown = 0.0f;
 	const float targetDamageCooldown = 2.0f;
@@ -43,7 +40,8 @@ public:
 	PlayerCamera* getActiveCamera();
 	PlayerCameraType getActiveCameraType();
 	void swapCamera();
-	void jump();
+	bool isOnGround();
+	void setIsOnGround(bool newValue);
 
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);

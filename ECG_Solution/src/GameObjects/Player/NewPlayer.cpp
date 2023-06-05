@@ -4,7 +4,7 @@ extern int score;
 
 NewPlayer::NewPlayer(MyShader* shader, PxPhysics* physics) : NewGameObject("Player", shader, physics, "cube/brick_cube/cube.obj", false) {
 	
-	PxMaterial* material = physics->createMaterial(0.5, 0.5, 0.1);
+	PxMaterial* material = physics->createMaterial(0.5, 0.5, 0.0);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
 	PxShape* collider = physics->createShape(geometry, *material);
 	PxFilterData filterData;
@@ -94,28 +94,12 @@ void NewPlayer::swapCamera() {
 	}
 }
 
-void NewPlayer::jump() {
-	PxRigidBody* body = static_cast<PxRigidBody*>(this->getRigidActor());
-	if (body != nullptr) {
-		std::cout << "yumping" << std::endl;
-		body->addForce(physx::PxVec3(0.0f, this->jumpForce, 0.0f), physx::PxForceMode::eIMPULSE);
-	}
-	return;
+bool NewPlayer::isOnGround() {
+	return this->onGround;
+}
 
-	if (this->isJumping == true) {
-		return;
-	}
-
-	if (this->onGround == true) {
-		PxRigidBody* body = static_cast<PxRigidBody*>(this->getRigidActor());
-		if (body != nullptr) {
-			std::cout << "suxxass" << std::endl;
-			body->addForce(physx::PxVec3(0.0f, this->jumpForce*10.0f, 0.0f));
-			this->onGround = false;
-			this->isJumping = true;
-		}
-	}
-
+void NewPlayer::setIsOnGround(bool newValue) {
+	this->onGround = newValue;
 }
 
 PlayerCamera* NewPlayer::getActiveCamera() {
@@ -160,13 +144,15 @@ void NewPlayer::processWindowInput(GLFWwindow* window, float deltaTime) {
 		setLocalPosition(position);
 	}
 
-	/*if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		// jump
 		if (onGround) {
 			PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
 			dyn->addForce(PxVec3(0, 1, 0) * jumpForce, PxForceMode::eIMPULSE);
+			//dyn->setForceAndTorque(PxVec3(0, 1, 0) * jumpForce, PxVec3(0, 0, 0), PxForceMode::eIMPULSE);
+			this->onGround = false;
 		}
-	}*/
+	}
 }
 
 void NewPlayer::processMouseInput(float offsetX, float offsetY) {

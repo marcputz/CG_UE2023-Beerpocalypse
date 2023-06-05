@@ -185,6 +185,33 @@ void Scene::step(float deltaTime) {
 	// Call update methods
 	for (NewGameObject* go : objects) {
 		go->update(deltaTime);
+
+		NewPlayer* p = dynamic_cast<NewPlayer*>(go);
+		if (p != nullptr) {
+			PxVec3 rayOrigin = asPxVec3(p->getWorldPosition());
+			PxVec3 rayDirection = asPxVec3(glm::vec3(0.0f, -1.0f, 0.0f));
+			const PxU32 hitBufferSize = 32;
+			PxRaycastHit hitBuffer[hitBufferSize];
+			PxRaycastBuffer buf(hitBuffer, hitBufferSize);
+			bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, 1.01f, buf);
+			if (raycastStatus) {
+				// Raycast has hit something
+				for (PxU32 i = 0; i < buf.nbTouches; i++) {
+					PxRaycastHit currentHit = buf.touches[i];
+					NewGameObject* object = static_cast<NewGameObject*>(currentHit.actor->userData);
+					if (object != nullptr) {
+						// Raycast hit game object
+						// Skip player as it is always hit
+						NewPlayer* player = dynamic_cast<NewPlayer*>(object);
+						if (player == nullptr) {
+							//std::cout << "Hit '" << object->name_ << "'" << std::endl;
+
+							p->setIsOnGround(true);
+						}
+					}
+				}
+			}
+		}
 	}
 }
 

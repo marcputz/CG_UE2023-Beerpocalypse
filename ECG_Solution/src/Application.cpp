@@ -254,23 +254,30 @@ int main(int argc, char** argv) {
 	scene->addObject(&testCubeThree);
 
 	// Init wall(s)
-	StaticCube wallOne{ &defaultShader, gPhysics };
-	wallOne.setLocalPosition(glm::vec3(-10.0f, 1.5f, 0.0f));
-	//wallOne.setScale(glm::vec3(1.0f));
-	StaticCube wallTwo{ &defaultShader, gPhysics };
-	wallTwo.setLocalPosition(glm::vec3(10.0f, 1.5f, 0.0f));
-	//wallTwo.setScale(glm::vec3(1.0f));
-	StaticCube wallThree{ &defaultShader, gPhysics };
-	wallThree.setLocalPosition(glm::vec3(0.0f, 1.5f, -10.0f));
-	//wallThree.setScale(glm::vec3(1.0f));
-	StaticCube wallFour{ &defaultShader, gPhysics };
-	wallFour.setLocalPosition(glm::vec3(0.0f, 1.5f, 10.0f));
-	//wallFour.setScale(glm::vec3(1.0f));
+	StaticCube wallRightOfSpawn{ &defaultShader, gPhysics };
+	wallRightOfSpawn.setLocalPosition(glm::vec3(-10.0f, 1.5f, 0.0f));
+	wallRightOfSpawn.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
+	wallRightOfSpawn.getModel()->applyTilingScale(10.0f, 2.0f);
 
-	scene->addObject(&wallOne);
-	scene->addObject(&wallTwo);
-	scene->addObject(&wallThree);
-	scene->addObject(&wallFour);
+	StaticCube wallLeftOfSpawn{ &defaultShader, gPhysics };
+	wallLeftOfSpawn.setLocalPosition(glm::vec3(10.0f, 1.5f, 0.0f));
+	wallLeftOfSpawn.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
+	wallLeftOfSpawn.getModel()->applyTilingScale(10.0f, 2.0f);
+
+	StaticCube wallBehindOfSpawn{ &defaultShader, gPhysics };
+	wallBehindOfSpawn.setLocalPosition(glm::vec3(0.0f, 1.5f, -10.0f));
+	wallBehindOfSpawn.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
+	wallBehindOfSpawn.getModel()->applyTilingScale(10.0f, 2.0f);
+
+	StaticCube wallFrontOfSpawn{ &defaultShader, gPhysics };
+	wallFrontOfSpawn.setLocalPosition(glm::vec3(0.0f, 1.5f, 10.0f));
+	wallFrontOfSpawn.setScale(glm::vec3(1.0f, 2.0f, 1.0f));
+	wallFrontOfSpawn.getModel()->applyTilingScale(1.0f, 2.0f);
+
+	scene->addObject(&wallRightOfSpawn);
+	scene->addObject(&wallLeftOfSpawn);
+	scene->addObject(&wallBehindOfSpawn);
+	scene->addObject(&wallFrontOfSpawn);
 
 	// Init Ground
 	Ground ground{ &defaultShader, gPhysics };
@@ -607,6 +614,7 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		textRenderer.renderText(textShader, "[F2] Backface Culling: " + std::string(enableBackfaceCulling ? "ON" : "OFF"), 14.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F3] Close Debug HUD", 14.0f, (float)screenHeight - 82.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no"), 14.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 	}
 }
 
@@ -699,10 +707,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			// swap camera
 			player->swapCamera();
 			break;
-		case GLFW_KEY_SPACE:
-			std::cout << "Press Spacebar" << std::endl;
-			player->jump();
-			break;
 		case GLFW_KEY_R:
 			// reload
 			bullets = maxBullets;
@@ -764,10 +768,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 
 	//std::cout << "Viewport event" << std::endl;
-}
-
-void error_callback(int errorCode, const char* description) {
-	std::cout << "[GLFW Error " << errorCode << "]: " << description << std::endl;
 }
 
 void readINIFile() {
@@ -917,6 +917,10 @@ void static destroyPhysX() {
 	transport->release();
 
 	gFoundation->release();
+}
+
+void error_callback(int errorCode, const char* description) {
+	std::cout << "[GLFW Error " << errorCode << "]: " << description << std::endl;
 }
 
 static void APIENTRY DebugCallbackDefault(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam) {
