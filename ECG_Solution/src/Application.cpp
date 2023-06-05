@@ -317,7 +317,7 @@ int main(int argc, char** argv) {
 	Beer beerFive{ &defaultShader, gPhysics };
 	beerFive.setLocalPosition(glm::vec3(-5, 1.0f, 10));
 	scene->addObject(&beerFive);
-
+	
 	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
 	shaders["Animation Shader"] = &animationShader;
 
@@ -542,7 +542,7 @@ int main(int argc, char** argv) {
 		}*/
 
 		renderHUD(textRenderer, textShader);
-		guiRenderer.renderGUI(guiShader, score, maxScore);
+		guiRenderer.renderGUI(guiShader, score, maxScore, bullets, maxBullets, player->getHealth(), player->maxHealth);
 
 		/*
 		// 2. blur bright fragments with two-pass Gaussian Blur
@@ -598,12 +598,12 @@ int main(int argc, char** argv) {
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	if (!isPaused) {
-		// Scoreboard
-		textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		// Health
-		textRenderer.renderText(textShader, "Health: " + std::to_string(player->getHealth()) + "/" + std::to_string(player->maxHealth), 14.0f, 38.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
-		// Ammo
-		textRenderer.renderText(textShader, "Ammo: " + std::to_string(bullets) + "/" + std::to_string(maxBullets), 14.0f, 62.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
+		// Scoreboard - replaced by GUI beers
+		//textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		// Health - replaced by GUI health
+		//textRenderer.renderText(textShader, "Health: " + std::to_string(player->getHealth()) + "/" + std::to_string(player->maxHealth), 14.0f, 38.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
+		// Ammo - replaced by GUI bullets
+		//textRenderer.renderText(textShader, "Ammo: " + std::to_string(bullets) + "/" + std::to_string(maxBullets), 14.0f, 62.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
 
 
 		if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
@@ -759,7 +759,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	scene->handleMouseButtonInput(window, button, action, mods);
+	if (!isPaused) {
+		scene->handleMouseButtonInput(window, button, action, mods);
+	}
 }
 
 void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {

@@ -7,6 +7,10 @@ class Beer : public NewGameObject {
 private:
 	bool animateRotation = true;
 
+	float animationTime = 0.0f;
+	float rotationAngle = 0.0f;
+	const float totalAnimationTime = 4.0f;
+
 private:
 	void onBeforeUpdate() override;
 	void onUpdate(float deltaTime) override;

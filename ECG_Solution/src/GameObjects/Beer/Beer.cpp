@@ -29,9 +29,6 @@ void Beer::onBeforeUpdate()
 void Beer::onUpdate(float deltaTime)
 {
 	if (animateRotation) {
-		static float animationTime = 0.0f;
-		static float rotationAngle = 0.0f;
-		static const float totalAnimationTime = 4.0f;
 
 		// first correct the rotation of the model to make the bottle stand up
 		glm::quat modelCorrection = glm::quat(glm::vec3(glm::radians(-90.0f), 0.0f, 0.0f));
