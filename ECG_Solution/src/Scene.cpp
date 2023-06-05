@@ -203,7 +203,9 @@ void Scene::step(float deltaTime) {
 						// Raycast hit game object
 						// Skip player as it is always hit
 						NewPlayer* player = dynamic_cast<NewPlayer*>(object);
-						if (player == nullptr) {
+						Zombie* zombie = dynamic_cast<Zombie*>(object);
+						Beer* beer = dynamic_cast<Beer*>(object);
+						if (player == nullptr && zombie == nullptr && beer == nullptr) {
 							//std::cout << "Hit '" << object->name_ << "'" << std::endl;
 
 							p->setIsOnGround(true);

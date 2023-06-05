@@ -9,6 +9,7 @@
 #include "stb/stb_image.h"
 #include "MyModel.h"
 #include "MyTextRenderer.h"
+#include "MyGUIRenderer.h"
 #include "MyTransform.h"
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
@@ -106,6 +107,7 @@ std::map<string, MyShader*> shaders;
 //MyShader bloomBlurShader;
 //MyShader bloomCombineShader;
 MyShader textShader;
+MyShader guiShader;
 MyShader defaultShader;
 MyShader animationShader;
 MyShader particleShader;
@@ -234,12 +236,20 @@ int main(int argc, char** argv) {
 	textShader.use();
 	textShader.setMat4("projection", textProjection);
 
+	// Prepare GUI Renderer and shader
+	MyGUIRenderer guiRenderer;
+	guiShader = MyAssetManager::loadShader("gui.vert", "gui.frag", "guiShader");
+	guiShader.use();
+	guiShader.setMat4("projection", textProjection);
+
+
 	// Setup Scene
 	scene = new Scene(gPhysics);
 
 	// Init Player
 	player = new NewPlayer{ &defaultShader, gPhysics };
 	player->setLocalPosition(glm::vec3(0.0f, 0.5f, -2.0f));
+	player->setRespawnPoint(glm::vec3(0.0f, 0.5f, -2.0f));
 	player->setScale(glm::vec3(0.5, 1, 0.5));
 	scene->addObject(player);
 
@@ -254,27 +264,28 @@ int main(int argc, char** argv) {
 	scene->addObject(&testCubeThree);
 
 	// Init wall(s)
+	/*
 	StaticCube wallRightOfSpawn{ &defaultShader, gPhysics };
 	wallRightOfSpawn.setLocalPosition(glm::vec3(-10.0f, 1.5f, 0.0f));
-	wallRightOfSpawn.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
-	wallRightOfSpawn.getModel()->applyTilingScale(10.0f, 2.0f);
-
+	wallRightOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
+	wallRightOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
+	*/
 	StaticCube wallLeftOfSpawn{ &defaultShader, gPhysics };
 	wallLeftOfSpawn.setLocalPosition(glm::vec3(10.0f, 1.5f, 0.0f));
-	wallLeftOfSpawn.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
-	wallLeftOfSpawn.getModel()->applyTilingScale(10.0f, 2.0f);
+	wallLeftOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
+	wallLeftOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
 
 	StaticCube wallBehindOfSpawn{ &defaultShader, gPhysics };
 	wallBehindOfSpawn.setLocalPosition(glm::vec3(0.0f, 1.5f, -10.0f));
-	wallBehindOfSpawn.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
-	wallBehindOfSpawn.getModel()->applyTilingScale(10.0f, 2.0f);
+	wallBehindOfSpawn.setScale(glm::vec3(10.0f, 3.0f, 1.0f));
+	wallBehindOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
 
 	StaticCube wallFrontOfSpawn{ &defaultShader, gPhysics };
 	wallFrontOfSpawn.setLocalPosition(glm::vec3(0.0f, 1.5f, 10.0f));
-	wallFrontOfSpawn.setScale(glm::vec3(1.0f, 2.0f, 1.0f));
-	wallFrontOfSpawn.getModel()->applyTilingScale(1.0f, 2.0f);
+	wallFrontOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 1.0f));
+	wallFrontOfSpawn.getModel()->applyTilingScale(1.0f, 3.0f);
 
-	scene->addObject(&wallRightOfSpawn);
+	//scene->addObject(&wallRightOfSpawn);
 	scene->addObject(&wallLeftOfSpawn);
 	scene->addObject(&wallBehindOfSpawn);
 	scene->addObject(&wallFrontOfSpawn);
@@ -282,14 +293,30 @@ int main(int argc, char** argv) {
 	// Init Ground
 	Ground ground{ &defaultShader, gPhysics };
 	ground.setLocalPosition(glm::vec3(0, -0.5f, 0));
-	ground.setScale(glm::vec3(100, 1, 100));
-	ground.getModel()->applyTilingScale(100.0f, 100.0f);
+	ground.setScale(glm::vec3(20, 1, 20));
+	ground.getModel()->applyTilingScale(20.0f, 20.0f);
 	scene->addObject(&ground);
 
 	// Init Beers
 	Beer beerOne{ &defaultShader, gPhysics };
 	beerOne.setLocalPosition(glm::vec3(-5, 1.0f, 2));
 	scene->addObject(&beerOne);
+	
+	Beer beerTwo{ &defaultShader, gPhysics };
+	beerTwo.setLocalPosition(glm::vec3(-5, 1.0f, 4));
+	scene->addObject(&beerTwo);
+
+	Beer beerThree{ &defaultShader, gPhysics };
+	beerThree.setLocalPosition(glm::vec3(-5, 1.0f, 6));
+	scene->addObject(&beerThree);
+
+	Beer beerFour{ &defaultShader, gPhysics };
+	beerFour.setLocalPosition(glm::vec3(-5, 1.0f, 8));
+	scene->addObject(&beerFour);
+
+	Beer beerFive{ &defaultShader, gPhysics };
+	beerFive.setLocalPosition(glm::vec3(-5, 1.0f, 10));
+	scene->addObject(&beerFive);
 
 	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
 	shaders["Animation Shader"] = &animationShader;
@@ -323,7 +350,7 @@ int main(int argc, char** argv) {
 	zombieTwo.follow(player);
 
 	// Init lights
-	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
+	MyDirectionalLight dirLight(glm::vec3(0.01f, 0.01f, 0.01f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
 		true, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
 
@@ -515,6 +542,7 @@ int main(int argc, char** argv) {
 		}*/
 
 		renderHUD(textRenderer, textShader);
+		guiRenderer.renderGUI(guiShader, score, maxScore);
 
 		/*
 		// 2. blur bright fragments with two-pass Gaussian Blur

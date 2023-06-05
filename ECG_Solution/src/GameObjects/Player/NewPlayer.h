@@ -20,6 +20,8 @@ private:
 	float facingAngle = 0.0f;
 	bool onGround = true;
 
+	glm::vec3 respawnPoint_;
+
 	float damageCooldown = 0.0f;
 	const float targetDamageCooldown = 2.0f;
 
@@ -48,5 +50,7 @@ public:
 
 	// Inherited via NewGameObject
 	virtual void onHealthChange(int oldHealth, int newHealth) override;
+
+	void setRespawnPoint(glm::vec3& newRespawnPoint);
 };
 

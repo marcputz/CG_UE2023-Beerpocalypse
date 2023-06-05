@@ -25,6 +25,7 @@
     <ClCompile Include="src\MyAssetManager.cpp" />
     <ClCompile Include="src\MyBone.cpp" />
     <ClCompile Include="src\MyFPSCamera.cpp" />
+    <ClCompile Include="src\MyGUIRenderer.cpp" />
     <ClCompile Include="src\MyMesh.cpp" />
     <ClCompile Include="src\MyModel.cpp" />
     <ClCompile Include="src\MyParticleGenerator.cpp" />
@@ -62,6 +63,7 @@
     <ClCompile Include="src\GameObjects\GameObject.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClInclude Include="src\MyGeometry.h" />
+    <ClInclude Include="src\MyGUIRenderer.h" />
     <ClInclude Include="src\MyMesh.h" />
     <ClInclude Include="src\MyModel.h" />
     <ClInclude Include="src\MyParticleGenerator.h" />

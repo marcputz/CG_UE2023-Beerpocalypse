@@ -38,6 +38,11 @@ void NewPlayer::onUpdate(float deltaTime) {
 		damageCooldown -= deltaTime;
 	}
 
+	glm::vec3 pos = this->getWorldPosition();
+	if (pos.y < -5.0) {
+		this->setWorldPosition(this->respawnPoint_);
+	}
+
 	// check if player is on the ground
 	/*PxVec3 groundRayDirection = PxVec3(0, -1, 0);
 	PxVec3 groundRayOrigin = asPxVec3(getWorldPosition());
@@ -175,4 +180,8 @@ void NewPlayer::processMouseInput(float offsetX, float offsetY) {
 
 void NewPlayer::onHealthChange(int oldHealth, int newHealth)
 {
+}
+
+void NewPlayer::setRespawnPoint(glm::vec3& newRespawnPoint) {
+	this->respawnPoint_ = newRespawnPoint;
 }
