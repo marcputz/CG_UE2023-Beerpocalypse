@@ -64,6 +64,7 @@ void NewPlayer::onCollision(NewGameObject* otherObject) {
 	if (beer != nullptr) {
 		// Collided with beer
 		if (beer->isVisible()) {
+			this->setHealth(this->getHealth() + 20);
 			score++;
 			beer->setVisible(false);
 		}
@@ -91,6 +92,30 @@ void NewPlayer::swapCamera() {
 		activeCameraType = PlayerCameraType::CAMERA_FIRST_PERSON;
 		setVisible(false);
 	}
+}
+
+void NewPlayer::jump() {
+	PxRigidBody* body = static_cast<PxRigidBody*>(this->getRigidActor());
+	if (body != nullptr) {
+		std::cout << "yumping" << std::endl;
+		body->addForce(physx::PxVec3(0.0f, this->jumpForce, 0.0f), physx::PxForceMode::eIMPULSE);
+	}
+	return;
+
+	if (this->isJumping == true) {
+		return;
+	}
+
+	if (this->onGround == true) {
+		PxRigidBody* body = static_cast<PxRigidBody*>(this->getRigidActor());
+		if (body != nullptr) {
+			std::cout << "suxxass" << std::endl;
+			body->addForce(physx::PxVec3(0.0f, this->jumpForce*10.0f, 0.0f));
+			this->onGround = false;
+			this->isJumping = true;
+		}
+	}
+
 }
 
 PlayerCamera* NewPlayer::getActiveCamera() {

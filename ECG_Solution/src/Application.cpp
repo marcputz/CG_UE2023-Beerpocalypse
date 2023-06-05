@@ -253,6 +253,25 @@ int main(int argc, char** argv) {
 	testCubeThree.setScale(glm::vec3(0.5, 0.5, 0.5));
 	scene->addObject(&testCubeThree);
 
+	// Init wall(s)
+	StaticCube wallOne{ &defaultShader, gPhysics };
+	wallOne.setLocalPosition(glm::vec3(-10.0f, 1.5f, 0.0f));
+	//wallOne.setScale(glm::vec3(1.0f));
+	StaticCube wallTwo{ &defaultShader, gPhysics };
+	wallTwo.setLocalPosition(glm::vec3(10.0f, 1.5f, 0.0f));
+	//wallTwo.setScale(glm::vec3(1.0f));
+	StaticCube wallThree{ &defaultShader, gPhysics };
+	wallThree.setLocalPosition(glm::vec3(0.0f, 1.5f, -10.0f));
+	//wallThree.setScale(glm::vec3(1.0f));
+	StaticCube wallFour{ &defaultShader, gPhysics };
+	wallFour.setLocalPosition(glm::vec3(0.0f, 1.5f, 10.0f));
+	//wallFour.setScale(glm::vec3(1.0f));
+
+	scene->addObject(&wallOne);
+	scene->addObject(&wallTwo);
+	scene->addObject(&wallThree);
+	scene->addObject(&wallFour);
+
 	// Init Ground
 	Ground ground{ &defaultShader, gPhysics };
 	ground.setLocalPosition(glm::vec3(0, -0.5f, 0));
@@ -679,8 +698,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		case GLFW_KEY_C:
 			// swap camera
 			player->swapCamera();
+			break;
 		case GLFW_KEY_SPACE:
 			std::cout << "Press Spacebar" << std::endl;
+			player->jump();
 			break;
 		case GLFW_KEY_R:
 			// reload

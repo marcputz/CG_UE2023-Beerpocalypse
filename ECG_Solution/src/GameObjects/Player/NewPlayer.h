@@ -15,7 +15,10 @@ class NewPlayer : public NewGameObject {
 private:
 	const float movementSpeed = 5.0f;
 	const float turningSpeed = 9.0f;
-	const float jumpForce = 0.8f;
+	const float jumpForce = 5.0f;
+
+	bool isJumping = false;
+	bool onGround = true;
 
 	float facingAngle = 0.0f;
 	//bool onGround = false;
@@ -40,6 +43,7 @@ public:
 	PlayerCamera* getActiveCamera();
 	PlayerCameraType getActiveCameraType();
 	void swapCamera();
+	void jump();
 
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);
