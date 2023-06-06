@@ -281,15 +281,21 @@ int main(int argc, char** argv) {
 	wallBehindOfSpawn.setScale(glm::vec3(10.0f, 3.0f, 1.0f));
 	wallBehindOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
 
-	StaticCube wallFrontOfSpawn{ &defaultShader, gPhysics };
-	wallFrontOfSpawn.setLocalPosition(glm::vec3(0.0f, 1.5f, 10.0f));
-	wallFrontOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 1.0f));
-	wallFrontOfSpawn.getModel()->applyTilingScale(1.0f, 3.0f);
+	StaticCube wallFrontRightOfSpawn{ &defaultShader, gPhysics };
+	wallFrontRightOfSpawn.setLocalPosition(glm::vec3(-6.0f, 1.5f, 10.0f));
+	wallFrontRightOfSpawn.setScale(glm::vec3(4.0f, 3.0f, 1.0f));
+	wallFrontRightOfSpawn.getModel()->applyTilingScale(4.0f, 3.0f);
+
+	StaticCube wallFrontLeftOfSpawn{ &defaultShader, gPhysics };
+	wallFrontLeftOfSpawn.setLocalPosition(glm::vec3(6.0f, 1.5f, 10.0f));
+	wallFrontLeftOfSpawn.setScale(glm::vec3(4.0f, 3.0f, 1.0f));
+	wallFrontLeftOfSpawn.getModel()->applyTilingScale(4.0f, 3.0f);
 
 	scene->addObject(&wallRightOfSpawn);
 	scene->addObject(&wallLeftOfSpawn);
 	scene->addObject(&wallBehindOfSpawn);
-	scene->addObject(&wallFrontOfSpawn);
+	scene->addObject(&wallFrontRightOfSpawn);
+	scene->addObject(&wallFrontLeftOfSpawn);
 
 	// Init Ground
 	Ground ground{ &defaultShader, gPhysics };
@@ -351,27 +357,27 @@ int main(int argc, char** argv) {
 	zombieTwo.follow(player);
 
 	// Init lights
-	MyDirectionalLight dirLight(glm::vec3(0.01f, 0.01f, 0.01f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
+	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
 		true, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
 
 	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, glm::vec3(0.7f, 0.2f, 2.0f),
+		false, glm::vec3(0.7f, 0.2f, 2.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
 
 	MyPointLight pointLightTwo(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, glm::vec3(2.3f, -3.3f, -4.0f),
+		false, glm::vec3(2.3f, -3.3f, -4.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightTwo.addLightToShader(defaultShader);
 
 	MyPointLight pointLightThree(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, glm::vec3(-4.0f, 2.0f, -12.0f),
+		false, glm::vec3(-4.0f, 2.0f, -12.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightThree.addLightToShader(defaultShader);
 
 	MyPointLight pointLightFour(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, glm::vec3(0.0f, 0.0f, -3.0f),
+		false, glm::vec3(0.0f, 0.0f, -3.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightFour.addLightToShader(defaultShader);
 
@@ -382,7 +388,7 @@ int main(int argc, char** argv) {
 	playerFlashLight->addLightToShader(defaultShader);
 
 	MySpotLight spotLightOne(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(-0.3f, 0.0f, -1.0f),
+		false, glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(-0.3f, 0.0f, -1.0f),
 		1.0f, 0.09f, 0.032f,
 		12.5f, 15.0f, nullptr);
 	spotLightOne.addLightToShader(defaultShader);

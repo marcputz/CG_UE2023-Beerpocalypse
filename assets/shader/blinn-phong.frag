@@ -38,10 +38,17 @@ struct SpotLight {
 	float cutOff;
 	float outerCutOff;
 };
-
+/*
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex);
 vec3 calcPointLight(PointLight light, vec3 pos, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTex, vec3 specularTex);
 vec3 calcSpotLight(SpotLight light, vec3 pos, vec3 direction, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTex, vec3 specularTex);
+*/
+vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex);
+vec3 calcPointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex, vec3 fragPos);
+vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex, vec3 fragPos);
+vec3 calcDirLightNormalMapping();
+vec3 calcPointLightNormalMapping();
+vec3 calcSpotLightNormalMapping();
 
 in VS_OUT {
     vec3 FragPos;
@@ -80,18 +87,18 @@ void main() {
 		vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
 
 		if (dirLight.enabled == 1) {
-			result += calcDirLight(dirLight, norm, viewDir, diffuseTex, specularTex);
+			//result += calcDirLight(dirLight, norm, viewDir, diffuseTex, specularTex);
 		}
 
 		for (int i = 0; i < NR_POINT_LIGHTS; i++) {
 			if (pointLights[i].enabled == 1) {
-				result += calcPointLight(pointLights[i], fs_in.TangentPointLightsPos[i], norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
+				//result += calcPointLight(pointLights[i], fs_in.TangentPointLightsPos[i], norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
 			}
 		}
 
 		for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
 			if (spotLights[i].enabled == 1) {
-				result += calcSpotLight(spotLights[i], fs_in.TangentSpotLightsPos[i], fs_in.TangentSpotLightsDir[i], norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
+				//result += calcSpotLight(spotLights[i], fs_in.TangentSpotLightsPos[i], fs_in.TangentSpotLightsDir[i], norm, fs_in.TangentFragPos, viewDir, diffuseTex, specularTex);
 			}
 		}
 
@@ -107,13 +114,13 @@ void main() {
 
 		for (int i = 0; i < NR_POINT_LIGHTS; i++) {
 			if (pointLights[i].enabled == 1) {
-				result += calcPointLight(pointLights[i], pointLights[i].position, norm, fs_in.FragPos, viewDir, diffuseTex, specularTex);
+				result += calcPointLight(pointLights[i], norm, viewDir, diffuseTex, specularTex, fs_in.FragPos);
 			}
 		}
 
 		for (int i = 0; i < NR_SPOT_LIGHTS; i++) {
 			if (spotLights[i].enabled == 1) {
-				result += calcSpotLight(spotLights[i], spotLights[i].position, spotLights[i].direction, norm, fs_in.FragPos, viewDir, diffuseTex, specularTex);
+				result += calcSpotLight(spotLights[i], norm, viewDir, diffuseTex, specularTex, fs_in.FragPos);
 			}
 		}
 
@@ -130,6 +137,98 @@ void main() {
 	}
 }
 
+vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex) {
+	vec3 result = vec3(0.0);
+
+	// parameters for non-ambient lighting calculations
+	vec3 lightDir = normalize(-light.direction);
+	// diffuse
+	float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
+	// specular - phong
+	//vec3 reflectDir = reflect(-lightDir, normal);
+	//float specularCoefficient = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+	// specular - blinn-phong
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+
+	vec3 ambientResult = light.ambient * diffuseTex;
+	vec3 diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
+	vec3 specularResult = light.specular * specularCoefficient * specularTex;
+
+	result = (ambientResult + diffuseResult + specularResult);
+
+	return result;
+}
+
+vec3 calcPointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex, vec3 fragPos) {
+	vec3 result = vec3(0.0);
+
+	// parameters for non-ambient lighting calculations
+	vec3 lightDir = normalize(light.position - fragPos);
+	// diffuse
+	float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
+	// specular - phong
+	//vec3 reflectDir = reflect(-lightDir, normal);
+	//float specularCoefficient = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+	// specular - blinn-phong
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+	// attenuation (pointLight drops off over distance)
+	float distance = length(light.position - fragPos);
+	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+
+	vec3 ambientResult = light.ambient * diffuseTex;
+	vec3 diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
+	vec3 specularResult = light.specular * specularCoefficient * specularTex;
+
+	// adjust lights based on the attenuation
+	ambientResult *= attenuation;
+	diffuseResult *= attenuation;
+	specularResult *= attenuation;
+
+	result = (ambientResult + diffuseResult + specularResult); 
+
+	return result;
+}
+
+vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex, vec3 fragPos) {
+	vec3 result = vec3(0.0);
+
+	// parameters for non-ambient lighting calculations
+	vec3 lightDir = normalize(light.position - fragPos);
+	// diffuse
+	float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
+	// specular - phong
+	//vec3 reflectDir = reflect(-lightDir, normal);
+	//float specularCoefficient = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+	// specular - blinn-phong
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+	// attenuation
+	float distance = length(light.position - fragPos);
+	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+	// intensity of spotlight, with soft edges
+	float theta = dot(lightDir, normalize(-light.direction));
+	float epsilon = light.cutOff - light.outerCutOff;
+	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+
+	vec3 ambientResult = light.ambient * diffuseTex;
+	vec3 diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
+	vec3 specularResult = light.specular * specularCoefficient * specularTex;
+
+	// adjust lights based on the attenuation and intensity
+	float attenuationTimesIntensity = attenuation * intensity;
+
+	ambientResult *= attenuationTimesIntensity;
+	diffuseResult *= attenuationTimesIntensity;
+	specularResult *= attenuationTimesIntensity;
+
+	result = (ambientResult + diffuseResult + specularResult); 
+
+	return result;
+}
+
+/*
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex) {
 	// ambient
 	vec3 ambient = light.ambient * diffuseTex;
@@ -214,6 +313,7 @@ vec3 calcSpotLight(SpotLight light, vec3 pos, vec3 direction, vec3 normal, vec3 
 
 	return (ambient + diffuse + specular);
 }
+*/
 
 /*
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir) {
