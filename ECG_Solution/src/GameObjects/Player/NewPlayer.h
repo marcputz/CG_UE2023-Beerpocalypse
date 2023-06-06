@@ -48,6 +48,8 @@ public:
 	void processWindowInput(GLFWwindow* window, float deltaTime);
 	void processMouseInput(float offsetX, float offsetY);
 
+	void processMouseScrolling(double yOffset);
+
 	// Inherited via NewGameObject
 	virtual void onHealthChange(int oldHealth, int newHealth) override;
 

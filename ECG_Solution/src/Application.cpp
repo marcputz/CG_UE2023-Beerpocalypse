@@ -129,6 +129,7 @@ bool enableWireframe = false;
 bool enableBackfaceCulling = true;
 bool enableDebugHUD = true;
 bool enableNormalMapping = false;
+bool enableGUIHUD = true;
 //bool enableBloom = true;
 
 // Frame Processing
@@ -264,12 +265,12 @@ int main(int argc, char** argv) {
 	scene->addObject(&testCubeThree);
 
 	// Init wall(s)
-	/*
+	
 	StaticCube wallRightOfSpawn{ &defaultShader, gPhysics };
 	wallRightOfSpawn.setLocalPosition(glm::vec3(-10.0f, 1.5f, 0.0f));
 	wallRightOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
 	wallRightOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
-	*/
+	
 	StaticCube wallLeftOfSpawn{ &defaultShader, gPhysics };
 	wallLeftOfSpawn.setLocalPosition(glm::vec3(10.0f, 1.5f, 0.0f));
 	wallLeftOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
@@ -285,7 +286,7 @@ int main(int argc, char** argv) {
 	wallFrontOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 1.0f));
 	wallFrontOfSpawn.getModel()->applyTilingScale(1.0f, 3.0f);
 
-	//scene->addObject(&wallRightOfSpawn);
+	scene->addObject(&wallRightOfSpawn);
 	scene->addObject(&wallLeftOfSpawn);
 	scene->addObject(&wallBehindOfSpawn);
 	scene->addObject(&wallFrontOfSpawn);
@@ -293,8 +294,8 @@ int main(int argc, char** argv) {
 	// Init Ground
 	Ground ground{ &defaultShader, gPhysics };
 	ground.setLocalPosition(glm::vec3(0, -0.5f, 0));
-	ground.setScale(glm::vec3(20, 1, 20));
-	ground.getModel()->applyTilingScale(20.0f, 20.0f);
+	ground.setScale(glm::vec3(15, 1, 15));
+	ground.getModel()->applyTilingScale(15.0f, 15.0f);
 	scene->addObject(&ground);
 
 	// Init Beers
@@ -542,7 +543,9 @@ int main(int argc, char** argv) {
 		}*/
 
 		renderHUD(textRenderer, textShader);
-		guiRenderer.renderGUI(guiShader, score, maxScore, bullets, maxBullets, player->getHealth(), player->maxHealth);
+		if (enableGUIHUD) {
+			guiRenderer.renderGUI(guiShader, score, maxScore, bullets, maxBullets, player->getHealth(), player->maxHealth);
+		}
 
 		/*
 		// 2. blur bright fragments with two-pass Gaussian Blur
@@ -640,9 +643,10 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		}
 		textRenderer.renderText(textShader, "[F1] Wireframe Mode: " + std::string(enableWireframe ? "ON" : "OFF"), 14.0f, (float)screenHeight - 34.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F2] Backface Culling: " + std::string(enableBackfaceCulling ? "ON" : "OFF"), 14.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F3] Close Debug HUD", 14.0f, (float)screenHeight - 82.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no"), 14.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F3] Game-HUD: " + std::string(enableGUIHUD ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 76.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F5] Close Debug HUD", 14.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no"), 14.0f, (float)screenHeight - 110.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 	}
 }
 
@@ -708,12 +712,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		}
 		break;
 	case GLFW_KEY_F3:
-		// toggle hud
-		enableDebugHUD = !enableDebugHUD;
+		// toggle GUI HUD
+		enableGUIHUD = !enableGUIHUD;
 		break;
 	case GLFW_KEY_F4:
 		// toggle normal mapping
 		enableNormalMapping = !enableNormalMapping;
+		break;
+	case GLFW_KEY_F5:
+		// toggle debug text hud
+		enableDebugHUD = !enableDebugHUD;
 		break;
 	case GLFW_KEY_F8:
 		// toggle view-frustum culling
@@ -790,6 +798,7 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 	//camera.handleMouseScrolling(yoffset);
+	player->processMouseScrolling(yoffset);
 
 	//std::cout << "Mouse scroll event" << std::endl;
 }

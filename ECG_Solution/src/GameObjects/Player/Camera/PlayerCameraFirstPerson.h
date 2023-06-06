@@ -4,7 +4,7 @@
 
 class PlayerCameraFirstPerson : public PlayerCamera {
 private:
-	const float yAngleChangeSpeed = 1.0f;
+	const float yAngleChangeSpeed = 1.5f;
 	float yAngle = 0.0f;
 
 public:

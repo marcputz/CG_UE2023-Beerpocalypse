@@ -178,6 +178,19 @@ void NewPlayer::processMouseInput(float offsetX, float offsetY) {
 	setLocalRotation(newRotation);
 }
 
+void NewPlayer::processMouseScrolling(double yOffset) {
+	float fov = this->firstPersonCamera->getFov();
+	fov -= (float)yOffset;
+	if (fov < 20.0f) {
+		fov = 20.0f;
+	}
+	if (fov > 90.0f) {
+		fov = 90.0f;
+	}
+	this->firstPersonCamera->setFov(fov);
+	this->thirdPersonCamera->setFov(fov);
+}
+
 void NewPlayer::onHealthChange(int oldHealth, int newHealth)
 {
 }

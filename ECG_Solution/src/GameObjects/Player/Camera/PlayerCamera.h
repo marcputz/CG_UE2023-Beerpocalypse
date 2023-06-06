@@ -18,6 +18,7 @@ public:
 	glm::mat4 getProjectionMatrix();
 
 	float getFov() { return fov; }
+	void setFov(float newFov);
 
 	virtual glm::vec3 getPosition() = 0;
 	virtual glm::vec3 getDirection() = 0;
