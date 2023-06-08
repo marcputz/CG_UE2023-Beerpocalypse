@@ -244,7 +244,6 @@ int main(int argc, char** argv) {
 	guiShader.use();
 	guiShader.setMat4("projection", textProjection);
 
-
 	// Setup Scene
 	scene = new Scene(gPhysics);
 
