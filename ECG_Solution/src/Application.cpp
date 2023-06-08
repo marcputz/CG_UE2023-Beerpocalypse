@@ -129,6 +129,7 @@ bool enableWireframe = false;
 bool enableBackfaceCulling = true;
 bool enableDebugHUD = true;
 bool enableNormalMapping = false;
+bool enableShowNormalMappingNormals = false;
 bool enableGUIHUD = true;
 //bool enableBloom = true;
 
@@ -360,38 +361,45 @@ int main(int argc, char** argv) {
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
 		true, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
+	dirLight.addLightToShader(animationShader);
 
 	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
 		false, glm::vec3(0.7f, 0.2f, 2.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
+	pointLightOne.addLightToShader(animationShader);
 
 	MyPointLight pointLightTwo(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
 		false, glm::vec3(2.3f, -3.3f, -4.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightTwo.addLightToShader(defaultShader);
+	pointLightTwo.addLightToShader(animationShader);
 
 	MyPointLight pointLightThree(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
 		false, glm::vec3(-4.0f, 2.0f, -12.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightThree.addLightToShader(defaultShader);
+	pointLightThree.addLightToShader(animationShader);
 
 	MyPointLight pointLightFour(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
 		false, glm::vec3(0.0f, 0.0f, -3.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightFour.addLightToShader(defaultShader);
+	pointLightFour.addLightToShader(animationShader);
 
 	playerFlashLight = new MySpotLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
 		12.5f, 15.0f, player);
 	playerFlashLight->addLightToShader(defaultShader);
+	playerFlashLight->addLightToShader(animationShader);
 
 	MySpotLight spotLightOne(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		false, glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(-0.3f, 0.0f, -1.0f),
 		1.0f, 0.09f, 0.032f,
 		12.5f, 15.0f, nullptr);
 	spotLightOne.addLightToShader(defaultShader);
+	spotLightOne.addLightToShader(animationShader);
 
 	// Add lights to the game
 	scene->addLight(&dirLight);
@@ -501,6 +509,7 @@ int main(int argc, char** argv) {
 		defaultShader.use();
 		defaultShader.setVec3("viewPos", player->getActiveCamera()->getPosition());
 		defaultShader.setBool("enableNormalMapping", enableNormalMapping);
+		defaultShader.setBool("enableShowNormals", enableShowNormalMappingNormals);
 
 		// Prepare Camera (view-projection matrix)
 		glm::mat4 projection = player->getActiveCamera()->getProjectionMatrix();
@@ -509,6 +518,9 @@ int main(int argc, char** argv) {
 		defaultShader.setMat4("view", view);
 
 		animationShader.use();
+		animationShader.setVec3("viewPos", player->getActiveCamera()->getPosition());
+		animationShader.setBool("enableNormalMapping", enableNormalMapping);
+		animationShader.setBool("enableShowNormals", enableShowNormalMappingNormals);
 		animationShader.setMat4("projection", projection);
 		animationShader.setMat4("view", view);
 
@@ -651,8 +663,9 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		textRenderer.renderText(textShader, "[F2] Backface Culling: " + std::string(enableBackfaceCulling ? "ON" : "OFF"), 14.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F3] Game-HUD: " + std::string(enableGUIHUD ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 76.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F5] Close Debug HUD", 14.0f, (float)screenHeight - 96.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no"), 14.0f, (float)screenHeight - 110.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F5] Display Normals: " + std::string(enableShowNormalMappingNormals ? "ON" : "OFF"), 14.0f, (float)screenHeight - 90.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F6] Close Debug HUD", 14.0f, (float)screenHeight - 110.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no"), 14.0f, (float)screenHeight - 124.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 	}
 }
 
@@ -726,6 +739,10 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		enableNormalMapping = !enableNormalMapping;
 		break;
 	case GLFW_KEY_F5:
+		// toggle normal map value display
+		enableShowNormalMappingNormals = !enableShowNormalMappingNormals;
+		break;
+	case GLFW_KEY_F6:
 		// toggle debug text hud
 		enableDebugHUD = !enableDebugHUD;
 		break;

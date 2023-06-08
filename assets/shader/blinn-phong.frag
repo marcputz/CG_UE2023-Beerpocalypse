@@ -43,12 +43,6 @@ vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, ve
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex, vec3 fragPos);
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex, vec3 fragPos);
 
-/*
-vec3 calcDirLightNormalMapping();
-vec3 calcPointLightNormalMapping();
-vec3 calcSpotLightNormalMapping();
-*/
-
 in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
@@ -66,7 +60,7 @@ in VS_OUT {
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
-//uniform int enableSpotLight;
+
 uniform vec3 viewPos;
 
 uniform sampler2D texture_diffuse1;
@@ -75,6 +69,10 @@ uniform sampler2D texture_height1;
 uniform sampler2D texture_normal1;
 
 uniform int enableNormalMapping;
+uniform int enableShowNormals;
+
+uniform int isHighlighted;
+uniform vec3 highlightColor;
 
 void main() {   
 	vec3 result = vec3(0.0, 0.0, 0.0);
@@ -83,7 +81,7 @@ void main() {
 	vec3 specularTex = texture(texture_specular1, fs_in.TexCoords).rgb;
 
 	if (enableNormalMapping == 1) {
-		// get the normal from the normalMap in the rage of [0,1]
+		// get the normal from the normalMap in the range of [0,1]
 		vec3 norm = texture(texture_normal1, fs_in.TexCoords).rgb;
 		// transform normal vector to range [-1, 1]
 		norm = norm * 2.0 - 1.0;
@@ -108,7 +106,10 @@ void main() {
 			}
 		}
 
-		result = norm * 0.5 + 0.5;
+		// display only normals
+		if (enableShowNormals == 1) {
+			result = norm * 0.5 + 0.5;
+		}
 
 	} else {
 		vec3 norm = normalize(fs_in.Normal);
@@ -129,6 +130,14 @@ void main() {
 				result += calcSpotLight(spotLights[i], norm, viewDir, diffuseTex, specularTex, fs_in.FragPos);
 			}
 		}
+
+		if (enableShowNormals == 1) {
+			result = norm * 0.5 + 0.5;
+		}
+	}
+
+	if (isHighlighted == 1) {
+		result = result * highlightColor;
 	}
 
 	FragColor = vec4(result, 1.0);
