@@ -150,10 +150,25 @@ MyMesh MyModel::processMesh(aiMesh* mesh, const aiScene* scene) {
 		textures.push_back(map);
 	}
 
+	// normal maps for .obj wavefile files
 	std::vector<My2DTexture> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, NORMAL);
 	for (My2DTexture map : normalMaps) {
 		textures.push_back(map);
 	}
+
+	// possible normal maps for .dae collada files
+	std::vector<My2DTexture> normalMapsColladaBump = loadMaterialTextures(material, aiTextureType_NORMALS, NORMAL);
+	for (My2DTexture map : normalMapsColladaBump) {
+		textures.push_back(map);
+	}
+
+	/*
+	// another possibility for normal maps for .dae collada files
+	std::vector<My2DTexture> normalMapsColladaDisplacement = loadMaterialTextures(material, aiTextureType_DISPLACEMENT, NORMAL);
+	for (My2DTexture map : normalMapsColladaDisplacement) {
+		textures.push_back(map);
+	}
+	*/
 
 	std::vector<My2DTexture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, HEIGHT);
 	for (My2DTexture map : heightMaps) {

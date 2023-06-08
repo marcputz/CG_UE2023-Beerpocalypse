@@ -109,6 +109,7 @@ void main() {
 		// display only normals
 		if (enableShowNormals == 1) {
 			result = norm * 0.5 + 0.5;
+			//result = texture(texture_normal1, fs_in.TexCoords).rgb * 0.5 + 0.5;
 		}
 
 	} else {

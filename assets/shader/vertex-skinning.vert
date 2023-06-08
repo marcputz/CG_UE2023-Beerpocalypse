@@ -81,15 +81,17 @@ void main() {
     boneTransform += finalBonesMatrices[aBoneIds[3]] * aWeights[3];
 
     vec4 totalPosition = boneTransform * vec4(aPos, 1.0f);
-    mat3 normalMatrix = transpose(inverse(mat3(boneTransform)));
+    //mat3 normalMatrix = mat3(transpose(inverse(boneTransform)));
+    mat3 transposeInverseModelTimesBoneTransform = mat3(transpose(inverse(model))) * mat3(boneTransform);
 
     if (enableNormalMapping == 1) {
+
         vs_out.FragPos = vec3(model * totalPosition);
         vs_out.TexCoords = aTexCoords;
 
         // Gram-Schmidt process to re-othogonalize the vectors
-        vec3 T = normalize(vec3(mat3(model) * normalMatrix * aTangent));
-        vec3 N = normalize(vec3(mat3(model) * normalMatrix * aNormal));
+        vec3 T = normalize(transposeInverseModelTimesBoneTransform * aTangent); // normalize(vec3(transpose(inverse(model)) * boneTransform * vec4(aTangent, 0.0)));
+        vec3 N = normalize(transposeInverseModelTimesBoneTransform * aNormal); // normalize(vec3(transpose(inverse(model)) * boneTransform * vec4(aNormal, 0.0)));
         // re-orthogonalize tangent with normal
         T = normalize(T - dot(T, N) * N);
         vec3 B = cross(N, T);
@@ -97,7 +99,7 @@ void main() {
         vs_out.TBN = mat3(T, B, N);
     } else {
         vs_out.FragPos = vec3(model * totalPosition);
-        vs_out.Normal = mat3(transpose(inverse(model))) * normalMatrix * aNormal;
+        vs_out.Normal = transposeInverseModelTimesBoneTransform * aNormal; // mat3(transpose(inverse(model))) * mat3(boneTransform) * aNormal;
         vs_out.TexCoords = aTexCoords;
     }
     
