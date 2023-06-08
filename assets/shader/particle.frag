@@ -9,5 +9,6 @@ out vec4 color;
 uniform sampler2D myTextureSampler;
 
 void main() {
-	color = (texture(myTextureSampler, texCoords) * particleColor);
+	//color = (texture(myTextureSampler, texCoords) * particleColor);
+	color = vec4(1.0, 1.0, 1.0, 1.0);
 }

@@ -17,6 +17,15 @@ void PlayerCamera::setFov(float newFov) {
 	this->fov = newFov;
 }
 
+glm::vec3 PlayerCamera::getRight() {
+	return this->cameraRight;
+}
+
 glm::vec3 PlayerCamera::getUp() {
-	return glm::vec3(0, 1, 0);
+	return this->cameraUp;
+}
+
+void PlayerCamera::updateRightAndUp() {
+	this->cameraRight = glm::normalize(glm::cross(this->worldUp, getDirection()));
+	this->cameraUp = glm::cross(getDirection(), this->cameraRight);
 }

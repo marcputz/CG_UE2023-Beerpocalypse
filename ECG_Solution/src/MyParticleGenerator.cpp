@@ -1,6 +1,6 @@
 #include "MyParticleGenerator.h"
 
-MyParticleGenerator::MyParticleGenerator(MyShader& shader, My2DTexture& texture, MyFPSCamera& camera, unsigned int amount) : shader_(&shader), texture_(&texture), camera_(&camera), amount_(amount) {
+MyParticleGenerator::MyParticleGenerator(MyShader& shader, My2DTexture& texture, NewPlayer* player, unsigned int amount) : shader_(&shader), texture_(&texture), player_(player), amount_(amount) {
 	init();
 }
 
@@ -31,7 +31,7 @@ void MyParticleGenerator::update(float deltaTime) {
 	for (int i = 0; i < newP; i++) {
 		int particleIndex = findFirstUnusedParticle();
 		particlesContainer_[particleIndex].life = 5.0f;
-		particlesContainer_[particleIndex].position = glm::vec3(0.0f, 0.0f, 1.0f);
+		particlesContainer_[particleIndex].position = glm::vec3(0.0f, 3.0f, 1.0f);
 
 		float spread = 1.5f;
 		glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -56,7 +56,7 @@ void MyParticleGenerator::update(float deltaTime) {
 			if (p.life > 0.0f) {
 				p.velocity += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.05f;
 				p.position += p.velocity * deltaTime;
-				p.cameraDistance = glm::length2(p.position - camera_->position_);
+				p.cameraDistance = glm::length2(p.position - player_->getActiveCamera()->getPosition());
 
 				particlePositions_[4 * particlesCount + 0] = p.position.x;
 				particlePositions_[4 * particlesCount + 1] = p.position.y;
@@ -111,8 +111,10 @@ void MyParticleGenerator::draw() {
 	glActiveTexture(GL_TEXTURE0);
 	texture_->bind();
 	shader_->setInt("myTextureSampler", texture_->ID_);
-	shader_->setVec3("cameraRight", camera_->right_);
-	shader_->setVec3("cameraUp", camera_->up_);
+	PlayerCamera* currCam = player_->getActiveCamera();
+	currCam->updateRightAndUp();
+	shader_->setVec3("cameraRight", currCam->getRight() * -1.0f);
+	shader_->setVec3("cameraUp", currCam->getUp());
 
 	glBindVertexArray(VAO_);
 

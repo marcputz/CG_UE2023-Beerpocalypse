@@ -191,8 +191,8 @@ void NewPlayer::processMouseScrolling(double yOffset) {
 	this->thirdPersonCamera->setFov(fov);
 }
 
-void NewPlayer::onHealthChange(int oldHealth, int newHealth)
-{
+void NewPlayer::onHealthChange(int oldHealth, int newHealth){
+	// play sound
 }
 
 void NewPlayer::setRespawnPoint(glm::vec3& newRespawnPoint) {

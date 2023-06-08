@@ -5,7 +5,7 @@
 #include "GameObjects/GameObject.h"
 #include "MyShader.h"
 #include "My2DTexture.h"
-#include "MyFPSCamera.h"
+#include "GameObjects/Player/NewPlayer.h"
 
 struct MyParticle {
 	glm::vec3 position;
@@ -21,11 +21,11 @@ struct MyParticle {
 	}
 };
 
-const int MaxParticles = 10000;
+const int MaxParticles = 50;
 
 class MyParticleGenerator {
 public:
-	MyParticleGenerator(MyShader& shader, My2DTexture& texture, MyFPSCamera& camera, unsigned int amount);
+	MyParticleGenerator(MyShader& shader, My2DTexture& texture, NewPlayer* player, unsigned int amount);
 	//void update(float deltaTime, GameObject& object, unsigned int newParticles, glm::vec3 offset = glm::vec3(0.0f, 0.0f, 0.0f));
 	void update(float deltaTime);
 	void draw();
@@ -37,7 +37,7 @@ private:
 	unsigned int amount_;
 	MyShader* shader_;
 	My2DTexture* texture_;
-	MyFPSCamera* camera_;
+	NewPlayer* player_;
 	unsigned int VAO_;
 	unsigned int verticesVBO_, positionVBO_, colorVBO_;
 	unsigned int lastUsedParticle_ = 0;

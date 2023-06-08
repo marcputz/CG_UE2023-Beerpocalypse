@@ -8,6 +8,7 @@ glm::vec3 PlayerCameraThirdPerson::getPosition() {
 		cameraPosition.y += playerYOffset;
 		return cameraPosition;
 	}
+
 	return glm::vec3(0, 0, 0);
 }
 
@@ -18,5 +19,6 @@ glm::vec3 PlayerCameraThirdPerson::getDirection() {
 
 		return glm::normalize(playerPosition - cameraPosition);
 	}
+
 	return glm::vec3(0, 0, 1);
 }
