@@ -6,7 +6,7 @@ flat in int TexSelect;
 
 out vec4 color;
 
-uniform sampler2D myTextureSampler;
+uniform sampler2D bloodTexture;
 
 void main() {
 	//color = (texture(myTextureSampler, texCoords) * particleColor);

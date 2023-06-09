@@ -12,12 +12,15 @@ struct MyParticle {
 	glm::vec3 velocity;
 	int textureSelect;
 	bool affectedByGravity;
+	float size;
+	float life;
+	float cameraDistance;
+	//float angle;
+	//float weight;
 	//glm::vec4 color;
 	//char r, g, b, a;
-	float size, angle, weight;
-	float life, cameraDistance;
 
-	MyParticle() : position(0.0f), velocity(0.0f)/*, r(255), g(255), b(255), a(255)*/, size(1.0f), angle(0.0f), weight(1.0f), life(0.0f) {}
+	MyParticle() : position(0.0f), velocity(0.0f)/*, r(255), g(255), b(255), a(255)*/, size(1.0f)/*, angle(0.0f), weight(1.0f)*/, life(0.0f) {}
 	bool operator<(const MyParticle& that) const {
 		return this->cameraDistance > that.cameraDistance;
 	}
