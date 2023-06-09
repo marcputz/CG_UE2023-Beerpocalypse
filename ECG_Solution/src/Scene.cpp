@@ -9,14 +9,12 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	physx::PxFilterData filterData1,
 	physx::PxPairFlags& pairFlags,
 	const void* constantBlock,
-	physx::PxU32 constantBlockSize)
-{
+	physx::PxU32 constantBlockSize) {
 	PX_UNUSED(constantBlockSize);
 	PX_UNUSED(constantBlock);
 
 	// let triggers through
-	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1))
-	{
+	if (physx::PxFilterObjectIsTrigger(attributes0) || physx::PxFilterObjectIsTrigger(attributes1)) {
 		pairFlags = physx::PxPairFlag::eTRIGGER_DEFAULT;
 		return physx::PxFilterFlag::eDEFAULT;
 	}
@@ -28,8 +26,7 @@ physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes a
 	// the filtermask of A contains the ID of B and vice versa.
 	if ((filterData0.word0 & filterData1.word1) && (filterData1.word0 & filterData0.word1)) {
 		pairFlags |= physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | PxPairFlag::eNOTIFY_TOUCH_PERSISTS;
-	}
-	else {
+	} else {
 		pairFlags |= physx::PxPairFlag::eCONTACT_DEFAULT;
 	}
 
@@ -73,6 +70,10 @@ void Scene::addLight(MySpotLight* spotLight) {
 	spotLights.push_back(spotLight);
 }
 
+void Scene::setParticleGenerator(MyParticleGenerator* newParticleGenerator) {
+	this->particleGenerator = newParticleGenerator;
+}
+
 void Scene::handleKeyboardInput(GLFWwindow* window, float deltaTime) {
 	for (NewGameObject* go : objects) {
 		go->processWindowInput(window, deltaTime);
@@ -96,7 +97,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 
 		// make a raycast and see what you've hit
 		static const PxReal maxShootDistance = 20.0f;
-		
+
 		// Find player
 		NewGameObject* playerGo = nullptr;
 		for (NewGameObject* go : objects) {
@@ -108,7 +109,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 
 		if (playerGo != nullptr) {
 			NewPlayer* player = static_cast<NewPlayer*>(playerGo);
-			
+
 			// Define Ray
 			PxVec3 rayOrigin = asPxVec3(player->getWorldPosition());
 			PxVec3 rayDirection;
@@ -119,12 +120,11 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 			// If first person camera, use camera direction, if third person, use player forward vector
 			if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
 				rayDirection = asPxVec3(player->getActiveCamera()->getDirection()).getNormalized();
-			}
-			else {
+			} else {
 				rayDirection = asPxVec3(player->getForwardVector()).getNormalized();
 			}
 
-			// Make Raycast
+			// Make Raycast for player gunshot
 			bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, maxShootDistance, buf);
 			if (raycastStatus) {
 				// Raycast has hit something
@@ -143,9 +143,15 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 							if (zombie != nullptr) {
 								if (zombie->isVisible()) {
 									zombie->setHealth(zombie->getHealth() - 40);
+
+									if (particleGenerator != nullptr) {
+										particleGenerator->createParticles(
+											asGlmVec3(currentHit.position),
+											(asGlmVec3(rayDirection) * -1.0f), ParticleType::ZOMBIE_BLOOD, 1.0f, 5, true);
+									}
+
 									return; // skip the rest of this function, as only the first hit should be processed.
-								}
-								else {
+								} else {
 									// zombie is invisible, so skip it (most likely it was defeated before)
 								}
 							}
@@ -186,40 +192,51 @@ void Scene::step(float deltaTime) {
 	for (NewGameObject* go : objects) {
 		go->update(deltaTime);
 
-		NewPlayer* p = dynamic_cast<NewPlayer*>(go);
-		if (p != nullptr) {
-			PxVec3 rayOrigin = asPxVec3(p->getWorldPosition());
-			PxVec3 rayDirection = asPxVec3(glm::vec3(0.0f, -1.0f, 0.0f));
-			const PxU32 hitBufferSize = 32;
-			PxRaycastHit hitBuffer[hitBufferSize];
-			PxRaycastBuffer buf(hitBuffer, hitBufferSize);
-			bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, 1.01f, buf);
-			if (raycastStatus) {
-				// Raycast has hit something
-				for (PxU32 i = 0; i < buf.nbTouches; i++) {
-					PxRaycastHit currentHit = buf.touches[i];
-					NewGameObject* object = static_cast<NewGameObject*>(currentHit.actor->userData);
-					if (object != nullptr) {
-						// Raycast hit game object
-						// Skip player as it is always hit
-						NewPlayer* player = dynamic_cast<NewPlayer*>(object);
-						Zombie* zombie = dynamic_cast<Zombie*>(object);
-						Beer* beer = dynamic_cast<Beer*>(object);
-						if (player == nullptr && zombie == nullptr && beer == nullptr) {
-							//std::cout << "Hit '" << object->name_ << "'" << std::endl;
+		// make downwards raycast to check if player is on ground
+		{
+			NewPlayer* p = dynamic_cast<NewPlayer*>(go);
+			if (p != nullptr) {
+				PxVec3 rayOrigin = asPxVec3(p->getWorldPosition());
+				PxVec3 rayDirection = asPxVec3(glm::vec3(0.0f, -1.0f, 0.0f));
+				const PxU32 hitBufferSize = 32;
+				PxRaycastHit hitBuffer[hitBufferSize];
+				PxRaycastBuffer buf(hitBuffer, hitBufferSize);
+				bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, 1.01f, buf);
+				if (raycastStatus) {
+					// Raycast has hit something
+					for (PxU32 i = 0; i < buf.nbTouches; i++) {
+						PxRaycastHit currentHit = buf.touches[i];
+						NewGameObject* object = static_cast<NewGameObject*>(currentHit.actor->userData);
+						if (object != nullptr) {
+							// Raycast hit game object
+							// Skip player as it is always hit
+							NewPlayer* player = dynamic_cast<NewPlayer*>(object);
+							Zombie* zombie = dynamic_cast<Zombie*>(object);
+							Beer* beer = dynamic_cast<Beer*>(object);
+							if (player == nullptr && zombie == nullptr && beer == nullptr) {
+								//std::cout << "Hit '" << object->name_ << "'" << std::endl;
 
-							p->setIsOnGround(true);
+								p->setIsOnGround(true);
+							}
 						}
 					}
 				}
 			}
 		}
 	}
+
+	if (particleGenerator != nullptr) {
+		particleGenerator->update(deltaTime);
+	}
 }
 
 void Scene::draw() {
 	for (NewGameObject* go : objects) {
 		go->draw();
+	}
+
+	if (particleGenerator != nullptr) {
+		particleGenerator->draw();
 	}
 }
 
@@ -244,8 +261,7 @@ PxScene* Scene::getPhysicsScene() {
 void Scene::onContact(const PxContactPairHeader& pairHeader, const PxContactPair* pairs, PxU32 nbPairs) {
 	//std::printf("onContact\n");
 
-	for (physx::PxU32 i = 0; i < nbPairs; i++)
-	{
+	for (physx::PxU32 i = 0; i < nbPairs; i++) {
 		const physx::PxContactPair& cp = pairs[i];
 		PxShape* shapeOne = cp.shapes[0];
 		PxShape* shapeTwo = cp.shapes[1];
@@ -268,9 +284,13 @@ void Scene::onTrigger(PxTriggerPair* pairs, PxU32 count) {
 }
 
 void Scene::onAdvance(const PxRigidBody* const* bodyBuffer, const PxTransform* poseBuffer, const PxU32 count) {
-	
+
 }
 
 physx::PxVec3 Scene::asPxVec3(glm::vec3 vec) {
 	return PxVec3(vec.x, vec.y, vec.z);
+}
+
+glm::vec3 Scene::asGlmVec3(physx::PxVec3 vec) {
+	return glm::vec3(vec.x, vec.y, vec.z);
 }

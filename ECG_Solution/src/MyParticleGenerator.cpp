@@ -1,6 +1,6 @@
 #include "MyParticleGenerator.h"
 
-MyParticleGenerator::MyParticleGenerator(MyShader& shader, My2DTexture& texture, NewPlayer* player, unsigned int amount) : shader_(&shader), texture_(&texture), player_(player), amount_(amount) {
+MyParticleGenerator::MyParticleGenerator(MyShader& shader, My2DTexture& texture, NewPlayer* player, unsigned int amount) : shader_(&shader), zombieBloodTexture_(&texture), player_(player), amount_(amount) {
 	init();
 }
 
@@ -23,6 +23,7 @@ void MyParticleGenerator::update(float deltaTime) {
 	}
 	*/
 
+	/*
 	int newP = (int)(deltaTime * 1000.0f);
 	if (newP > (int)(0.016f * 1000.0f)) {
 		newP = (int)(0.016f * 1000.0f);
@@ -32,6 +33,7 @@ void MyParticleGenerator::update(float deltaTime) {
 		int particleIndex = findFirstUnusedParticle();
 		particlesContainer_[particleIndex].life = 5.0f;
 		particlesContainer_[particleIndex].position = glm::vec3(0.0f, 3.0f, 1.0f);
+		particlesContainer_[particleIndex].textureSelect = rand() % (2 - 1 + 1) + 1; // %(max-min + 1) + min
 
 		float spread = 1.5f;
 		glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -39,20 +41,23 @@ void MyParticleGenerator::update(float deltaTime) {
 
 		particlesContainer_[particleIndex].velocity = maindir + randomDir * spread;
 
-		particlesContainer_[particleIndex].r = rand() % 256;
-		particlesContainer_[particleIndex].g = rand() % 256;
-		particlesContainer_[particleIndex].b = rand() % 256;
+		//particlesContainer_[particleIndex].r = rand() % 256;
+		//particlesContainer_[particleIndex].g = rand() % 256;
+		//particlesContainer_[particleIndex].b = rand() % 256;
 		particlesContainer_[particleIndex].a = (rand() % 256) / 3;
-		particlesContainer_[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
+
+		particlesContainer_[particleIndex].size = (rand() % 1000) / 3000.0f + 0.1f;
 	}
+	*/
 
 	int particlesCount = 0;
+	amountToDraw_ = 0;
 	for (int i = 0; i < MaxParticles; i++) {
 		MyParticle& p = particlesContainer_[i];
 
 		if (p.life > 0.0f) {
 			p.life -= deltaTime;
-			
+
 			if (p.life > 0.0f) {
 				p.velocity += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.05f;
 				p.position += p.velocity * deltaTime;
@@ -63,14 +68,19 @@ void MyParticleGenerator::update(float deltaTime) {
 				particlePositions_[4 * particlesCount + 2] = p.position.z;
 				particlePositions_[4 * particlesCount + 3] = p.size;
 
+				particleTextures_[particlesCount] = p.textureSelect;
+
+				/*
 				particleColors_[4 * particlesCount + 0] = p.r;
 				particleColors_[4 * particlesCount + 1] = p.g;
 				particleColors_[4 * particlesCount + 2] = p.b;
 				particleColors_[4 * particlesCount + 3] = p.a;
+				*/
 			} else {
 				p.cameraDistance = -1.0f;
 			}
 			particlesCount++;
+			amountToDraw_++;
 		}
 	}
 
@@ -79,12 +89,20 @@ void MyParticleGenerator::update(float deltaTime) {
 	glBindVertexArray(VAO_);
 
 	glBindBuffer(GL_ARRAY_BUFFER, positionVBO_);
-	glBufferData(GL_ARRAY_BUFFER, amount_ * 4 * sizeof(float), NULL, GL_STREAM_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, amount_ * sizeof(float) * 4, particlePositions_);
+	//glBufferData(GL_ARRAY_BUFFER, amount_ * 4 * sizeof(float), NULL, GL_STREAM_DRAW);
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, amount_ * 4 * sizeof(float), particlePositions_);
+	glBufferData(GL_ARRAY_BUFFER, amountToDraw_ * 4 * sizeof(float), NULL, GL_STREAM_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, amountToDraw_ * 4 * sizeof(float), particlePositions_);
 
+	glBindBuffer(GL_ARRAY_BUFFER, textureVBO_);
+	glBufferData(GL_ARRAY_BUFFER, amountToDraw_ * 1 * sizeof(int), NULL, GL_STREAM_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, amountToDraw_ * 1 * sizeof(int), particleTextures_);
+
+	/*
 	glBindBuffer(GL_ARRAY_BUFFER, colorVBO_);
 	glBufferData(GL_ARRAY_BUFFER, amount_ * 4 * sizeof(char), NULL, GL_STREAM_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, amount_ * sizeof(char) * 4, particleColors_);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, amount_ * 4 * sizeof(char), particleColors_);
+	*/
 
 	glBindVertexArray(0);
 }
@@ -109,8 +127,8 @@ void MyParticleGenerator::draw() {
 
 	shader_->use();
 	glActiveTexture(GL_TEXTURE0);
-	texture_->bind();
-	shader_->setInt("myTextureSampler", texture_->ID_);
+	zombieBloodTexture_->bind();
+	shader_->setInt("myTextureSampler", zombieBloodTexture_->ID_);
 	PlayerCamera* currCam = player_->getActiveCamera();
 	currCam->updateRightAndUp();
 	shader_->setVec3("cameraRight", currCam->getRight() * -1.0f);
@@ -127,16 +145,75 @@ void MyParticleGenerator::draw() {
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, textureVBO_);
+	glVertexAttribIPointer(2, 1, GL_INT, 0, (void*)0);
+
+	/*
+	glEnableVertexAttribArray(3);
 	glBindBuffer(GL_ARRAY_BUFFER, colorVBO_);
-	glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)0);
+	glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)0);
+	*/
 
-	glVertexAttribDivisor(0, 0);
-	glVertexAttribDivisor(1, 1);
-	glVertexAttribDivisor(2, 1);
+	glVertexAttribDivisor(0, 0); // vertices
+	glVertexAttribDivisor(1, 1); // positions
+	glVertexAttribDivisor(2, 1); // textureSelect
+	//glVertexAttribDivisor(3, 1);
 
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, amount_);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, amountToDraw_);
 
 	glBindVertexArray(0);
+}
+
+void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity) {
+	int texSelect;
+	switch (type) {
+	case ZOMBIE_BLOOD:
+		// all particles we create are zombie blood
+		texSelect = 1;
+
+		for (int i = 0; i < amount; i++) {
+			int particleIndex = findFirstUnusedParticle();
+
+			particlesContainer_[particleIndex].life = avgLifetime;
+			// all blood particles begin a the same spot
+			particlesContainer_[particleIndex].position = position;
+			particlesContainer_[particleIndex].textureSelect = texSelect;
+
+			float spread = 1.5f;
+			glm::vec3 randomDir = glm::vec3((rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f);
+
+			particlesContainer_[particleIndex].velocity = direction + randomDir * spread;
+			particlesContainer_[particleIndex].size = (rand() % 1000) / 3000.0f + 0.1f;
+			particlesContainer_[particleIndex].affectedByGravity = hasGravity;
+		}
+
+		break;
+	case BEER_SPARKLE:
+		// all particles we create are beer sparkles
+		texSelect = 2;
+
+		for (int i = 0; i < amount; i++) {
+			int particleIndex = findFirstUnusedParticle();
+
+			particlesContainer_[particleIndex].life = avgLifetime;
+			// particles should be randomly around the beer
+			particlesContainer_[particleIndex].position = position;
+			// add randomness to position
+			particlesContainer_[particleIndex].textureSelect = texSelect;
+
+			//float spread = 1.5f;
+			//glm::vec3 randomDir = glm::vec3((rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f);
+
+			particlesContainer_[particleIndex].velocity = direction; // + randomDir * spread;
+			particlesContainer_[particleIndex].size = (rand() % 1000) / 3000.0f + 0.1f;
+			particlesContainer_[particleIndex].affectedByGravity = hasGravity;
+		}
+
+		break;
+	default:
+		// no default particles
+		return;
+	}
 }
 
 void MyParticleGenerator::init() {
@@ -193,9 +270,15 @@ void MyParticleGenerator::init() {
 	glBindBuffer(GL_ARRAY_BUFFER, positionVBO_);
 	glBufferData(GL_ARRAY_BUFFER, amount_ * 4 * sizeof(float), NULL, GL_STREAM_DRAW); // data is NULL for now
 
+	glGenBuffers(1, &textureVBO_);
+	glBindBuffer(GL_ARRAY_BUFFER, textureVBO_);
+	glBufferData(GL_ARRAY_BUFFER, amount_ * 1 * sizeof(int), NULL, GL_STREAM_DRAW); // using an int to determine which texture to use
+
+	/*
 	glGenBuffers(1, &colorVBO_);
 	glBindBuffer(GL_ARRAY_BUFFER, colorVBO_);
 	glBufferData(GL_ARRAY_BUFFER, amount_ * 4 * sizeof(char), NULL, GL_STREAM_DRAW); // char is basically GLubyte
+	*/
 
 	glBindVertexArray(0);
 }
@@ -220,6 +303,7 @@ unsigned int MyParticleGenerator::findFirstUnusedParticle() {
 	lastUsedParticle_ = 0;
 	return 0;
 	*/
+
 	for (unsigned int i = 0; i < MaxParticles; i++) {
 		if (particlesContainer_[i].life <= 0.0f) {
 			lastUsedParticle_ = i;

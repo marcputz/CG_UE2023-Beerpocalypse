@@ -6,11 +6,13 @@
 #include "Lights/PointLight/MyPointLight.h"
 #include "Lights/SpotLight/MySpotLight.h"
 #include "Lights/DirectionalLight/MyDirectionalLight.h"
+#include "MyParticleGenerator.h"
 
 class Scene : public PxSimulationEventCallback {
 private:
 	vector<NewGameObject*> objects = {};
 
+	MyParticleGenerator* particleGenerator;
 	MyDirectionalLight* directionLight;
 	vector<MyPointLight*> pointLights = {};
 	vector<MySpotLight*> spotLights = {};
@@ -21,6 +23,7 @@ private:
 private:
 	// helper functions
 	physx::PxVec3 asPxVec3(glm::vec3 vec);
+	glm::vec3 asGlmVec3(physx::PxVec3 vec);
 
 public:
 	Scene(PxPhysics* physics);
@@ -31,6 +34,7 @@ public:
 	void addLight(MyDirectionalLight* dirLight);
 	void addLight(MyPointLight* pointLight);
 	void addLight(MySpotLight* spotLight);
+	void setParticleGenerator(MyParticleGenerator* newParticleGenerator);
 
 	void handleKeyboardInput(GLFWwindow* window, float deltaTime);
 	void handleMouseInput(float xOffset, float yOffset);

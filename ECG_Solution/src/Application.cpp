@@ -265,12 +265,12 @@ int main(int argc, char** argv) {
 	scene->addObject(&testCubeThree);
 
 	// Init wall(s)
-	
+
 	StaticCube wallRightOfSpawn{ &defaultShader, gPhysics };
 	wallRightOfSpawn.setLocalPosition(glm::vec3(-10.0f, 1.5f, 0.0f));
 	wallRightOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
 	wallRightOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
-	
+
 	StaticCube wallLeftOfSpawn{ &defaultShader, gPhysics };
 	wallLeftOfSpawn.setLocalPosition(glm::vec3(10.0f, 1.5f, 0.0f));
 	wallLeftOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
@@ -308,7 +308,7 @@ int main(int argc, char** argv) {
 	Beer beerOne{ &defaultShader, gPhysics };
 	beerOne.setLocalPosition(glm::vec3(-5, 1.0f, 2));
 	scene->addObject(&beerOne);
-	
+
 	Beer beerTwo{ &defaultShader, gPhysics };
 	beerTwo.setLocalPosition(glm::vec3(-5, 1.0f, 4));
 	scene->addObject(&beerTwo);
@@ -324,7 +324,7 @@ int main(int argc, char** argv) {
 	Beer beerFive{ &defaultShader, gPhysics };
 	beerFive.setLocalPosition(glm::vec3(-5, 1.0f, 10));
 	scene->addObject(&beerFive);
-	
+
 	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
 	shaders["Animation Shader"] = &animationShader;
 
@@ -408,10 +408,11 @@ int main(int argc, char** argv) {
 	scene->addLight(&pointLightFour);
 	scene->addLight(playerFlashLight);
 	scene->addLight(&spotLightOne);
-	
+
 	particleShader = MyAssetManager::loadShader("particle.vert", "particle.frag", "particle");
 	My2DTexture particleTexture = MyAssetManager::loadTexture("assets/textures/particle.png", SPRITE, true, "particle");
-	MyParticleGenerator particleGen(particleShader, particleTexture, player, 5);
+	MyParticleGenerator particleGen(particleShader, particleTexture, player, 50);
+	scene->setParticleGenerator(&particleGen);
 
 	// Setup lights shader
 	lightSourceShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
@@ -480,7 +481,7 @@ int main(int argc, char** argv) {
 	// vertex attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	
+
 	/*---- RENDER LOOP -----*/
 	float time = float(glfwGetTime());
 	float lastTime = time;
@@ -532,12 +533,14 @@ int main(int argc, char** argv) {
 			scene->step(deltaTime);
 		}
 		scene->draw();
-		
+
 		particleShader.use();
 		particleShader.setMat4("projection", projection);
 		particleShader.setMat4("view", view);
+		/*
 		particleGen.update(deltaTime);
 		particleGen.draw();
+		*/
 
 		// Render Light-Cubes
 		//glBindVertexArray(lightVAO);
@@ -626,10 +629,9 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 			// display crosshair
 			textRenderer.renderText(textShader, "+", ((float)screenWidth / 2.0f) - (48.0f * 0.2f), ((float)screenHeight / 2.0f) - (48.0f * 0.2f), 0.8f, glm::vec3(1, 1, 1), enableWireframe);
 		}
-	}
-	else {
+	} else {
 		// Pause Menu
-		textRenderer.renderText(textShader, "GAME PAUSED", 20.0f, (float) screenHeight - 62.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		textRenderer.renderText(textShader, "GAME PAUSED", 20.0f, (float)screenHeight - 62.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		textRenderer.renderText(textShader, "PRESS [X] TO QUIT", 24.0f, (float)screenHeight - 90.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
 		textRenderer.renderText(textShader, "CONTROLS", 24.0f, (float)screenHeight - 150.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
@@ -650,8 +652,7 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 			textRenderer.renderText(textShader, "FPS: " + std::to_string((double)framesPerSecond), 14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 			previousFPS = framesPerSecond;
 			delayFrameCounter += 4; // draw only every few frames, because otherwise it's unreadable
-		}
-		else {
+		} else {
 			textRenderer.renderText(textShader, "FPS: " + std::to_string((double)previousFPS), 14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		}
 		textRenderer.renderText(textShader, "[F1] Wireframe Mode: " + std::string(enableWireframe ? "ON" : "OFF"), 14.0f, (float)screenHeight - 34.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
@@ -720,8 +721,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		enableBackfaceCulling = !enableBackfaceCulling;
 		if (enableBackfaceCulling) {
 			glEnable(GL_CULL_FACE);
-		}
-		else {
+		} else {
 			glDisable(GL_CULL_FACE);
 		}
 		break;
@@ -774,8 +774,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			std::cout << "Press -" << std::endl;
 			break;
 		}
-	}
-	else {
+	} else {
 		switch (key) {
 		case GLFW_KEY_X:
 			glfwSetWindowShouldClose(window, true);
@@ -794,7 +793,7 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos) {
 	static bool firstMouse = true;
 	static float lastX = 0.0f;
 	static float lastY = 0.0f;
-	
+
 	float x = static_cast<float>(xpos);
 	float y = static_cast<float>(ypos);
 
@@ -842,7 +841,7 @@ void readINIFile() {
 }
 
 void static initOpenGL() {
-	
+
 	/* --------------------------------------------- */
 	// Init GLFW
 	/* --------------------------------------------- */
@@ -997,93 +996,111 @@ static std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLen
 	// The AMD variant of this extension provides a less detailed classification of the error,
 	// which is why some arguments might be "Unknown".
 	switch (source) {
-		case GL_DEBUG_CATEGORY_API_ERROR_AMD:
-		case GL_DEBUG_SOURCE_API: {
-			sourceString = "API";
-			break;
-		}
-		case GL_DEBUG_CATEGORY_APPLICATION_AMD:
-		case GL_DEBUG_SOURCE_APPLICATION: {
-			sourceString = "Application";
-			break;
-		}
-		case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD:
-		case GL_DEBUG_SOURCE_WINDOW_SYSTEM: {
-			sourceString = "Window System";
-			break;
-		}
-		case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD:
-		case GL_DEBUG_SOURCE_SHADER_COMPILER: {
-			sourceString = "Shader Compiler";
-			break;
-		}
-		case GL_DEBUG_SOURCE_THIRD_PARTY: {
-			sourceString = "Third Party";
-			break;
-		}
-		case GL_DEBUG_CATEGORY_OTHER_AMD:
-		case GL_DEBUG_SOURCE_OTHER: {
-			sourceString = "Other";
-			break;
-		}
-		default: {
-			sourceString = "Unknown";
-			break;
-		}
+	case GL_DEBUG_CATEGORY_API_ERROR_AMD:
+	case GL_DEBUG_SOURCE_API:
+	{
+		sourceString = "API";
+		break;
+	}
+	case GL_DEBUG_CATEGORY_APPLICATION_AMD:
+	case GL_DEBUG_SOURCE_APPLICATION:
+	{
+		sourceString = "Application";
+		break;
+	}
+	case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD:
+	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+	{
+		sourceString = "Window System";
+		break;
+	}
+	case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD:
+	case GL_DEBUG_SOURCE_SHADER_COMPILER:
+	{
+		sourceString = "Shader Compiler";
+		break;
+	}
+	case GL_DEBUG_SOURCE_THIRD_PARTY:
+	{
+		sourceString = "Third Party";
+		break;
+	}
+	case GL_DEBUG_CATEGORY_OTHER_AMD:
+	case GL_DEBUG_SOURCE_OTHER:
+	{
+		sourceString = "Other";
+		break;
+	}
+	default:
+	{
+		sourceString = "Unknown";
+		break;
+	}
 	}
 
 	switch (type) {
-		case GL_DEBUG_TYPE_ERROR: {
-			typeString = "Error";
-			break;
-		}
-		case GL_DEBUG_CATEGORY_DEPRECATION_AMD:
-		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: {
-			typeString = "Deprecated Behavior";
-			break;
-		}
-		case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD:
-		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: {
-			typeString = "Undefined Behavior";
-			break;
-		}
-		case GL_DEBUG_TYPE_PORTABILITY_ARB: {
-			typeString = "Portability";
-			break;
-		}
-		case GL_DEBUG_CATEGORY_PERFORMANCE_AMD:
-		case GL_DEBUG_TYPE_PERFORMANCE: {
-			typeString = "Performance";
-			break;
-		}
-		case GL_DEBUG_CATEGORY_OTHER_AMD:
-		case GL_DEBUG_TYPE_OTHER: {
-			typeString = "Other";
-			break;
-		}
-		default: {
-			typeString = "Unknown";
-			break;
-		}
+	case GL_DEBUG_TYPE_ERROR:
+	{
+		typeString = "Error";
+		break;
+	}
+	case GL_DEBUG_CATEGORY_DEPRECATION_AMD:
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+	{
+		typeString = "Deprecated Behavior";
+		break;
+	}
+	case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD:
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+	{
+		typeString = "Undefined Behavior";
+		break;
+	}
+	case GL_DEBUG_TYPE_PORTABILITY_ARB:
+	{
+		typeString = "Portability";
+		break;
+	}
+	case GL_DEBUG_CATEGORY_PERFORMANCE_AMD:
+	case GL_DEBUG_TYPE_PERFORMANCE:
+	{
+		typeString = "Performance";
+		break;
+	}
+	case GL_DEBUG_CATEGORY_OTHER_AMD:
+	case GL_DEBUG_TYPE_OTHER:
+	{
+		typeString = "Other";
+		break;
+	}
+	default:
+	{
+		typeString = "Unknown";
+		break;
+	}
 	}
 
 	switch (severity) {
-		case GL_DEBUG_SEVERITY_HIGH: {
-			severityString = "High";
-			break;
-		}
-		case GL_DEBUG_SEVERITY_MEDIUM: {
-			severityString = "Medium";
-			break;
-		}
-		case GL_DEBUG_SEVERITY_LOW: {
-			severityString = "Low";
-			break;
-		}
-		default: {
-			severityString = "Unknown";
-			break;
-		}
+	case GL_DEBUG_SEVERITY_HIGH:
+	{
+		severityString = "High";
+		break;
+	}
+	case GL_DEBUG_SEVERITY_MEDIUM:
+	{
+		severityString = "Medium";
+		break;
+	}
+	case GL_DEBUG_SEVERITY_LOW:
+	{
+		severityString = "Low";
+		break;
+	}
+	default:
+	{
+		severityString = "Unknown";
+		break;
+	}
 	}
 
 	stringStream << "OpenGL Error: " << msg;

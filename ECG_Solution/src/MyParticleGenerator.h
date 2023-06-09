@@ -10,18 +10,25 @@
 struct MyParticle {
 	glm::vec3 position;
 	glm::vec3 velocity;
+	int textureSelect;
+	bool affectedByGravity;
 	//glm::vec4 color;
-	char r, g, b, a;
+	//char r, g, b, a;
 	float size, angle, weight;
 	float life, cameraDistance;
 
-	MyParticle() : position(0.0f), velocity(0.0f), r(255), g(255), b(255), a(255), size(1.0f), angle(0.0f), weight(1.0f), life(0.0f) {}
+	MyParticle() : position(0.0f), velocity(0.0f)/*, r(255), g(255), b(255), a(255)*/, size(1.0f), angle(0.0f), weight(1.0f), life(0.0f) {}
 	bool operator<(const MyParticle& that) const {
 		return this->cameraDistance > that.cameraDistance;
 	}
 };
 
-const int MaxParticles = 50;
+enum ParticleType {
+	ZOMBIE_BLOOD,
+	BEER_SPARKLE
+};
+
+const int MaxParticles = 100;
 
 class MyParticleGenerator {
 public:
@@ -30,21 +37,26 @@ public:
 	void update(float deltaTime);
 	void draw();
 
+	void createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity);
+
 protected:
 
 private:
 	std::vector<MyParticle> particles_;
 	unsigned int amount_;
+	unsigned int amountToDraw_;
 	MyShader* shader_;
-	My2DTexture* texture_;
+	My2DTexture* zombieBloodTexture_;
+	My2DTexture* beerParticleTexture_;
 	NewPlayer* player_;
 	unsigned int VAO_;
-	unsigned int verticesVBO_, positionVBO_, colorVBO_;
+	unsigned int verticesVBO_, positionVBO_, textureVBO_, colorVBO_;
 	unsigned int lastUsedParticle_ = 0;
 
 	MyParticle particlesContainer_[MaxParticles];
 	float* particlePositions_ = new float[MaxParticles * 4];
-	char* particleColors_ = new char[MaxParticles * 4];
+	int* particleTextures_ = new int[MaxParticles * 1];
+	//char* particleColors_ = new char[MaxParticles * 4];
 
 	void init();
 	unsigned int findFirstUnusedParticle();
