@@ -103,7 +103,6 @@ float cameraNear = 0.0f;
 float cameraFar = 0.0f;
 
 // Shaders
-std::map<string, MyShader*> shaders;
 //MyShader bloomBlurShader;
 //MyShader bloomCombineShader;
 MyShader textShader;
@@ -227,12 +226,10 @@ int main(int argc, char** argv) {
 
 	// Load default shader for objects
 	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
-	shaders["Default"] = &defaultShader;
 
 	// Prepare Text Renderer and Shader
 	MyTextRenderer textRenderer("arial/arial.ttf");
 	textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
-	shaders["Text Shader"] = &textShader;
 	// set the "camera" to be used for text rendering (static fixed orthogonal view-projection)
 	glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
 	textShader.use();
@@ -326,7 +323,6 @@ int main(int argc, char** argv) {
 	scene->addObject(&beerFive);
 
 	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
-	shaders["Animation Shader"] = &animationShader;
 
 	/*
 	Vampire vampire(&animationShader, gPhysics);
@@ -335,8 +331,6 @@ int main(int argc, char** argv) {
 	*/
 
 	// Init Zombies
-	//MyShader animationShaderZombieOne = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
-	//shaders["Animation Shader (Zombie 1)"] = &animationShaderZombieOne;
 	Zombie zombieOne{ &animationShader, gPhysics };
 	scene->addObject(&zombieOne, true);
 	zombieOne.setLocalPosition(glm::vec3(2, 1.5, 2));
@@ -416,7 +410,6 @@ int main(int argc, char** argv) {
 
 	// Setup lights shader
 	lightSourceShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");
-	shaders["Light Source Shader"] = &lightSourceShader;
 
 	// Prepare Light Cubes 
 	unsigned int VBO, lightVAO;
@@ -503,15 +496,15 @@ int main(int argc, char** argv) {
 		lastTime = time;
 		framesPerSecond = 1.0f / deltaTime;
 
+		// Prepare Camera (view-projection matrix)
+		glm::mat4 projection = player->getActiveCamera()->getProjectionMatrix();
+		glm::mat4 view = player->getActiveCamera()->getViewMatrix();
+
 		// Set Shader Attributes
 		defaultShader.use();
 		defaultShader.setVec3("viewPos", player->getActiveCamera()->getPosition());
 		defaultShader.setBool("enableNormalMapping", enableNormalMapping);
 		defaultShader.setBool("enableShowNormals", enableShowNormals);
-
-		// Prepare Camera (view-projection matrix)
-		glm::mat4 projection = player->getActiveCamera()->getProjectionMatrix();
-		glm::mat4 view = player->getActiveCamera()->getViewMatrix();
 		defaultShader.setMat4("projection", projection);
 		defaultShader.setMat4("view", view);
 
@@ -521,6 +514,10 @@ int main(int argc, char** argv) {
 		animationShader.setBool("enableShowNormals", enableShowNormals);
 		animationShader.setMat4("projection", projection);
 		animationShader.setMat4("view", view);
+
+		particleShader.use();
+		particleShader.setMat4("projection", projection);
+		particleShader.setMat4("view", view);
 
 		// Fail Condition
 		if (player->getHealth() <= 0) {
@@ -533,14 +530,6 @@ int main(int argc, char** argv) {
 			scene->step(deltaTime);
 		}
 		scene->draw();
-
-		particleShader.use();
-		particleShader.setMat4("projection", projection);
-		particleShader.setMat4("view", view);
-		/*
-		particleGen.update(deltaTime);
-		particleGen.draw();
-		*/
 
 		// Render Light-Cubes
 		//glBindVertexArray(lightVAO);
@@ -877,8 +866,6 @@ void static initOpenGL() {
 	} else {
 		window = glfwCreateWindow(screenWidth, screenHeight, windowTitle.c_str(), monitor, nullptr);
 	}
-
-
 
 	if (!window) {
 		glfwTerminate();
