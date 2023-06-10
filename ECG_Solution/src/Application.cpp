@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string>
 #include <map>
+#include <irrklang/irrKlang.h>
 
 #include "MyShader.h"
 #include "stb/stb_image.h"
@@ -117,6 +118,8 @@ Scene* scene;
 NewPlayer* player = nullptr;
 MySpotLight* playerFlashLight = nullptr;
 
+irrklang::ISoundEngine* soundEngine;
+
 const int maxScore = 5;
 int score = 0;
 
@@ -124,6 +127,8 @@ const int maxBullets = 4;
 int bullets = maxBullets;
 
 bool isPaused = false;
+bool isGameLost = false;
+bool isGameWon = false;
 bool enableWireframe = false;
 bool enableBackfaceCulling = true;
 bool enableDebugHUD = true;
@@ -162,6 +167,14 @@ int main(int argc, char** argv) {
 	// Initialize PhysX Physics Engine
 	initPhysX();
 	std::cout << "PhysX initialized" << std::endl;
+
+	soundEngine = irrklang::createIrrKlangDevice();
+
+	if (!soundEngine) {
+		std::cout << "irrKlang not initialized successfully" << std::endl;
+	}
+
+	soundEngine->play2D("assets/sounds/explosion.wav");
 
 	// setup for bloom
 	/*
@@ -303,23 +316,23 @@ int main(int argc, char** argv) {
 
 	// Init Beers
 	Beer beerOne{ &defaultShader, gPhysics };
-	beerOne.setLocalPosition(glm::vec3(-5, 1.0f, 2));
+	beerOne.setLocalPosition(glm::vec3(-5, 1.0f, 0));
 	scene->addObject(&beerOne);
 
 	Beer beerTwo{ &defaultShader, gPhysics };
-	beerTwo.setLocalPosition(glm::vec3(-5, 1.0f, 4));
+	beerTwo.setLocalPosition(glm::vec3(-5, 1.0f, 2));
 	scene->addObject(&beerTwo);
 
 	Beer beerThree{ &defaultShader, gPhysics };
-	beerThree.setLocalPosition(glm::vec3(-5, 1.0f, 6));
+	beerThree.setLocalPosition(glm::vec3(-5, 1.0f, 4));
 	scene->addObject(&beerThree);
 
 	Beer beerFour{ &defaultShader, gPhysics };
-	beerFour.setLocalPosition(glm::vec3(-5, 1.0f, 8));
+	beerFour.setLocalPosition(glm::vec3(-5, 1.0f, 6));
 	scene->addObject(&beerFour);
 
 	Beer beerFive{ &defaultShader, gPhysics };
-	beerFive.setLocalPosition(glm::vec3(-5, 1.0f, 10));
+	beerFive.setLocalPosition(glm::vec3(-5, 1.0f, 8));
 	scene->addObject(&beerFive);
 
 	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
@@ -352,7 +365,7 @@ int main(int argc, char** argv) {
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
-		false, glm::vec3(-0.2f, -1.0f, 0.3f));
+		true, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
 	dirLight.addLightToShader(animationShader);
 
@@ -526,17 +539,26 @@ int main(int argc, char** argv) {
 		particleShader.setMat4("projection", projection);
 		particleShader.setMat4("view", view);
 
-		// Fail Condition
-		if (player->getHealth() <= 0) {
-			exit(100);
-		}
-
 		// Update the game
-		if (!isPaused) {
+		if (isPaused == false && isGameLost == false && isGameWon == false) {
 			scene->handleKeyboardInput(window, deltaTime);
 			scene->step(deltaTime);
 		}
+
 		scene->draw();
+
+		// Fail Condition
+		if (player->getHealth() <= 0) {
+			isGameLost = true;
+			isPaused = true;
+			//exit(100);
+		}
+
+		// win condition
+		if (score == maxScore) {
+			isGameWon = true;
+			isPaused = true;
+		}
 
 		// Render Light-Cubes
 		//glBindVertexArray(lightVAO);
@@ -596,6 +618,9 @@ int main(int argc, char** argv) {
 	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &VBO);
 
+	// destroy irrKlang
+	soundEngine->drop();
+
 	// Breakdown Bullet Physics Engine
 	destroyPhysX();
 
@@ -612,7 +637,7 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
-	if (!isPaused) {
+	if (isPaused == false) {
 		// Scoreboard - replaced by GUI beers
 		//textRenderer.renderText(textShader, "Score: " + std::to_string(score) + "/" + std::to_string(maxScore), 14.0f, 14.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		// Health - replaced by GUI health
@@ -620,25 +645,36 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		// Ammo - replaced by GUI bullets
 		//textRenderer.renderText(textShader, "Ammo: " + std::to_string(bullets) + "/" + std::to_string(maxBullets), 14.0f, 62.0f, 0.5f, glm::vec3(1, 1, 1), enableWireframe);
 
-
 		if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
 			// display crosshair
 			textRenderer.renderText(textShader, "+", ((float)screenWidth / 2.0f) - (48.0f * 0.2f), ((float)screenHeight / 2.0f) - (48.0f * 0.2f), 0.8f, glm::vec3(1, 1, 1), enableWireframe);
 		}
 	} else {
-		// Pause Menu
-		textRenderer.renderText(textShader, "GAME PAUSED", 20.0f, (float)screenHeight - 62.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "PRESS [X] TO QUIT", 24.0f, (float)screenHeight - 90.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		if (isPaused == true && isGameLost == false && isGameWon == false) {
+			// Pause Menu
+			textRenderer.renderText(textShader, "GAME PAUSED", 20.0f, (float)screenHeight - 62.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "PRESS [X] TO QUIT", 24.0f, (float)screenHeight - 90.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-		textRenderer.renderText(textShader, "CONTROLS", 24.0f, (float)screenHeight - 150.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "WASD", 24.0f, (float)screenHeight - 170.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "Move", 120.0f, (float)screenHeight - 170.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "Mouse", 24.0f, (float)screenHeight - 190.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "Look Around", 120.0f, (float)screenHeight - 190.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "LMB", 24.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "Shoot", 120.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "Escape", 24.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-		textRenderer.renderText(textShader, "Pause / Unpause", 120.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "CONTROLS", 24.0f, (float)screenHeight - 150.0f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "WASD", 24.0f, (float)screenHeight - 170.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Move", 120.0f, (float)screenHeight - 170.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Mouse", 24.0f, (float)screenHeight - 190.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Look Around", 120.0f, (float)screenHeight - 190.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "LMB", 24.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Shoot", 120.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Escape", 24.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Pause / Unpause", 120.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		}
+
+		if (isGameLost == true) {
+			textRenderer.renderText(textShader, "GAME OVER", (float)(screenWidth / 2.0f) * 0.8f, (float)(screenHeight / 2.0f) * 0.8f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Press [Enter] to restart", (float)(screenWidth / 2.0f) * 0.7f, (float)(screenHeight / 2.0f) * 0.7f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		}
+
+		if (isGameWon == true) {
+			textRenderer.renderText(textShader, "You Win!", (float)(screenWidth / 2.0f) * 0.8f, (float)(screenHeight / 2.0f) * 0.8f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Press [Enter] to restart", (float)(screenWidth / 2.0f) * 0.7f, (float)(screenHeight / 2.0f) * 0.7f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+		}
 	}
 
 	if (enableDebugHUD) {
@@ -707,7 +743,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	switch (key) {
 	case GLFW_KEY_ESCAPE:
 		// Pause game
-		isPaused = !isPaused;
+		if (isGameLost == false && isGameWon == false) {
+			isPaused = !isPaused;
+		}
+		break;
+	case GLFW_KEY_ENTER:
+		// restart game if over
+		if (isGameLost == true || isGameWon == true) {
+			scene->reset();
+			bullets = maxBullets;
+			score = 0;
+			isGameLost = false;
+			isGameWon = false;
+			isPaused = false;
+		}
 		break;
 	case GLFW_KEY_F1:
 		enableWireframe = !enableWireframe;

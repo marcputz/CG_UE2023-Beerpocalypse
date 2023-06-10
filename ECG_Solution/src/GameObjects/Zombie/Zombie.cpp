@@ -62,6 +62,10 @@ void Zombie::follow(NewGameObject* objectToFollow) {
 	followObject = objectToFollow;
 }
 
+void Zombie::resetSpecifics() {
+	std::cout << "Reset Zombie" << std::endl;
+}
+
 void Zombie::processWindowInput(GLFWwindow* window, float deltaTime) {
 
 }

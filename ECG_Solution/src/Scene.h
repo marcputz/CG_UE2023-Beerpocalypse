@@ -42,6 +42,7 @@ public:
 
 	void step(float deltaTime);
 	void draw();
+	void reset();
 
 	// Geerbt über PxSimulationEventCallback
 	virtual void onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) override;

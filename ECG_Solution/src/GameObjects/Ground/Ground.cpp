@@ -13,6 +13,11 @@ void Ground::onHealthChange(int oldHealth, int newHealth)
 {
 }
 
+void Ground::resetSpecifics() {
+	std::cout << "Reset Ground" << std::endl;
+
+}
+
 void Ground::onBeforeUpdate() {
 
 }

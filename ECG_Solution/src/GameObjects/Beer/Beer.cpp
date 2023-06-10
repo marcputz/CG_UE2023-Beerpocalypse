@@ -67,3 +67,7 @@ void Beer::onHealthChange(int oldHealth, int newHealth)
 {
 }
 
+void Beer::resetSpecifics() {
+	std::cout << "Reset Beer" << std::endl;
+}
+

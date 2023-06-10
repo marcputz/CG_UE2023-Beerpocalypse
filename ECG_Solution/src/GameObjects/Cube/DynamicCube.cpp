@@ -14,6 +14,10 @@ void DynamicCube::onHealthChange(int oldHealth, int newHealth)
 {
 }
 
+void DynamicCube::resetSpecifics() {
+	std::cout << "Reset Dynamic Cube" << std::endl;
+}
+
 void DynamicCube::onBeforeUpdate() {
 
 }

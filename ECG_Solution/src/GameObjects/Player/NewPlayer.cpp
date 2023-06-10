@@ -198,3 +198,8 @@ void NewPlayer::onHealthChange(int oldHealth, int newHealth){
 void NewPlayer::setRespawnPoint(glm::vec3& newRespawnPoint) {
 	this->respawnPoint_ = newRespawnPoint;
 }
+
+void NewPlayer::resetSpecifics() {
+	std::cout << "Reset Player" << std::endl;
+
+}

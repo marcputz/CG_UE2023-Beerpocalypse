@@ -30,6 +30,8 @@ protected:
 
 	// Transform (Position, Rotation, etc.)
 	Transform* transform_;
+	glm::vec3 originalPosition;
+	bool hasOriginalPosition = false;
 
 	// Model data
 	MyModel* model_;
@@ -79,6 +81,7 @@ protected:
 	*/
 	virtual void onBeforeUpdate() = 0;
 	virtual void onUpdate(float deltaTime) = 0;
+	virtual void resetSpecifics() = 0;
 
 	// Helper Functions
 	glm::vec3 asGlmVec3(physx::PxVec3 vec);
@@ -111,6 +114,10 @@ public:
 	void setCollider(PxShape* colliderShape);
 	PxShape* getCollider() { return physicsShape_; }
 	PxRigidActor* getRigidActor() { return this->physicsActor_; }
+
+	void reset();
+
+	bool isInsideFrustum();
 
 	/**
 	* This update function must be called BEFORE the physics update

@@ -24,4 +24,7 @@ public:
 
 	// Inherited via NewGameObject
 	virtual void onHealthChange(int oldHealth, int newHealth) override;
+
+	// Inherited via NewGameObject
+	virtual void resetSpecifics() override;
 };

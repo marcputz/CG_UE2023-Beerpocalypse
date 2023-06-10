@@ -21,3 +21,7 @@ void Vampire::processMouseInput(float offsetX, float offsetY) {
 void Vampire::onHealthChange(int oldHealth, int newHealth)
 {
 }
+
+void Vampire::resetSpecifics() {
+	std::cout << "Reset Vampire" << std::endl;
+}

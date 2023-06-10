@@ -24,4 +24,7 @@ public:
 	bool isFollowing();
 	NewGameObject* getFollowing();
 	void follow(NewGameObject* objectToFollow);
+
+	// Inherited via NewGameObject
+	virtual void resetSpecifics() override;
 };

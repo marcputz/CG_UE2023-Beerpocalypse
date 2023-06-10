@@ -46,6 +46,14 @@ void NewGameObject::setCollider(PxShape* colliderShape) {
 	}
 }
 
+void NewGameObject::reset() {
+	this->setLocalPosition(this->originalPosition);
+	this->setHealth(100);
+	this->setVisible(true);
+
+	this->resetSpecifics();
+}
+
 void NewGameObject::setParent(NewGameObject* newParent) {
 	if (newParent != nullptr) {
 		this->transform_->setParent(newParent->transform_);
@@ -74,6 +82,11 @@ int NewGameObject::getHealth() {
 }
 
 void NewGameObject::setLocalPosition(glm::vec3 newPosition) {
+	if (this->hasOriginalPosition == false) {
+		this->originalPosition = newPosition;
+		this->hasOriginalPosition = true;
+	}
+
 	this->transform_->setLocalPosition(newPosition);
 
 	PxTransform transf = physicsActor_->getGlobalPose();

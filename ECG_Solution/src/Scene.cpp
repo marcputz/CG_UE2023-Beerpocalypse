@@ -249,6 +249,13 @@ void Scene::draw() {
 	}
 }
 
+
+void Scene::reset() {
+	for (NewGameObject* go : objects) {
+		go->reset();
+	}
+}
+
 /* --- SIMULATION CALLBACKS --- */
 
 void Scene::onConstraintBreak(PxConstraintInfo* constraints, PxU32 count) {

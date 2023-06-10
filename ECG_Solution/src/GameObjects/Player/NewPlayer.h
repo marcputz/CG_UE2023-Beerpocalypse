@@ -54,5 +54,8 @@ public:
 	virtual void onHealthChange(int oldHealth, int newHealth) override;
 
 	void setRespawnPoint(glm::vec3& newRespawnPoint);
+
+	// Inherited via NewGameObject
+	virtual void resetSpecifics() override;
 };
 
