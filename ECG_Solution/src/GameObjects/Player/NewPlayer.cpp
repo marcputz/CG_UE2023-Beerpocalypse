@@ -72,6 +72,7 @@ void NewPlayer::onCollision(NewGameObject* otherObject) {
 			this->setHealth(this->getHealth() + 20);
 			score++;
 			beer->setVisible(false);
+			MyAssetManager::playSound("bell");
 		}
 		return;
 	}
@@ -200,6 +201,8 @@ void NewPlayer::setRespawnPoint(glm::vec3& newRespawnPoint) {
 }
 
 void NewPlayer::resetSpecifics() {
-	std::cout << "Reset Player" << std::endl;
-
+	//std::cout << "Reset Player" << std::endl;
+	if (activeCameraType == CAMERA_FIRST_PERSON) {
+		setVisible(false);
+	}
 }

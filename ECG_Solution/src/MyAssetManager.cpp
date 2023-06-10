@@ -2,6 +2,8 @@
 
 std::map<std::string, MyShader> MyAssetManager::shaders_;
 std::map<std::string, My2DTexture> MyAssetManager::textures_;
+irrklang::ISoundEngine* MyAssetManager::irrKlangSoundEngine_ = irrklang::createIrrKlangDevice();
+std::map<std::string, irrklang::ISoundSource*> MyAssetManager::soundSources_;
 
 Assimp::Importer MyAssetManager::importer_;
 
@@ -92,6 +94,35 @@ My2DTexture MyAssetManager::loadTexture(const char* textureFileName, My2DTexture
 My2DTexture MyAssetManager::getTexture(std::string textureName) {
 	return textures_[textureName];
 }
+
+bool MyAssetManager::loadSoundSource(const char* soundSourceFileName, std::string soundName) {
+	if (irrKlangSoundEngine_) {
+		soundSources_[soundName] = irrKlangSoundEngine_->addSoundSourceFromFile(soundSourceFileName, irrklang::ESM_NO_STREAMING, true);
+
+		// sounds lag the application when they are played the first time
+		// so in order to avoid a lag when a sound is played during gameplay (which can break physx)
+		// play the sound muted (0.0f volume) once at initial load, then set volume back to 1.0f
+		soundSources_[soundName]->setDefaultVolume(0.0f);
+		irrKlangSoundEngine_->play2D(soundSources_[soundName]);
+		soundSources_[soundName]->setDefaultVolume(0.5f);
+
+		return true;
+	}
+
+	return false;
+}
+
+bool MyAssetManager::playSound(std::string soundName) {
+	if (irrKlangSoundEngine_ && soundSources_.count(soundName)) {
+		irrKlangSoundEngine_->play2D(soundSources_[soundName]);
+		return true;
+	}
+
+	return false;
+}
+
+
+
 /*
 MyModel MyAssetManager::loadModel(const char* modelFileName, std::string modelName) {
 	auto search = models_.find(modelName);
@@ -131,4 +162,6 @@ void MyAssetManager::cleanUp() {
 	for (std::pair<std::string, My2DTexture> iter : textures_) {
 		glDeleteTextures(1, &iter.second.ID_);
 	}
+
+	irrKlangSoundEngine_->drop();
 }

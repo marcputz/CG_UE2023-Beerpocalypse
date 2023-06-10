@@ -109,6 +109,9 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 		}
 
 		if (playerGo != nullptr) {
+
+			MyAssetManager::playSound("explosion");
+
 			NewPlayer* player = static_cast<NewPlayer*>(playerGo);
 
 			// Define Ray

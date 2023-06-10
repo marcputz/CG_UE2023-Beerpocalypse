@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string>
 #include <map>
-#include <irrklang/irrKlang.h>
 
 #include "MyShader.h"
 #include "stb/stb_image.h"
@@ -58,8 +57,8 @@ void static initPhysX();
 void static destroyPhysX();
 
 // irrKlang
+// load all necessary sounds in the asset manager
 void static initIrrKlang();
-void static destroyIrrKlang();
 
 // Game-Logic and Rendering
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader);
@@ -150,13 +149,6 @@ PxFoundation* gFoundation = nullptr;
 PxPhysics* gPhysics = nullptr;
 PxPvd* gPvd = nullptr;
 
-// irrKlang
-irrklang::ISoundEngine* soundEngine = nullptr;
-irrklang::ISoundSource* explosionSoundSource = nullptr;
-irrklang::ISoundSource* gunshotSoundSource = nullptr;
-irrklang::ISoundSource* zombiehitSoundSource = nullptr;
-irrklang::ISoundSource* beerpickupSoundSource = nullptr;
-
 /* ------------------------- */
 /*           MAIN            */
 /* ------------------------- */
@@ -177,12 +169,8 @@ int main(int argc, char** argv) {
 	initPhysX();
 	std::cout << "PhysX initialized" << std::endl;
 
-	// Initialize irrKlang and all the sounds that will be used
+	// Initialize sounds that will be used
 	initIrrKlang();
-
-	if (soundEngine && explosionSoundSource) {
-		soundEngine->play2D(explosionSoundSource);
-	}
 
 	// setup for bloom
 	/*
@@ -283,7 +271,6 @@ int main(int argc, char** argv) {
 	scene->addObject(&testCubeThree);
 
 	// Init wall(s)
-
 	StaticCube wallRightOfSpawn{ &defaultShader, gPhysics };
 	wallRightOfSpawn.setLocalPosition(glm::vec3(-10.0f, 1.5f, 0.0f));
 	wallRightOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
@@ -626,8 +613,8 @@ int main(int argc, char** argv) {
 	glDeleteVertexArrays(1, &lightVAO);
 	glDeleteBuffers(1, &VBO);
 
-	// Breakdown irrKlang and created sound sources
-	destroyIrrKlang();
+	// Breakdown shaders, textures and irrklang loaded via the MyAssetManager
+	MyAssetManager::cleanUp();
 
 	// Breakdown Bullet Physics Engine
 	destroyPhysX();
@@ -1027,28 +1014,9 @@ void static destroyPhysX() {
 }
 
 void static initIrrKlang() {
-	soundEngine = irrklang::createIrrKlangDevice();
-
-	if (!soundEngine) {
-		std::cout << "irrKlang not initialized successfully" << std::endl;
-		return;
-	}
-
-	explosionSoundSource = soundEngine->addSoundSourceFromFile("assets/sounds/explosion.wav");
-	//gunshotSoundSource = nullptr;
-	//zombiehitSoundSource = nullptr;
-	//beerpickupSoundSource = nullptr;
-}
-
-void static destroyIrrKlang() {
-	if (explosionSoundSource) {
-		// for some reason explicitly dropping the sound source throws an exception
-		//explosionSoundSource->drop();
-	}
-
-	if (soundEngine) {
-		soundEngine->drop();
-	}
+	MyAssetManager::loadSoundSource("assets/sounds/explosion.wav", "explosion");
+	MyAssetManager::loadSoundSource("assets/sounds/bell.wav", "bell");
+	// add more
 }
 
 void error_callback(int errorCode, const char* description) {

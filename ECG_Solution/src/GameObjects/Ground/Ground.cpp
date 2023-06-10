@@ -14,7 +14,7 @@ void Ground::onHealthChange(int oldHealth, int newHealth)
 }
 
 void Ground::resetSpecifics() {
-	std::cout << "Reset Ground" << std::endl;
+	//std::cout << "Reset Ground" << std::endl;
 
 }
 

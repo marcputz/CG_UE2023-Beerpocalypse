@@ -14,7 +14,7 @@ void StaticCube::onHealthChange(int oldHealth, int newHealth)
 }
 
 void StaticCube::resetSpecifics() {
-	std::cout << "Reset Static Cube" << std::endl;
+	//std::cout << "Reset Static Cube" << std::endl;
 }
 
 void StaticCube::onBeforeUpdate() {
