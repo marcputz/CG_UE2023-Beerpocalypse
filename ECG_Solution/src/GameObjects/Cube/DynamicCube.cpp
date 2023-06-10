@@ -1,7 +1,7 @@
 #include "DynamicCube.h"
 
 DynamicCube::DynamicCube(MyShader* shader, PxPhysics* physics) 
-	: NewGameObject("Dynamic Cube", shader, physics, "cube/brick_cube/cube.obj", false) {
+	: NewGameObject("Dynamic Cube", shader, physics, "cube/wood_cube/cube.obj", false) {
 	
 	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
 	PxBoxGeometry geometry = PxBoxGeometry(1,1, 1);
