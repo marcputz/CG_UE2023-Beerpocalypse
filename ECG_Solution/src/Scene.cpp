@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "GameObjects/Zombie/Zombie.h"
+#include "GameObjects/Cube/DynamicCube.h"
 
 extern int bullets;
 
@@ -153,6 +154,14 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 									return; // skip the rest of this function, as only the first hit should be processed.
 								} else {
 									// zombie is invisible, so skip it (most likely it was defeated before)
+								}
+							} else {
+								// if object is a dynamic cube, set some force to push the cube
+								DynamicCube* cube = dynamic_cast<DynamicCube*>(object);
+								if (cube != nullptr) {
+									PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(cube->getRigidActor());
+									dyn->addForce(rayDirection * 2.0, PxForceMode::eIMPULSE);
+									return;
 								}
 							}
 						}
