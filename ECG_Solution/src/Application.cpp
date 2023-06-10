@@ -404,8 +404,7 @@ int main(int argc, char** argv) {
 	scene->addLight(&spotLightOne);
 
 	particleShader = MyAssetManager::loadShader("particle.vert", "particle.frag", "particle");
-	My2DTexture particleTexture = MyAssetManager::loadTexture("assets/textures/particle.png", SPRITE, true, "particle");
-	MyParticleGenerator particleGen(particleShader, particleTexture, player, 50);
+	MyParticleGenerator particleGen(particleShader/*, particleTexture*/, player, 50);
 	scene->setParticleGenerator(&particleGen);
 
 	// Setup lights shader
@@ -478,6 +477,14 @@ int main(int argc, char** argv) {
 	/*---- RENDER LOOP -----*/
 	float time = float(glfwGetTime());
 	float lastTime = time;
+
+	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
+	particleGen.createParticles(beerOne.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerTwo.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerThree.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerFour.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerFive.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+
 
 	std::cout << "Render Loop START" << std::endl;
 	while (!glfwWindowShouldClose(window)) {

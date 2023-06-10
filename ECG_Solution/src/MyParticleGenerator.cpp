@@ -1,6 +1,6 @@
 #include "MyParticleGenerator.h"
 
-MyParticleGenerator::MyParticleGenerator(MyShader& shader, My2DTexture& texture, NewPlayer* player, unsigned int amount) : shader_(&shader), zombieBloodTexture_(&texture), player_(player), amount_(amount) {
+MyParticleGenerator::MyParticleGenerator(MyShader& shader/*, My2DTexture& texture*/, NewPlayer* player, unsigned int amount) : shader_(&shader)/*, zombieBloodTexture_(&texture)*/, player_(player), amount_(amount) {
 	init();
 }
 
@@ -54,11 +54,19 @@ void MyParticleGenerator::update(float deltaTime) {
 	for (int i = 0; i < MaxParticles; i++) {
 		MyParticle& p = particlesContainer_[i];
 
-		if (p.life > 0.0f) {
-			p.life -= deltaTime;
+		if (p.remainingLife > 0.0f) {
+			p.remainingLife -= deltaTime;
 
-			if (p.life > 0.0f) {
-				p.velocity += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.05f;
+			// reset lifetime of sparkles and reverse their movement
+			if (p.remainingLife < 0.0f && p.textureSelect == 2) {
+				p.remainingLife = p.maxLife;
+				p.velocity = (p.velocity * -1.0f);
+			}
+
+			if (p.remainingLife > 0.0f) {
+				if (p.affectedByGravity) {
+					p.velocity += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.05f;
+				}
 				p.position += p.velocity * deltaTime;
 				p.cameraDistance = glm::length2(p.position - player_->getActiveCamera()->getPosition());
 
@@ -125,9 +133,13 @@ void MyParticleGenerator::draw() {
 	shader_->use();
 
 	glActiveTexture(GL_TEXTURE0);
-	zombieBloodTexture_->bind();
+	zombieBloodTexture_.bind();
 	// TODO: create an actual blood texture and also a sparkle texture and bind it
-	shader_->setInt("bloodTexture", zombieBloodTexture_->ID_);
+	shader_->setInt("bloodTexture", 0);
+	glActiveTexture(GL_TEXTURE1);
+	beerParticleTexture_.bind();
+	shader_->setInt("sparkleTexture", 1);
+
 	PlayerCamera* currCam = player_->getActiveCamera();
 	currCam->updateRightAndUp();
 	shader_->setVec3("cameraRight", currCam->getRight() * -1.0f);
@@ -173,17 +185,20 @@ void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 directio
 
 			for (int i = 0; i < amount; i++) {
 				int particleIndex = findFirstUnusedParticle();
-
-				particlesContainer_[particleIndex].life = avgLifetime;
+				particlesContainer_[particleIndex].maxLife = avgLifetime;
+				particlesContainer_[particleIndex].remainingLife = avgLifetime;
 				// all blood particles begin a the same spot
 				particlesContainer_[particleIndex].position = position;
 				particlesContainer_[particleIndex].textureSelect = texSelect;
-
+				// but "spurt out" in different angles
 				float spread = 1.5f;
-				glm::vec3 randomDir = glm::vec3((rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f);
+				glm::vec3 randomDir = glm::vec3(
+					(rand() % 2000 - 1000.0f) / 1000.0f,
+					(rand() % 2000 - 1000.0f) / 1000.0f,
+					(rand() % 2000 - 1000.0f) / 1000.0f);
 
 				particlesContainer_[particleIndex].velocity = direction + randomDir * spread;
-				particlesContainer_[particleIndex].size = (rand() % 1000) / 3000.0f + 0.1f;
+				particlesContainer_[particleIndex].size = (rand() % 1000) / 5000.0f + 0.05f;
 				particlesContainer_[particleIndex].affectedByGravity = hasGravity;
 			}
 
@@ -194,18 +209,25 @@ void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 directio
 
 			for (int i = 0; i < amount; i++) {
 				int particleIndex = findFirstUnusedParticle();
-
-				particlesContainer_[particleIndex].life = avgLifetime;
+				// add some lifetime variance
+				float randomTimeOffset = (rand() % 2000 - 1000.0f) / 2000.0f;
+				particlesContainer_[particleIndex].maxLife = avgLifetime + randomTimeOffset;
+				particlesContainer_[particleIndex].remainingLife = particlesContainer_[particleIndex].maxLife;
 				// particles should be randomly around the beer
-				particlesContainer_[particleIndex].position = position;
 				// add randomness to position
+				glm::vec3 randomXYZPos = glm::vec3(
+					(rand() % 2000 - 1000.0f) / 1000.0f,
+					(rand() % 2000 - 1000.0f) / 2000.0f,
+					(rand() % 2000 - 1000.0f) / 1000.0f);
+				particlesContainer_[particleIndex].position = position + randomXYZPos;
+				
 				particlesContainer_[particleIndex].textureSelect = texSelect;
 
 				//float spread = 1.5f;
 				//glm::vec3 randomDir = glm::vec3((rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f, (rand() % 2000 - 1000.0f) / 1000.0f);
 
 				particlesContainer_[particleIndex].velocity = direction; // + randomDir * spread;
-				particlesContainer_[particleIndex].size = (rand() % 1000) / 3000.0f + 0.1f;
+				particlesContainer_[particleIndex].size = (rand() % 1000) / 5000.0f + 0.05f;
 				particlesContainer_[particleIndex].affectedByGravity = hasGravity;
 			}
 
@@ -248,7 +270,7 @@ void MyParticleGenerator::init() {
 	*/
 
 	for (unsigned int i = 0; i < MaxParticles; i++) {
-		particlesContainer_[i].life = -1.0f;
+		particlesContainer_[i].remainingLife = -1.0f;
 		particlesContainer_[i].cameraDistance = -1.0f;
 	}
 
@@ -258,6 +280,9 @@ void MyParticleGenerator::init() {
 		-0.5f,  0.5f, 0.0f,
 		 0.5f,  0.5f, 0.0f
 	};
+
+	this->zombieBloodTexture_ = MyAssetManager::loadTexture("assets/textures/zombieBloodParticle.png", DIFFUSE, true, "zombieBloodParticle");
+	this->beerParticleTexture_ = MyAssetManager::loadTexture("assets/textures/beerSparkle.png", DIFFUSE, true, "beerSparkleParticle");
 
 	glGenVertexArrays(1, &VAO_);
 	glBindVertexArray(VAO_);
@@ -305,14 +330,14 @@ unsigned int MyParticleGenerator::findFirstUnusedParticle() {
 	*/
 
 	for (unsigned int i = 0; i < MaxParticles; i++) {
-		if (particlesContainer_[i].life <= 0.0f) {
+		if (particlesContainer_[i].remainingLife <= 0.0f) {
 			lastUsedParticle_ = i;
 			return i;
 		}
 	}
 
 	for (unsigned int i = 0; i < lastUsedParticle_; i++) {
-		if (particlesContainer_[i].life <= 0.0f) {
+		if (particlesContainer_[i].remainingLife <= 0.0f) {
 			lastUsedParticle_ = i;
 			return i;
 		}

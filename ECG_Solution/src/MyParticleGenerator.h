@@ -13,14 +13,15 @@ struct MyParticle {
 	int textureSelect;
 	bool affectedByGravity;
 	float size;
-	float life;
+	float remainingLife;
+	float maxLife;
 	float cameraDistance;
 	//float angle;
 	//float weight;
 	//glm::vec4 color;
 	//char r, g, b, a;
 
-	MyParticle() : position(0.0f), velocity(0.0f)/*, r(255), g(255), b(255), a(255)*/, size(1.0f)/*, angle(0.0f), weight(1.0f)*/, life(0.0f) {}
+	MyParticle() : position(0.0f), velocity(0.0f)/*, r(255), g(255), b(255), a(255)*/, size(1.0f)/*, angle(0.0f), weight(1.0f)*/, remainingLife(0.0f), maxLife(0.0f) {}
 	bool operator<(const MyParticle& that) const {
 		return this->cameraDistance > that.cameraDistance;
 	}
@@ -35,7 +36,7 @@ const int MaxParticles = 100;
 
 class MyParticleGenerator {
 public:
-	MyParticleGenerator(MyShader& shader, My2DTexture& texture, NewPlayer* player, unsigned int amount);
+	MyParticleGenerator(MyShader& shader/*, My2DTexture& texture*/, NewPlayer* player, unsigned int amount);
 	//void update(float deltaTime, GameObject& object, unsigned int newParticles, glm::vec3 offset = glm::vec3(0.0f, 0.0f, 0.0f));
 	void update(float deltaTime);
 	void draw();
@@ -49,8 +50,8 @@ private:
 	unsigned int amount_;
 	unsigned int amountToDraw_;
 	MyShader* shader_;
-	My2DTexture* zombieBloodTexture_;
-	My2DTexture* beerParticleTexture_;
+	My2DTexture zombieBloodTexture_;
+	My2DTexture beerParticleTexture_;
 	NewPlayer* player_;
 	unsigned int VAO_;
 	unsigned int verticesVBO_, positionVBO_, textureVBO_, colorVBO_;
