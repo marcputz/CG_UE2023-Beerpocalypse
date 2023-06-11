@@ -104,7 +104,7 @@ bool MyAssetManager::loadSoundSource(const char* soundSourceFileName, std::strin
 		// play the sound muted (0.0f volume) once at initial load, then set volume back to 1.0f
 		soundSources_[soundName]->setDefaultVolume(0.0f);
 		irrKlangSoundEngine_->play2D(soundSources_[soundName]);
-		soundSources_[soundName]->setDefaultVolume(0.5f);
+		soundSources_[soundName]->setDefaultVolume(1.0f);
 
 		return true;
 	}

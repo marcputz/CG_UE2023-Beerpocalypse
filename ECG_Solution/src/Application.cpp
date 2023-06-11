@@ -32,7 +32,6 @@ using namespace physx;
 using std::cout;
 using std::endl;
 
-
 /* ------------------------- */
 /*        PROTOTYPES         */
 /* ------------------------- */
@@ -78,6 +77,8 @@ const float CAMERA_FOV_DEFAULT = 60.0f;
 const float CAMERA_NEAR_DEFAULT = 0.1f;
 const float CAMERA_FAR_DEFAULT = 100.0f;
 
+const float AUDIO_VOLUME_DEFAULT = 0.5f;
+
 // Window-Attributes
 GLFWwindow* window;
 unsigned int screenWidth = 0;
@@ -85,6 +86,14 @@ unsigned int screenHeight = 0;
 unsigned int refreshRate = 0;
 string windowTitle = "";
 bool startFullscreen = false;
+
+// Camera
+float cameraFov = 0.0f;
+float cameraNear = 0.0f;
+float cameraFar = 0.0f;
+
+// audio
+float audioVolume = 0.0f;
 
 /*
 // bloom
@@ -100,11 +109,6 @@ unsigned int pingPongColorBuffers[2];
 unsigned int bloomQuadVAO = 0;
 unsigned int bloomQuadVBO;
 */
-
-// Camera
-float cameraFov = 0.0f;
-float cameraNear = 0.0f;
-float cameraFar = 0.0f;
 
 // Shaders
 //MyShader bloomBlurShader;
@@ -258,6 +262,7 @@ int main(int argc, char** argv) {
 	player->setLocalPosition(glm::vec3(0.0f, 0.5f, -2.0f));
 	player->setRespawnPoint(glm::vec3(0.0f, 0.5f, -2.0f));
 	player->setScale(glm::vec3(0.5, 1, 0.5));
+	player->setCameraFOVs(cameraFov);
 	scene->addObject(player);
 
 	// Init Objects
@@ -878,6 +883,8 @@ void readINIFile() {
 	cameraFov = iniReader.GetReal("camera", "fov", CAMERA_FOV_DEFAULT);
 	cameraNear = iniReader.GetReal("camera", "near", CAMERA_NEAR_DEFAULT);
 	cameraFar = iniReader.GetReal("camera", "far", CAMERA_FAR_DEFAULT);
+
+	audioVolume = iniReader.GetReal("audio", "volume", AUDIO_VOLUME_DEFAULT);
 }
 
 void static initOpenGL() {
@@ -1014,6 +1021,8 @@ void static destroyPhysX() {
 }
 
 void static initIrrKlang() {
+	MyAssetManager::irrKlangSoundEngine_->setSoundVolume(audioVolume);
+
 	MyAssetManager::loadSoundSource("assets/sounds/explosion.wav", "explosion");
 	MyAssetManager::loadSoundSource("assets/sounds/bell.wav", "bell");
 	// add more
