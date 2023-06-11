@@ -662,13 +662,13 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		}
 
 		if (isGameLost == true) {
-			textRenderer.renderText(textShader, "GAME OVER", (float)(screenWidth / 2.0f) * 0.8f, (float)(screenHeight / 2.0f) * 0.8f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Press [Enter] to restart", (float)(screenWidth / 2.0f) * 0.7f, (float)(screenHeight / 2.0f) * 0.7f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "GAME OVER", (float)(screenWidth / 2.0f) * 0.8f, (float)(screenHeight / 2.0f) , 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Press [Enter] to restart", (float)(screenWidth / 2.0f) * 0.8375f, (float)(screenHeight / 2.0f) * 0.9f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		}
 
 		if (isGameWon == true) {
-			textRenderer.renderText(textShader, "You Win!", (float)(screenWidth / 2.0f) * 0.8f, (float)(screenHeight / 2.0f) * 0.8f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Press [Enter] to restart", (float)(screenWidth / 2.0f) * 0.7f, (float)(screenHeight / 2.0f) * 0.7f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "You Win!", (float)(screenWidth / 2.0f) * 0.875f, (float)(screenHeight / 2.0f), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Press [Enter] to restart", (float)(screenWidth / 2.0f) * 0.8375f, (float)(screenHeight / 2.0f) * 0.9f, 0.5f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		}
 	}
 

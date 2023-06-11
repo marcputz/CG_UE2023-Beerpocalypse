@@ -23,7 +23,7 @@ private:
 	glm::vec3 respawnPoint_;
 
 	float damageCooldown = 0.0f;
-	const float targetDamageCooldown = 2.0f;
+	const float targetDamageCooldown = 0.5f;
 
 	PlayerCameraType activeCameraType = PlayerCameraType::CAMERA_FIRST_PERSON;
 	PlayerCameraFirstPerson* firstPersonCamera;
