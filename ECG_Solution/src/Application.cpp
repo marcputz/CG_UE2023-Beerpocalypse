@@ -300,7 +300,7 @@ int main(int argc, char** argv) {
 	wallFrontLeftOfSpawn.setLocalPosition(glm::vec3(6.0f, 1.5f, 10.0f));
 	wallFrontLeftOfSpawn.setScale(glm::vec3(4.0f, 3.0f, 1.0f));
 	wallFrontLeftOfSpawn.getModel()->applyTilingScale(4.0f, 3.0f);
-
+	
 	scene->addObject(&wallRightOfSpawn);
 	scene->addObject(&wallLeftOfSpawn);
 	scene->addObject(&wallBehindOfSpawn);
@@ -308,11 +308,17 @@ int main(int argc, char** argv) {
 	scene->addObject(&wallFrontLeftOfSpawn);
 
 	// Init Ground
-	Ground ground{ &defaultShader, gPhysics };
-	ground.setLocalPosition(glm::vec3(0, -0.5f, 0));
-	ground.setScale(glm::vec3(15, 1, 15));
-	ground.getModel()->applyTilingScale(15.0f, 15.0f);
-	scene->addObject(&ground);
+	Ground groundOne{ &defaultShader, gPhysics };
+	groundOne.setLocalPosition(glm::vec3(0, -0.5f, 0));
+	groundOne.setScale(glm::vec3(15, 1, 15));
+	groundOne.getModel()->applyTilingScale(15.0f, 15.0f);
+	scene->addObject(&groundOne);
+
+	Ground groundTwo{ &defaultShader, gPhysics };
+	groundTwo.setLocalPosition(glm::vec3(0.0f, -0.5f, 35.0f));
+	groundTwo.setScale(glm::vec3(15, 1, 15));
+	groundTwo.getModel()->applyTilingScale(15.0f, 15.0f);
+	scene->addObject(&groundTwo);
 
 	// Init Beers
 	Beer beerOne{ &defaultShader, gPhysics };
