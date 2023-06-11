@@ -915,10 +915,13 @@ void renderBloomQuad() {
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// F1 - Wireframe
 	// F2 - Culling
-	// F3 - Toggle HUD
+	// F3 - Toggle GUI HUD
 	// F4 - Toggle normal mapping
+	// F5 - Toggle displaying normals
+	// F6 - Toggle debug text HUD
 	// F8 - Toggle view-frustum culling
 	// Esc - Exit
+	// Enter - restart game if won/lost
 	// E - Interact with Object
 	// R - Reload
 	// C - Switch First/Third Person Camera
