@@ -240,6 +240,9 @@ int main(int argc, char** argv) {
 	// Load default shader for objects
 	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
 
+	// Load shader for vertex skinned models
+	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
+
 	// Prepare Text Renderer and Shader
 	MyTextRenderer textRenderer("arial/arial.ttf");
 	textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
@@ -535,9 +538,6 @@ int main(int argc, char** argv) {
 
 	// Init corridors between rooms
 
-
-	animationShader = MyAssetManager::loadShader("vertex-skinning.vert", "vertex-skinning.frag", "skinning");
-
 	// Init Zombies
 	Zombie zombieOne{ &animationShader, gPhysics };
 	scene->addObject(&zombieOne, true);
@@ -571,7 +571,7 @@ int main(int argc, char** argv) {
 	dirLight.addLightToShader(animationShader);
 
 	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, glm::vec3(0.7f, 0.2f, 2.0f),
+		true, glm::vec3(0.7f, 0.2f, 2.0f),
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
 	pointLightOne.addLightToShader(animationShader);
