@@ -100,7 +100,7 @@ public:
 	void setLocalPosition(glm::vec3 newPosition);
 	void setLocalRotation(glm::quat newRotation);
 	void setWorldPosition(glm::vec3 newPosition);
-	void setScale(glm::vec3 newScale);
+	void setScale(glm::vec3 newScale, bool applyTilingScale = false);
 	glm::vec3 getLocalPosition();
 	glm::quat getLocalRotation();
 	glm::vec3 getWorldPosition();

@@ -110,7 +110,7 @@ void NewGameObject::setWorldPosition(glm::vec3 newPosition) {
 	physicsActor_->setGlobalPose(transf);
 }
 
-void NewGameObject::setScale(glm::vec3 newScale) {
+void NewGameObject::setScale(glm::vec3 newScale, bool applyTilingScale) {
 	this->transform_->setScale(newScale);
 
 	if (physicsShape_ != nullptr) {
@@ -126,6 +126,10 @@ void NewGameObject::setScale(glm::vec3 newScale) {
 			physicsShape_->setGeometry(boxGeometry);
 			physicsActor_->attachShape(*physicsShape_);
 		}
+	}
+
+	if (applyTilingScale == true) {
+		this->model_->applyTilingScale(newScale.x, newScale.y, newScale.z);
 	}
 }
 

@@ -278,38 +278,32 @@ int main(int argc, char** argv) {
 	MyParticleGenerator particleGen(particleShader/*, particleTexture*/, player, 50);
 	scene->setParticleGenerator(&particleGen);
 
-	// Init first room
+	// first room
 	{
 		// floor
 		Ground groundRoomOne{ &defaultShader, gPhysics };
 		groundRoomOne.setLocalPosition(glm::vec3(0.0f, -0.5f, 0.0f));
-		groundRoomOne.setScale(glm::vec3(10.0f, 1.0f, 10.0f));
-		groundRoomOne.getModel()->applyTilingScale(10.0f, 1.0f, 10.0f);
+		groundRoomOne.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 		// right wall
 		StaticCube rightWallRoomOne{ &defaultShader, gPhysics };
 		rightWallRoomOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
-		rightWallRoomOne.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
-		rightWallRoomOne.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
+		rightWallRoomOne.setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
 		// left wall
 		StaticCube leftWallRoomOne{ &defaultShader, gPhysics };
 		leftWallRoomOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
-		leftWallRoomOne.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
-		leftWallRoomOne.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
+		leftWallRoomOne.setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
 		// behind wall
 		StaticCube behindWallRoomOne{ &defaultShader, gPhysics };
 		behindWallRoomOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(0.0f, 2.5f, -10.0f));
-		behindWallRoomOne.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
-		behindWallRoomOne.getModel()->applyTilingScale(10.0f, 2.0f, 1.0f);
+		behindWallRoomOne.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
 		// front wall - right part of exit
 		StaticCube frontWallRightExitRoomOne{ &defaultShader, gPhysics };
 		frontWallRightExitRoomOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(-6.0f, 2.5f, 10.0f));
-		frontWallRightExitRoomOne.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
-		frontWallRightExitRoomOne.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+		frontWallRightExitRoomOne.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
 		// front wall - left part of exit
 		StaticCube frontWallLeftExitRoomOne{ &defaultShader, gPhysics };
 		frontWallLeftExitRoomOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(6.0f, 2.5f, 10.0f));
-		frontWallLeftExitRoomOne.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
-		frontWallLeftExitRoomOne.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+		frontWallLeftExitRoomOne.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
 
 		Beer beerOne{ &defaultShader, gPhysics };
 		beerOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(-5, 1.5f, 0));
@@ -330,53 +324,44 @@ int main(int argc, char** argv) {
 		scene->addObject(&groundRoomOne);
 	}
 
-	// Init second room (front/center)
+	// second room (front/center)
 	{
 		// ground
 		Ground groundRoomTwo{ &defaultShader, gPhysics };
-		groundRoomTwo.setLocalPosition(glm::vec3(0.0f, -0.5f, 25.0f));
-		groundRoomTwo.setScale(glm::vec3(10.0f, 1.0f, 10.0f));
-		groundRoomTwo.getModel()->applyTilingScale(10.0f, 1.0f, 10.0f);
+		groundRoomTwo.setLocalPosition(glm::vec3(0.0f, -0.5f, 35.0f));
+		groundRoomTwo.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 		// right wall - front part of exit
 		StaticCube rightWallFrontExitRoomTwo{ &defaultShader, gPhysics };
 		rightWallFrontExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(-10.0f, 2.5f, 6.0f));
-		rightWallFrontExitRoomTwo.setScale(glm::vec3(1.0f, 2.0f, 4.0f));
-		rightWallFrontExitRoomTwo.getModel()->applyTilingScale(1.0f, 2.0f, 4.0f);
+		rightWallFrontExitRoomTwo.setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
 		// right wall - behind part of exit
 		StaticCube rightWallBehindExitRoomTwo{ &defaultShader, gPhysics };
 		rightWallBehindExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(-10.0f, 2.5f, -6.0f));
-		rightWallBehindExitRoomTwo.setScale(glm::vec3(1.0f, 2.0f, 4.0f));
-		rightWallBehindExitRoomTwo.getModel()->applyTilingScale(1.0f, 2.0f, 4.0f);
+		rightWallBehindExitRoomTwo.setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
 		// left wall - front part of exit
 		StaticCube leftWallFrontExitRoomTwo{ &defaultShader, gPhysics };
 		leftWallFrontExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(10.0f, 2.5f, 6.0f));
-		leftWallFrontExitRoomTwo.setScale(glm::vec3(1.0f, 2.0f, 4.0f));
-		leftWallFrontExitRoomTwo.getModel()->applyTilingScale(1.0f, 2.0f, 4.0f);
+		leftWallFrontExitRoomTwo.setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
 		// left wall - behind part of exit 
 		StaticCube leftWallBehindExitRoomTwo{ &defaultShader, gPhysics };
 		leftWallBehindExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(10.0f, 2.5f, -6.0f));
-		leftWallBehindExitRoomTwo.setScale(glm::vec3(1.0f, 2.0f, 4.0f));
-		leftWallBehindExitRoomTwo.getModel()->applyTilingScale(1.0f, 2.0f, 4.0f);
+		leftWallBehindExitRoomTwo.setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
 		// behind wall - right part of exit
 		StaticCube behindWallRightExitRoomTwo{ &defaultShader, gPhysics };
 		behindWallRightExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(-6.0f, 2.5f, -10.0f));
-		behindWallRightExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
-		behindWallRightExitRoomTwo.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+		behindWallRightExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
 		// behind wall - left part of exit
 		StaticCube behindWallLeftExitRoomTwo{ &defaultShader, gPhysics };
 		behindWallLeftExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(6.0f, 2.5f, -10.0f));
-		behindWallLeftExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
-		behindWallLeftExitRoomTwo.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+		behindWallLeftExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
 		// front wall - right part of exit
 		StaticCube frontWallRightExitRoomTwo{ &defaultShader, gPhysics };
 		frontWallRightExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(-6.0f, 2.5f, 10.0f));
-		frontWallRightExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
-		frontWallRightExitRoomTwo.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+		frontWallRightExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
 		// front wall - left part of exit
 		StaticCube frontWallLeftExitRoomTwo{ &defaultShader, gPhysics };
 		frontWallLeftExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(6.0f, 2.5f, 10.0f));
-		frontWallLeftExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
-		frontWallLeftExitRoomTwo.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+		frontWallLeftExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
 
 		Beer beerTwo{ &defaultShader, gPhysics };
 		beerTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(-5, 1.5f, 2));
@@ -402,38 +387,32 @@ int main(int argc, char** argv) {
 		scene->addObject(&groundRoomTwo);
 	}
 
-	// Init third room (left)
+	// third room (left)
 	{
 		// floor
 		Ground groundRoomThree{ &defaultShader, gPhysics };
-		groundRoomThree.setLocalPosition(glm::vec3(25.0f, -0.5f, 25.0f));
-		groundRoomThree.setScale(glm::vec3(10.0f, 1.0f, 10.0f));
-		groundRoomThree.getModel()->applyTilingScale(10.0f, 1.0f, 10.0f);
+		groundRoomThree.setLocalPosition(glm::vec3(35.0f, -0.5f, 35.0f));
+		groundRoomThree.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 		// right wall - front part of exit
 		StaticCube rightWallFrontExitRoomThree{ &defaultShader, gPhysics };
 		rightWallFrontExitRoomThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(-10.0f, 2.5f, 6.0f));
-		rightWallFrontExitRoomThree.setScale(glm::vec3(1.0f, 2.0f, 4.0f));
-		rightWallFrontExitRoomThree.getModel()->applyTilingScale(1.0f, 2.0f, 4.0f);
+		rightWallFrontExitRoomThree.setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
 		// right wall - behind part of exit
 		StaticCube rightWallBehindExitRoomThree{ &defaultShader, gPhysics };
 		rightWallBehindExitRoomThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(-10.0f, 2.5f, -6.0f));
-		rightWallBehindExitRoomThree.setScale(glm::vec3(1.0f, 2.0f, 4.0f));
-		rightWallBehindExitRoomThree.getModel()->applyTilingScale(1.0f, 2.0f, 4.0f);
+		rightWallBehindExitRoomThree.setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
 		// left wall
 		StaticCube leftWallRoomThree{ &defaultShader, gPhysics };
 		leftWallRoomThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
-		leftWallRoomThree.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
-		leftWallRoomThree.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
+		leftWallRoomThree.setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
 		// behind wall
 		StaticCube behindWallRoomThree{ &defaultShader, gPhysics };
 		behindWallRoomThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(0.0f, 2.5f, -10.0f));
-		behindWallRoomThree.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
-		behindWallRoomThree.getModel()->applyTilingScale(10.0f, 2.0f, 1.0f);
+		behindWallRoomThree.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
 		// front wall
 		StaticCube frontWallRoomThree{ &defaultShader, gPhysics };
 		frontWallRoomThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
-		frontWallRoomThree.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
-		frontWallRoomThree.getModel()->applyTilingScale(10.0f, 2.0f, 1.0f);
+		frontWallRoomThree.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
 
 		Beer beerThree{ &defaultShader, gPhysics };
 		beerThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(-5, 1.5f, 4));
@@ -449,38 +428,32 @@ int main(int argc, char** argv) {
 		scene->addObject(&groundRoomThree);
 	}
 
-	// Init fourth room (right)
+	// fourth room (right)
 	{
 		// floor
 		Ground groundRoomFour{ &defaultShader, gPhysics };
-		groundRoomFour.setLocalPosition(glm::vec3(-25.0f, -0.5f, 25.0f));
-		groundRoomFour.setScale(glm::vec3(10.0f, 1.0f, 10.0f));
-		groundRoomFour.getModel()->applyTilingScale(10.0f, 1.0f, 10.0f);
+		groundRoomFour.setLocalPosition(glm::vec3(-35.0f, -0.5f, 35.0f));
+		groundRoomFour.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 		// right wall
 		StaticCube rightWallRoomFour{ &defaultShader, gPhysics };
 		rightWallRoomFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
-		rightWallRoomFour.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
-		rightWallRoomFour.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
+		rightWallRoomFour.setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
 		// left wall - front part of exit
 		StaticCube leftWallFrontExitRoomFour{ &defaultShader, gPhysics };
 		leftWallFrontExitRoomFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(10.0f, 2.5f, 6.0f));
-		leftWallFrontExitRoomFour.setScale(glm::vec3(1.0f, 2.0f, 4.0f));
-		leftWallFrontExitRoomFour.getModel()->applyTilingScale(1.0f, 2.0f, 4.0f);
+		leftWallFrontExitRoomFour.setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
 		// left wall - behind part of exit 
 		StaticCube leftWallBehindExitRoomFour{ &defaultShader, gPhysics };
 		leftWallBehindExitRoomFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(10.0f, 2.5f, -6.0f));
-		leftWallBehindExitRoomFour.setScale(glm::vec3(1.0f, 2.0f, 4.0f));
-		leftWallBehindExitRoomFour.getModel()->applyTilingScale(1.0f, 2.0f, 4.0f);
+		leftWallBehindExitRoomFour.setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
 		// behind wall
 		StaticCube behindWallRoomFour{ &defaultShader, gPhysics };
 		behindWallRoomFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(0.0f, 2.5f, -10.0f));
-		behindWallRoomFour.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
-		behindWallRoomFour.getModel()->applyTilingScale(10.0f, 2.0f, 1.0f);
+		behindWallRoomFour.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
 		// front wall
 		StaticCube frontWallRoomFour{ &defaultShader, gPhysics };
 		frontWallRoomFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
-		frontWallRoomFour.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
-		frontWallRoomFour.getModel()->applyTilingScale(10.0f, 2.0f, 1.0f);
+		frontWallRoomFour.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
 
 		Beer beerFour{ &defaultShader, gPhysics };
 		beerFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(-5, 1.5f, 6));
@@ -496,38 +469,32 @@ int main(int argc, char** argv) {
 		scene->addObject(&groundRoomFour);
 	}
 
-	// Init fifth room (front front)
+	// fifth room (front front)
 	{
 		// floor
 		Ground groundRoomFive{ &defaultShader, gPhysics };
-		groundRoomFive.setLocalPosition(glm::vec3(0.0f, -0.5f, 50.0f));
-		groundRoomFive.setScale(glm::vec3(10.0f, 1.0f, 10.0f));
-		groundRoomFive.getModel()->applyTilingScale(10.0f, 1.0f, 10.0f);
+		groundRoomFive.setLocalPosition(glm::vec3(0.0f, -0.5f, 70.0f));
+		groundRoomFive.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 		// right wall
 		StaticCube rightWallRoomFive{ &defaultShader, gPhysics };
 		rightWallRoomFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
-		rightWallRoomFive.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
-		rightWallRoomFive.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
+		rightWallRoomFive.setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
 		// left wall
 		StaticCube leftWallRoomFive{ &defaultShader, gPhysics };
 		leftWallRoomFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
-		leftWallRoomFive.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
-		leftWallRoomFive.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
+		leftWallRoomFive.setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
 		// behind wall - right part of exit
 		StaticCube behindWallRightExitRoomFive{ &defaultShader, gPhysics };
 		behindWallRightExitRoomFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(-6.0f, 2.5f, -10.0f));
-		behindWallRightExitRoomFive.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
-		behindWallRightExitRoomFive.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+		behindWallRightExitRoomFive.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
 		// behind wall - left part of exit
 		StaticCube behindWallLeftExitRoomFive{ &defaultShader, gPhysics };
 		behindWallLeftExitRoomFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(6.0f, 2.5f, -10.0f));
-		behindWallLeftExitRoomFive.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
-		behindWallLeftExitRoomFive.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+		behindWallLeftExitRoomFive.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
 		// front wall
 		StaticCube frontWallRoomFive{ &defaultShader, gPhysics };
 		frontWallRoomFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
-		frontWallRoomFive.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
-		frontWallRoomFive.getModel()->applyTilingScale(10.0f, 2.0f, 1.0f);
+		frontWallRoomFive.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
 
 		Beer beerFive{ &defaultShader, gPhysics };
 		beerFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(-5, 1.0f, 8));
@@ -543,7 +510,40 @@ int main(int argc, char** argv) {
 		scene->addObject(&groundRoomFive);
 	}
 
-	// Init corridors between rooms
+	// corridor first and second room
+	{
+		// floor
+		Ground groundCorridorFirstSecond{ &defaultShader, gPhysics };
+		groundCorridorFirstSecond.setLocalPosition(glm::vec3(0.0f, -0.5f, 17.5f));
+		groundCorridorFirstSecond.setScale(glm::vec3(2.0f, 1.0f, 5.0f), true);
+		// right wall
+		StaticCube rightWallCorridorFirstSecond{ &defaultShader, gPhysics };
+		rightWallCorridorFirstSecond.setLocalPosition(groundCorridorFirstSecond.getWorldPosition() + glm::vec3(-2.75f, 2.5f, 0.0f));
+		rightWallCorridorFirstSecond.setScale(glm::vec3(1.0f, 2.0f, 1.5f), true);
+		// left wall
+		StaticCube leftWallCorridorFirstSecond{ &defaultShader, gPhysics };
+		leftWallCorridorFirstSecond.setLocalPosition(groundCorridorFirstSecond.getWorldPosition() + glm::vec3(2.75f, 2.5f, 0.0f));
+		leftWallCorridorFirstSecond.setScale(glm::vec3(1.0f, 2.0f, 1.5f), true);
+
+		scene->addObject(&rightWallCorridorFirstSecond);
+		scene->addObject(&leftWallCorridorFirstSecond);
+		scene->addObject(&groundCorridorFirstSecond);
+	}
+
+	// corridor second and third room
+	{
+
+	}
+
+	// corridor second and fourth room
+	{
+
+	}
+
+	// corridor second and fifth room
+	{
+
+	}
 
 	// Init Zombies
 	Zombie zombieOne{ &animationShader, gPhysics };
