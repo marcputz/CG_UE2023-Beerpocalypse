@@ -566,7 +566,7 @@ int main(int argc, char** argv) {
 
 	// Init lights
 	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
-		true, glm::vec3(-0.2f, -1.0f, 0.3f));
+		false, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
 	dirLight.addLightToShader(animationShader);
 
@@ -597,7 +597,7 @@ int main(int argc, char** argv) {
 	playerFlashLight = new MySpotLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, player);
+		17.5f, 20.0f, player);
 	playerFlashLight->addLightToShader(defaultShader);
 	playerFlashLight->addLightToShader(animationShader);
 
@@ -1172,7 +1172,7 @@ void static initOpenGL() {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Set standard values for OpenGL
-	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
