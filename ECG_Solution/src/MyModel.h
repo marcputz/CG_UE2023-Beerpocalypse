@@ -30,7 +30,7 @@ public:
 	int& getBoneCount();
 
 	// only if you want to upscale and reduce blurryness
-	void applyTilingScale(float wScale, float hScale);
+	void applyTilingScale(float xScale, float yScale, float zScale);
 
 	//void create(const aiScene* scene, std::string& directory);
 

@@ -275,49 +275,49 @@ int main(int argc, char** argv) {
 	testCubeThree.setScale(glm::vec3(0.5, 0.5, 0.5));
 	scene->addObject(&testCubeThree);
 
-	// Init wall(s)
+	// Init first room
+	Ground groundOne{ &defaultShader, gPhysics };
+	groundOne.setLocalPosition(glm::vec3(0, -0.5f, 0));
+	groundOne.setScale(glm::vec3(15, 1, 15));
+	groundOne.getModel()->applyTilingScale(15.0f, 1.0f, 15.0f);
+
 	StaticCube wallRightOfSpawn{ &defaultShader, gPhysics };
-	wallRightOfSpawn.setLocalPosition(glm::vec3(-10.0f, 1.5f, 0.0f));
-	wallRightOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
-	wallRightOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
+	wallRightOfSpawn.setLocalPosition(groundOne.getLocalPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
+	wallRightOfSpawn.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
+	wallRightOfSpawn.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
 
 	StaticCube wallLeftOfSpawn{ &defaultShader, gPhysics };
-	wallLeftOfSpawn.setLocalPosition(glm::vec3(10.0f, 1.5f, 0.0f));
-	wallLeftOfSpawn.setScale(glm::vec3(1.0f, 3.0f, 10.0f));
-	wallLeftOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
+	wallLeftOfSpawn.setLocalPosition(groundOne.getLocalPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
+	wallLeftOfSpawn.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
+	wallLeftOfSpawn.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
 
 	StaticCube wallBehindOfSpawn{ &defaultShader, gPhysics };
-	wallBehindOfSpawn.setLocalPosition(glm::vec3(0.0f, 1.5f, -10.0f));
-	wallBehindOfSpawn.setScale(glm::vec3(10.0f, 3.0f, 1.0f));
-	wallBehindOfSpawn.getModel()->applyTilingScale(10.0f, 3.0f);
+	wallBehindOfSpawn.setLocalPosition(groundOne.getLocalPosition() + glm::vec3(0.0f, 2.5f, -10.0f));
+	wallBehindOfSpawn.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
+	wallBehindOfSpawn.getModel()->applyTilingScale(10.0f, 2.0f, 1.0f);
 
 	StaticCube wallFrontRightOfSpawn{ &defaultShader, gPhysics };
-	wallFrontRightOfSpawn.setLocalPosition(glm::vec3(-6.0f, 1.5f, 10.0f));
-	wallFrontRightOfSpawn.setScale(glm::vec3(4.0f, 3.0f, 1.0f));
-	wallFrontRightOfSpawn.getModel()->applyTilingScale(4.0f, 3.0f);
+	wallFrontRightOfSpawn.setLocalPosition(groundOne.getLocalPosition() + glm::vec3(-6.0f, 2.5f, 10.0f));
+	wallFrontRightOfSpawn.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
+	wallFrontRightOfSpawn.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
 
 	StaticCube wallFrontLeftOfSpawn{ &defaultShader, gPhysics };
-	wallFrontLeftOfSpawn.setLocalPosition(glm::vec3(6.0f, 1.5f, 10.0f));
-	wallFrontLeftOfSpawn.setScale(glm::vec3(4.0f, 3.0f, 1.0f));
-	wallFrontLeftOfSpawn.getModel()->applyTilingScale(4.0f, 3.0f);
+	wallFrontLeftOfSpawn.setLocalPosition(groundOne.getLocalPosition() + glm::vec3(6.0f, 2.5f, 10.0f));
+	wallFrontLeftOfSpawn.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
+	wallFrontLeftOfSpawn.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
 	
 	scene->addObject(&wallRightOfSpawn);
 	scene->addObject(&wallLeftOfSpawn);
 	scene->addObject(&wallBehindOfSpawn);
 	scene->addObject(&wallFrontRightOfSpawn);
 	scene->addObject(&wallFrontLeftOfSpawn);
-
-	// Init Ground
-	Ground groundOne{ &defaultShader, gPhysics };
-	groundOne.setLocalPosition(glm::vec3(0, -0.5f, 0));
-	groundOne.setScale(glm::vec3(15, 1, 15));
-	groundOne.getModel()->applyTilingScale(15.0f, 15.0f);
 	scene->addObject(&groundOne);
 
+	// Init room two
 	Ground groundTwo{ &defaultShader, gPhysics };
 	groundTwo.setLocalPosition(glm::vec3(0.0f, -0.5f, 35.0f));
 	groundTwo.setScale(glm::vec3(15, 1, 15));
-	groundTwo.getModel()->applyTilingScale(15.0f, 15.0f);
+	groundTwo.getModel()->applyTilingScale(15.0f, 1.0f, 15.0f);
 	scene->addObject(&groundTwo);
 
 	// Init Beers

@@ -50,10 +50,26 @@ void MyMesh::draw(MyShader& shader) {
 	glActiveTexture(GL_TEXTURE0);
 }
 
-void MyMesh::applyTilingScaleToUVCoordinates(float wScale, float hScale) {
+void MyMesh::applyTilingScaleToUVCoordinates(float xScale, float yScale, float zScale) {
 	for (int i = 0; i < vertices_.size(); i++) {
-		vertices_[i].texCoords.x = vertices_[i].texCoords.x * wScale;
-		vertices_[i].texCoords.y = vertices_[i].texCoords.y * hScale;
+		// a face pointing left or right is only scaled by y or z
+		if (vertices_[i].normal.x == 1 || vertices_[i].normal.x == -1) {
+			vertices_[i].texCoords.x = vertices_[i].texCoords.x * zScale;
+			vertices_[i].texCoords.y = vertices_[i].texCoords.y * yScale;
+			continue;
+		}
+		// a face pointing up or down is only scaled in x or z
+		if (vertices_[i].normal.y == 1 || vertices_[i].normal.y == -1) {
+			vertices_[i].texCoords.x = vertices_[i].texCoords.x * xScale;
+			vertices_[i].texCoords.y = vertices_[i].texCoords.y * zScale;
+			continue;
+		}
+		// a face pointing front or back is only scaled by x or y
+		if (vertices_[i].normal.z == 1 || vertices_[i].normal.z == -1) {
+			vertices_[i].texCoords.x = vertices_[i].texCoords.x * xScale;
+			vertices_[i].texCoords.y = vertices_[i].texCoords.y * yScale;
+			continue;
+		}
 	}
 
 	glBindVertexArray(VAO_);

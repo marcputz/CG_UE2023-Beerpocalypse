@@ -19,9 +19,9 @@ int& MyModel::getBoneCount() {
 	return boneCounter_;
 }
 
-void MyModel::applyTilingScale(float wScale, float hScale) {
+void MyModel::applyTilingScale(float xScale, float yScale, float zScale) {
 	for (int i = 0; i < meshes_.size(); i++) {
-		meshes_[i].applyTilingScaleToUVCoordinates(wScale, hScale);
+		meshes_[i].applyTilingScaleToUVCoordinates(xScale, yScale, zScale);
 	}
 }
 

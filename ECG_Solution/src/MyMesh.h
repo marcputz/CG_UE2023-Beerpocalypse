@@ -31,7 +31,7 @@ public:
 	MyMesh(std::vector<MyVertex> vertices, std::vector<unsigned int> indices, std::vector<My2DTexture> textures);
 	void draw(MyShader& shader);
 
-	void applyTilingScaleToUVCoordinates(float wScale, float hScale);
+	void applyTilingScaleToUVCoordinates(float xScale, float yScale, float zScale);
 
 private:
 	unsigned int VAO_, VBO_, EBO_;
