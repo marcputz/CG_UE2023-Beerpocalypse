@@ -515,7 +515,7 @@ int main(int argc, char** argv) {
 		// floor
 		Ground groundCorridorFirstSecond{ &defaultShader, gPhysics };
 		groundCorridorFirstSecond.setLocalPosition(glm::vec3(0.0f, -0.5f, 17.5f));
-		groundCorridorFirstSecond.setScale(glm::vec3(2.0f, 1.0f, 5.0f), true);
+		groundCorridorFirstSecond.setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
 		// right wall
 		StaticCube rightWallCorridorFirstSecond{ &defaultShader, gPhysics };
 		rightWallCorridorFirstSecond.setLocalPosition(groundCorridorFirstSecond.getWorldPosition() + glm::vec3(-2.75f, 2.5f, 0.0f));
