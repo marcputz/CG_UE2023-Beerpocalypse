@@ -125,6 +125,11 @@ Scene* scene;
 NewPlayer* player = nullptr;
 MySpotLight* playerFlashLight = nullptr;
 
+glm::vec3 pointLightOnePosition;
+glm::vec3 pointLightTwoPosition;
+glm::vec3 pointLightThreePosition;
+glm::vec3 pointLightFourPosition;
+
 const int maxScore = 5;
 int score = 0;
 
@@ -382,6 +387,8 @@ int main(int argc, char** argv) {
 		testCubeThree.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(5.6f, 10.0f, 0.1f));
 		testCubeThree.setScale(glm::vec3(0.5, 0.5, 0.5));
 
+		pointLightOnePosition = groundRoomTwo.getWorldPosition() + glm::vec3(0.0f, 2.0f, 0.0f);
+
 		scene->addObject(&testCubeThree);
 		scene->addObject(&beerTwo);
 		scene->addObject(&rightWallFrontExitRoomTwo);
@@ -571,7 +578,7 @@ int main(int argc, char** argv) {
 	dirLight.addLightToShader(animationShader);
 
 	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, glm::vec3(0.7f, 0.2f, 2.0f),
+		true, pointLightOnePosition,
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
 	pointLightOne.addLightToShader(animationShader);
