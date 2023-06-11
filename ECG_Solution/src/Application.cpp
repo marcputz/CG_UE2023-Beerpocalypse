@@ -329,9 +329,9 @@ int main(int argc, char** argv) {
 	// Init second room
 	{
 		Ground groundRoomTwo{ &defaultShader, gPhysics };
-		groundRoomTwo.setLocalPosition(glm::vec3(0.0f, -0.5f, 35.0f));
-		groundRoomTwo.setScale(glm::vec3(15, 1, 15));
-		groundRoomTwo.getModel()->applyTilingScale(15.0f, 1.0f, 15.0f);
+		groundRoomTwo.setLocalPosition(glm::vec3(0.0f, -0.5f, 25.0f));
+		groundRoomTwo.setScale(glm::vec3(10.0f, 1.0f, 10.0f));
+		groundRoomTwo.getModel()->applyTilingScale(10.0f, 1.0f, 10.0f);
 
 		StaticCube rightWallRoomTwo{ &defaultShader, gPhysics };
 		rightWallRoomTwo.setLocalPosition(groundRoomTwo.getLocalPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
@@ -360,7 +360,7 @@ int main(int argc, char** argv) {
 
 		Beer beerTwo{ &defaultShader, gPhysics };
 		beerTwo.setLocalPosition(groundRoomTwo.getLocalPosition() + glm::vec3(-5, 1.5f, 2));
-
+		// sparkles never run out of life, when life is zero their life is reset and their direction inverted
 		particleGen.createParticles(beerTwo.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
 
 		scene->addObject(&beerTwo);
@@ -374,7 +374,35 @@ int main(int argc, char** argv) {
 
 	// Init third room
 	{
+		Ground groundRoomThree{ &defaultShader, gPhysics };
+		groundRoomThree.setLocalPosition(glm::vec3(25.0f, -0.5f, 25.0f));
+		groundRoomThree.setScale(glm::vec3(10.0f, 1.0f, 10.0f));
+		groundRoomThree.getModel()->applyTilingScale(10.0f, 1.0f, 10.0f);
 
+		StaticCube rightWallRoomThree{ &defaultShader, gPhysics };
+		rightWallRoomThree.setLocalPosition(groundRoomThree.getLocalPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
+		rightWallRoomThree.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
+		rightWallRoomThree.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
+
+		StaticCube leftWallRoomThree{ &defaultShader, gPhysics };
+		leftWallRoomThree.setLocalPosition(groundRoomThree.getLocalPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
+		leftWallRoomThree.setScale(glm::vec3(1.0f, 2.0f, 10.0f));
+		leftWallRoomThree.getModel()->applyTilingScale(1.0f, 2.0f, 10.0f);
+
+		StaticCube behindWallRoomThree{ &defaultShader, gPhysics };
+		behindWallRoomThree.setLocalPosition(groundRoomThree.getLocalPosition() + glm::vec3(0.0f, 2.5f, -10.0f));
+		behindWallRoomThree.setScale(glm::vec3(10.0f, 2.0f, 1.0f));
+		behindWallRoomThree.getModel()->applyTilingScale(10.0f, 2.0f, 1.0f);
+
+		StaticCube frontWallRightExitRoomThree{ &defaultShader, gPhysics };
+		frontWallRightExitRoomThree.setLocalPosition(groundRoomThree.getLocalPosition() + glm::vec3(-6.0f, 2.5f, 10.0f));
+		frontWallRightExitRoomThree.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
+		frontWallRightExitRoomThree.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
+
+		StaticCube frontWallLeftExitRoomThree{ &defaultShader, gPhysics };
+		frontWallLeftExitRoomThree.setLocalPosition(groundRoomThree.getLocalPosition() + glm::vec3(6.0f, 2.5f, 10.0f));
+		frontWallLeftExitRoomThree.setScale(glm::vec3(4.0f, 2.0f, 1.0f));
+		frontWallLeftExitRoomThree.getModel()->applyTilingScale(4.0f, 2.0f, 1.0f);
 
 		Beer beerThree{ &defaultShader, gPhysics };
 		beerThree.setLocalPosition(glm::vec3(-5, 1.0f, 4));
@@ -382,6 +410,12 @@ int main(int argc, char** argv) {
 		particleGen.createParticles(beerThree.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
 		
 		scene->addObject(&beerThree);
+		scene->addObject(&rightWallRoomThree);
+		scene->addObject(&leftWallRoomThree);
+		scene->addObject(&behindWallRoomThree);
+		scene->addObject(&frontWallRightExitRoomThree);
+		scene->addObject(&frontWallLeftExitRoomThree);
+		scene->addObject(&groundRoomThree);
 	}
 
 	// Init fourth room
