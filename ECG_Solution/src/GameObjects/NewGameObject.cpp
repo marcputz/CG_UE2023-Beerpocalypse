@@ -54,6 +54,10 @@ void NewGameObject::reset() {
 	this->resetSpecifics();
 }
 
+bool NewGameObject::isInsideFrustum(const Frustum& frustum) {
+	return true;
+}
+
 void NewGameObject::setParent(NewGameObject* newParent) {
 	if (newParent != nullptr) {
 		this->transform_->setParent(newParent->transform_);
@@ -221,7 +225,7 @@ void NewGameObject::draw() {
 	if (this->animator_ != nullptr) {
 		std::vector<glm::mat4> finalBoneTransforms = animator_->getFinalBoneMatrices();
 
-		for (int i = 0; i < finalBoneTransforms.size(); i++) {
+		for (unsigned int i = 0; i < finalBoneTransforms.size(); i++) {
 			shader_->setMat4("finalBonesMatrices[" + std::to_string(i) + "]", finalBoneTransforms[i]);
 		}
 	}

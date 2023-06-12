@@ -2,6 +2,10 @@
 #include "GameObjects/Zombie/Zombie.h"
 #include "GameObjects/Cube/DynamicCube.h"
 
+extern unsigned int screenWidth;
+extern unsigned int screenHeight;
+extern float cameraNear;
+extern float cameraFar;
 extern int bullets;
 
 physx::PxFilterFlags contactReportFilterShader(physx::PxFilterObjectAttributes attributes0,
@@ -204,10 +208,12 @@ void Scene::step(float deltaTime) {
 	for (NewGameObject* go : objects) {
 		go->update(deltaTime);
 
-		// make downwards raycast to check if player is on ground
+		// player ground check via raycast, also creates frustum
 		{
 			NewPlayer* p = dynamic_cast<NewPlayer*>(go);
 			if (p != nullptr) {
+				//frustum = Frustum::createFrustumFromCamera(*p->getActiveCamera(), (float)screenWidth/(float)screenHeight, glm::radians(p->getActiveCamera()->getFov()), cameraNear, cameraFar);
+
 				PxVec3 rayOrigin = asPxVec3(p->getWorldPosition());
 				PxVec3 rayDirection = asPxVec3(glm::vec3(0.0f, -1.0f, 0.0f));
 				const PxU32 hitBufferSize = 32;
@@ -245,6 +251,11 @@ void Scene::step(float deltaTime) {
 void Scene::draw() {
 	for (NewGameObject* go : objects) {
 		go->draw();
+		/*
+		if (go->isInsideFrustum(frustum)) {
+			go->draw();
+		}
+		*/
 	}
 
 	if (particleGenerator != nullptr) {

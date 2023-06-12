@@ -7,6 +7,7 @@
 #include "Lights/SpotLight/MySpotLight.h"
 #include "Lights/DirectionalLight/MyDirectionalLight.h"
 #include "MyParticleGenerator.h"
+#include "MyFrustum.h"
 
 class Scene : public PxSimulationEventCallback {
 private:
@@ -19,6 +20,8 @@ private:
 
 	PxPhysics* physics;
 	PxScene* physicsScene;
+
+	Frustum frustum;
 
 private:
 	// helper functions

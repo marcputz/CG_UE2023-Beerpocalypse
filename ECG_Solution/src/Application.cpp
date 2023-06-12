@@ -49,7 +49,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-//void renderBloomQuad();
+void renderBloomQuad();
 
 // PhysX
 void static initPhysX();
@@ -95,7 +95,7 @@ float cameraFar = 0.0f;
 // audio
 float audioVolume = 0.0f;
 
-/*
+
 // bloom
 unsigned int hdrFrameBuffer;
 unsigned int colorBuffers[2];
@@ -108,11 +108,11 @@ unsigned int pingPongColorBuffers[2];
 
 unsigned int bloomQuadVAO = 0;
 unsigned int bloomQuadVBO;
-*/
+
 
 // Shaders
-//MyShader bloomBlurShader;
-//MyShader bloomCombineShader;
+MyShader bloomBlurShader;
+MyShader bloomCombineShader;
 MyShader textShader;
 MyShader guiShader;
 MyShader defaultShader;
@@ -145,7 +145,7 @@ bool enableDebugHUD = true;
 bool enableNormalMapping = false;
 bool enableShowNormals = false;
 bool enableGUIHUD = true;
-//bool enableBloom = true;
+bool enableBloom = true;
 
 // Frame Processing
 float deltaTime = 0.0f;
@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
 	initIrrKlang();
 
 	// setup for bloom
-	/*
+	
 	{
 		glGenFramebuffers(1, &hdrFrameBuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
@@ -240,7 +240,7 @@ int main(int argc, char** argv) {
 		bloomCombineShader.setInt("scene", 0);
 		bloomCombineShader.setInt("bloomBlur", 1);
 	}
-	*/
+	
 
 	// Load default shader for objects
 	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
@@ -713,7 +713,7 @@ int main(int argc, char** argv) {
 	std::cout << "Render Loop START" << std::endl;
 	while (!glfwWindowShouldClose(window)) {
 		// 1. render scene into floating point frameBuffer for bloom
-		//glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
 
 		// Clear backbuffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -792,7 +792,7 @@ int main(int argc, char** argv) {
 			guiRenderer.renderGUI(guiShader, score, maxScore, bullets, maxBullets, player->getHealth(), player->maxHealth);
 		}
 
-		/*
+		
 		// 2. blur bright fragments with two-pass Gaussian Blur
 		bool horizontal = true, firstIteration = true;
 		unsigned int amount = 10;
@@ -820,7 +820,7 @@ int main(int argc, char** argv) {
 		bloomCombineShader.setInt("bloom", enableBloom);
 		bloomCombineShader.setFloat("exposure", 1.0f);
 		renderBloomQuad();
-		*/
+		
 
 		// Swap buffers
 		glfwSwapBuffers(window);
@@ -908,7 +908,7 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	}
 }
 
-/*
+
 void renderBloomQuad() {
 	if (bloomQuadVAO == 0) {
 		float quadVertices[] = {
@@ -932,7 +932,7 @@ void renderBloomQuad() {
 	glDrawArrays(GL_TRIANGLE_STRIP, 0., 4);
 	glBindVertexArray(0);
 }
-*/
+
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// F1 - Wireframe

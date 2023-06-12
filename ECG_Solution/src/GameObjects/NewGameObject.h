@@ -10,6 +10,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <GLFW/glfw3.h>
 #include "../MyAnimator.h"
+#include "../MyFrustum.h"
 
 enum CollisionLayer : PxU32 {
 	LAYER_DEFAULT = (1 << 0),
@@ -117,7 +118,7 @@ public:
 
 	void reset();
 
-	bool isInsideFrustum();
+	bool isInsideFrustum(const Frustum& frustum);
 
 	/**
 	* This update function must be called BEFORE the physics update
