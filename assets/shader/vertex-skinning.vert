@@ -88,6 +88,7 @@ void main() {
 
         vs_out.FragPos = vec3(model * totalPosition);
         vs_out.TexCoords = aTexCoords;
+        vs_out.Normal = transposeInverseModelTimesBoneTransform * aNormal;
 
         // Gram-Schmidt process to re-othogonalize the vectors
         vec3 T = normalize(transposeInverseModelTimesBoneTransform * aTangent); // normalize(vec3(transpose(inverse(model)) * boneTransform * vec4(aTangent, 0.0)));

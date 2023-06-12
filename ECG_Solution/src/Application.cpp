@@ -577,7 +577,7 @@ int main(int argc, char** argv) {
 	dirLight.addLightToShader(defaultShader);
 	dirLight.addLightToShader(animationShader);
 
-	MyPointLight pointLightOne(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MyPointLight pointLightOne(glm::vec3(0.00f, 0.00f, 0.00f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
 		true, pointLightOnePosition,
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);

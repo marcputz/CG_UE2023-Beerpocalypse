@@ -68,6 +68,10 @@ uniform sampler2D texture_specular1;
 uniform sampler2D texture_height1;
 uniform sampler2D texture_normal1;
 
+uniform int hasDiffuse1;
+uniform int hasSpecular1;
+uniform int hasNormal1;
+
 uniform int enableNormalMapping;
 uniform int enableShowNormals;
 
@@ -80,7 +84,7 @@ void main() {
 	vec3 diffuseTex = texture(texture_diffuse1, fs_in.TexCoords).rgb;
 	vec3 specularTex = texture(texture_specular1, fs_in.TexCoords).rgb;
 
-	if (enableNormalMapping == 1) {
+	if (enableNormalMapping == 1 && hasNormal1 == 1) {
 		// get the normal from the normalMap in the range of [0,1]
 		vec3 norm = texture(texture_normal1, fs_in.TexCoords).rgb;
 		// transform normal vector to range [-1, 1]
@@ -152,27 +156,31 @@ void main() {
 	}
 }
 
-
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex) {
 	vec3 result = vec3(0.0);
+	vec3 ambientResult = vec3(0.0);
+	vec3 diffuseResult = vec3(0.0);
+	vec3 specularResult = vec3(0.0);
+
+	ambientResult = light.ambient * diffuseTex;
 
 	// parameters for non-ambient lighting calculations
 	vec3 lightDir = normalize(-light.direction);
 
 	// diffuse
 	float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
+	diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
 
 	// specular - phong
 	//vec3 reflectDir = reflect(-lightDir, normal);
 	//float specularCoefficient = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
 
 	// specular - blinn-phong
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-
-	vec3 ambientResult = light.ambient * diffuseTex;
-	vec3 diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
-	vec3 specularResult = light.specular * specularCoefficient * specularTex;
+	if (hasSpecular1 == 1) {
+		vec3 halfwayDir = normalize(lightDir + viewDir);
+		float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+		specularResult = light.specular * specularCoefficient * specularTex;
+	}
 
 	result = (ambientResult + diffuseResult + specularResult);
 
@@ -181,28 +189,33 @@ vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, ve
 
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex, vec3 fragPos) {
 	vec3 result = vec3(0.0);
+	vec3 ambientResult = vec3(0.0);
+	vec3 diffuseResult = vec3(0.0);
+	vec3 specularResult = vec3(0.0);
+
+	ambientResult = light.ambient * diffuseTex;
 
 	// parameters for non-ambient lighting calculations
 	vec3 lightDir = normalize(light.position - fragPos);
 
 	// diffuse
 	float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
+	diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
 
 	// specular - phong
 	//vec3 reflectDir = reflect(-lightDir, normal);
 	//float specularCoefficient = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
 
 	// specular - blinn-phong
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+	if (hasSpecular1 == 1) {
+		vec3 halfwayDir = normalize(lightDir + viewDir);
+		float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+		specularResult = light.specular * specularCoefficient * specularTex;
+	}
 
 	// attenuation (pointLight drops off over distance)
 	float distance = length(light.position - fragPos);
 	float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-
-	vec3 ambientResult = light.ambient * diffuseTex;
-	vec3 diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
-	vec3 specularResult = light.specular * specularCoefficient * specularTex;
 
 	// adjust lights based on the attenuation
 	ambientResult *= attenuation;
@@ -216,20 +229,29 @@ vec3 calcPointLight(PointLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex
 
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex, vec3 fragPos) {
 	vec3 result = vec3(0.0);
+	vec3 ambientResult = vec3(0.0);
+	vec3 diffuseResult = vec3(0.0);
+	vec3 specularResult = vec3(0.0);
+
+	ambientResult = light.ambient * diffuseTex;
 
 	// parameters for non-ambient lighting calculations
 	vec3 lightDir = normalize(light.position - fragPos);
 
 	// diffuse
 	float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
+	diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
 
 	// specular - phong
 	//vec3 reflectDir = reflect(-lightDir, normal);
 	//float specularCoefficient = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
 
 	// specular - blinn-phong
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+	if (hasSpecular1 == 1) {
+		vec3 halfwayDir = normalize(lightDir + viewDir);
+		float specularCoefficient = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
+		specularResult = light.specular * specularCoefficient * specularTex;
+	}
 
 	// attenuation
 	float distance = length(light.position - fragPos);
@@ -239,10 +261,6 @@ vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, 
 	float theta = dot(lightDir, normalize(-light.direction));
 	float epsilon = light.cutOff - light.outerCutOff;
 	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-
-	vec3 ambientResult = light.ambient * diffuseTex;
-	vec3 diffuseResult = light.diffuse * diffuseCoefficient * diffuseTex;
-	vec3 specularResult = light.specular * specularCoefficient * specularTex;
 
 	// adjust lights based on the attenuation and intensity
 	float attenuationTimesIntensity = attenuation * intensity;

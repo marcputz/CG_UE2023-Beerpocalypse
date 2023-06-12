@@ -50,6 +50,8 @@ void MyParticleGenerator::update(float deltaTime) {
 	}
 	*/
 
+	glm::vec3 camPos = player_->getActiveCamera()->getPosition();
+
 	amountToDraw_ = 0;
 	for (int i = 0; i < MaxParticles; i++) {
 		MyParticle& p = particlesContainer_[i];
@@ -68,7 +70,7 @@ void MyParticleGenerator::update(float deltaTime) {
 					p.velocity += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.05f;
 				}
 				p.position += p.velocity * deltaTime;
-				p.cameraDistance = glm::length2(p.position - player_->getActiveCamera()->getPosition());
+				p.cameraDistance = glm::length2(p.position - camPos);
 
 				particlePositions_[4 * amountToDraw_ + 0] = p.position.x;
 				particlePositions_[4 * amountToDraw_ + 1] = p.position.y;

@@ -9,10 +9,10 @@ MyMesh::MyMesh(std::vector<MyVertex> vertices, std::vector<unsigned int> indices
 }
 
 void MyMesh::draw(MyShader& shader) {
-	unsigned int diffuseNr = 1;
-	unsigned int specularNr = 1;
-	unsigned int normalNr = 1;
-	unsigned int heightNr = 1;
+	unsigned int diffuseNr = 0;
+	unsigned int specularNr = 0;
+	unsigned int normalNr = 0;
+	unsigned int heightNr = 0;
 
 	for (unsigned int i = 0; i < textures_.size(); i++) {
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -22,25 +22,40 @@ void MyMesh::draw(MyShader& shader) {
 
 		if (textures_[i].type_ == DIFFUSE) {
 			name = "texture_diffuse";
-			number = std::to_string(diffuseNr++);
+			number = std::to_string(++diffuseNr);
+			shader.setInt(("hasDiffuse" + number).c_str(), 1);
 		} else {
 			if (textures_[i].type_ == SPECULAR) {
 				name = "texture_specular";
-				number = std::to_string(specularNr++);
+				number = std::to_string(++specularNr);
+				shader.setInt(("hasSpecular" + number).c_str(), 1);
 			} else {
 				if (textures_[i].type_ == NORMAL) {
 					name = "texture_normal";
-					number = std::to_string(normalNr++);
+					number = std::to_string(++normalNr);
+					shader.setInt(("hasNormal" + number).c_str(), 1);
 				} else {
 					if (textures_[i].type_ == HEIGHT) {
 						name = "texture_height";
-						number = std::to_string(heightNr++);
+						number = std::to_string(++heightNr);
 					}
 				}
 			}
 		}
 		shader.setInt((name + number).c_str(), i);
 		textures_[i].bind();
+	}
+
+	if (diffuseNr == 0) {
+		shader.setInt("hasDiffuse1", 0);
+	}
+
+	if (specularNr == 0) {
+		shader.setInt("hasSpecular1", 0);
+	}
+
+	if (normalNr == 0) {
+		shader.setInt("hasNormal1", 0);
 	}
 
 	glBindVertexArray(VAO_);
