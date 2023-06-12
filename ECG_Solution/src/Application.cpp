@@ -50,6 +50,8 @@ void mouse_cursor_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void renderBloomQuad();
+void setupBloomBuffers();
+void adjustBloomBuffers();
 
 // PhysX
 void static initPhysX();
@@ -182,7 +184,9 @@ int main(int argc, char** argv) {
 	initIrrKlang();
 
 	// setup for bloom
-	
+	setupBloomBuffers();
+
+	/*
 	{
 		glGenFramebuffers(1, &hdrFrameBuffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
@@ -230,17 +234,17 @@ int main(int argc, char** argv) {
 				std::cout << "Framebuffer (blur) not complete!" << std::endl;
 			}
 		}
-
-		bloomBlurShader = MyAssetManager::loadShader("bloomBlur.vert", "bloomBlur.frag", "bloomBlur");
-		bloomBlurShader.use();
-		bloomBlurShader.setInt("imageToBlur", 0);
-
-		bloomCombineShader = MyAssetManager::loadShader("bloomCombine.vert", "bloomCombine.frag", "bloomCombine");
-		bloomCombineShader.use();
-		bloomCombineShader.setInt("scene", 0);
-		bloomCombineShader.setInt("bloomBlur", 1);
 	}
-	
+	*/
+
+	bloomBlurShader = MyAssetManager::loadShader("bloomBlur.vert", "bloomBlur.frag", "bloomBlur");
+	bloomBlurShader.use();
+	bloomBlurShader.setInt("imageToBlur", 0);
+
+	bloomCombineShader = MyAssetManager::loadShader("bloomCombine.vert", "bloomCombine.frag", "bloomCombine");
+	bloomCombineShader.use();
+	bloomCombineShader.setInt("scene", 0);
+	bloomCombineShader.setInt("bloomBlur", 1);
 
 	// Load default shader for objects
 	defaultShader = MyAssetManager::loadShader("blinn-phong.vert", "blinn-phong.frag", "blinnPhongShader");
@@ -933,6 +937,99 @@ void renderBloomQuad() {
 	glBindVertexArray(0);
 }
 
+void setupBloomBuffers() {
+	glGenFramebuffers(1, &hdrFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
+	// 2 floating point color buffers, 1 for normal rendering, 2 for brightness thresholds
+	glGenTextures(2, colorBuffers);
+	for (unsigned int i = 0; i < 2; i++) {
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		// attach texture to corresponding framebuffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+	}
+	// create and attach depthBuffer (renderBuffer)
+	glGenRenderbuffers(1, &renderBufferDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, screenWidth, screenHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferDepth);
+	// tell openGL which color attachments to use for rendering
+	attachments[0] = GL_COLOR_ATTACHMENT0;
+	attachments[1] = GL_COLOR_ATTACHMENT1;
+	glDrawBuffers(2, attachments);
+	// check framebuffer for completeness
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Framebuffer (depth) not complete!" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// ping-pong framebuffer for blurring (bloom effect around light)
+	glGenFramebuffers(2, pingPongFrameBuffer);
+	glGenTextures(2, pingPongColorBuffers);
+	for (unsigned int i = 0; i < 2; i++) {
+		glBindFramebuffer(GL_FRAMEBUFFER, pingPongFrameBuffer[i]);
+		glBindTexture(GL_TEXTURE_2D, pingPongColorBuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongColorBuffers[i], 0);
+		// also check if framebuffers are complete (no need for depth buffer)
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			std::cout << "Framebuffer (blur) not complete!" << std::endl;
+		}
+	}
+}
+
+void adjustBloomBuffers() {
+	glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
+	// 2 floating point color buffers, 1 for normal rendering, 2 for brightness thresholds
+	glGenTextures(2, colorBuffers);
+	for (unsigned int i = 0; i < 2; i++) {
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		// attach texture to corresponding framebuffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+	}
+	// create and attach depthBuffer (renderBuffer)
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBufferDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, screenWidth, screenHeight);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBufferDepth);
+	// tell openGL which color attachments to use for rendering
+	attachments[0] = GL_COLOR_ATTACHMENT0;
+	attachments[1] = GL_COLOR_ATTACHMENT1;
+	glDrawBuffers(2, attachments);
+	// check framebuffer for completeness
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Framebuffer (depth) not complete!" << std::endl;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// ping-pong framebuffer for blurring (bloom effect around light)
+	for (unsigned int i = 0; i < 2; i++) {
+		glBindFramebuffer(GL_FRAMEBUFFER, pingPongFrameBuffer[i]);
+		glBindTexture(GL_TEXTURE_2D, pingPongColorBuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongColorBuffers[i], 0);
+		// also check if framebuffers are complete (no need for depth buffer)
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			std::cout << "Framebuffer (blur) not complete!" << std::endl;
+		}
+	}
+}
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// F1 - Wireframe
@@ -1080,7 +1177,14 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+	//std::cout << "Size callback: width: " << width << " height: " << height << std::endl;
+
 	glViewport(0, 0, width, height);
+
+	screenWidth = width;
+	screenHeight = height;
+
+	adjustBloomBuffers();
 
 	//std::cout << "Viewport event" << std::endl;
 }
