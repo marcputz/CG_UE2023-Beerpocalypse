@@ -518,12 +518,12 @@ int main(int argc, char** argv) {
 		groundCorridorFirstSecond.setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
 		// right wall
 		StaticCube rightWallCorridorFirstSecond{ &defaultShader, gPhysics };
-		rightWallCorridorFirstSecond.setLocalPosition(groundCorridorFirstSecond.getWorldPosition() + glm::vec3(-2.75f, 2.5f, 0.0f));
-		rightWallCorridorFirstSecond.setScale(glm::vec3(1.0f, 2.0f, 1.5f), true);
+		rightWallCorridorFirstSecond.setLocalPosition(groundCorridorFirstSecond.getWorldPosition() + glm::vec3(-3.0f, 2.5f, 0.0f));
+		rightWallCorridorFirstSecond.setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
 		// left wall
 		StaticCube leftWallCorridorFirstSecond{ &defaultShader, gPhysics };
-		leftWallCorridorFirstSecond.setLocalPosition(groundCorridorFirstSecond.getWorldPosition() + glm::vec3(2.75f, 2.5f, 0.0f));
-		leftWallCorridorFirstSecond.setScale(glm::vec3(1.0f, 2.0f, 1.5f), true);
+		leftWallCorridorFirstSecond.setLocalPosition(groundCorridorFirstSecond.getWorldPosition() + glm::vec3(3.0f, 2.5f, 0.0f));
+		leftWallCorridorFirstSecond.setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
 
 		scene->addObject(&rightWallCorridorFirstSecond);
 		scene->addObject(&leftWallCorridorFirstSecond);
@@ -542,7 +542,22 @@ int main(int argc, char** argv) {
 
 	// corridor second and fifth room
 	{
+		// floor
+		Ground groundCorridorSecondFifth{ &defaultShader, gPhysics };
+		groundCorridorSecondFifth.setLocalPosition(glm::vec3(0.0f, -0.5f, 52.5f));
+		groundCorridorSecondFifth.setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
+		// right wall
+		StaticCube rightWallCorridorSecondFifth{ &defaultShader, gPhysics };
+		rightWallCorridorSecondFifth.setLocalPosition(groundCorridorSecondFifth.getWorldPosition() + glm::vec3(-3.0f, 2.5f, 0.0f));
+		rightWallCorridorSecondFifth.setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
+		// left wall
+		StaticCube leftWallCorridorSecondFifth{ &defaultShader, gPhysics };
+		leftWallCorridorSecondFifth.setLocalPosition(groundCorridorSecondFifth.getWorldPosition() + glm::vec3(3.0f, 2.5f, 0.0f));
+		leftWallCorridorSecondFifth.setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
 
+		scene->addObject(&rightWallCorridorSecondFifth);
+		scene->addObject(&leftWallCorridorSecondFifth);
+		scene->addObject(&groundCorridorSecondFifth);
 	}
 
 	// Init Zombies
