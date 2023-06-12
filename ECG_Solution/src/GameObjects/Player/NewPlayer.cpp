@@ -193,7 +193,12 @@ void NewPlayer::processMouseScrolling(double yOffset) {
 }
 
 void NewPlayer::onHealthChange(int oldHealth, int newHealth){
-	// play sound
+	if (newHealth < oldHealth) {
+		// play sound
+		int rand = std::rand() % 7;
+		string sound = "zombie_attack_" + to_string(rand);
+		MyAssetManager::playSound(sound);
+	}
 }
 
 void NewPlayer::setRespawnPoint(glm::vec3& newRespawnPoint) {

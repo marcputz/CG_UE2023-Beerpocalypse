@@ -75,6 +75,13 @@ void Zombie::processMouseInput(float offsetX, float offsetY) {
 }
 
 void Zombie::onHealthChange(int oldHealth, int newHealth) {
+	if (newHealth < oldHealth) {
+		// make grunt sound
+		int rand = std::rand() % 6;
+		string sound = "grunt_" + to_string(rand);
+		MyAssetManager::playSound(sound);
+	}
+
 	if (newHealth <= 0) {
 		setVisible(false);
 	}

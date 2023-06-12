@@ -1118,6 +1118,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		case GLFW_KEY_R:
 			// reload
 			bullets = maxBullets;
+			MyAssetManager::playSound("reload");
 			break;
 		case GLFW_KEY_KP_ADD:
 			// increase illumination
@@ -1339,8 +1340,22 @@ void static destroyPhysX() {
 void static initIrrKlang() {
 	MyAssetManager::irrKlangSoundEngine_->setSoundVolume(audioVolume);
 
-	MyAssetManager::loadSoundSource("assets/sounds/explosion.wav", "explosion");
 	MyAssetManager::loadSoundSource("assets/sounds/bell.wav", "bell");
+	MyAssetManager::loadSoundSource("assets/sounds/gunshot.mp3", "gunshot");
+	MyAssetManager::loadSoundSource("assets/sounds/reload.mp3", "reload");
+	MyAssetManager::loadSoundSource("assets/sounds/grunt_0.mp3", "grunt_0");
+	MyAssetManager::loadSoundSource("assets/sounds/grunt_1.mp3", "grunt_1");
+	MyAssetManager::loadSoundSource("assets/sounds/grunt_2.mp3", "grunt_2");
+	MyAssetManager::loadSoundSource("assets/sounds/grunt_3.mp3", "grunt_3");
+	MyAssetManager::loadSoundSource("assets/sounds/grunt_4.mp3", "grunt_4");
+	MyAssetManager::loadSoundSource("assets/sounds/grunt_5.mp3", "grunt_5");
+	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_0.mp3", "zombie_attack_0");
+	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_1.mp3", "zombie_attack_1");
+	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_2.mp3", "zombie_attack_2");
+	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_3.mp3", "zombie_attack_3");
+	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_4.mp3", "zombie_attack_4");
+	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_5.mp3", "zombie_attack_5");
+	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_6.mp3", "zombie_attack_6");
 	// add more
 }
 
