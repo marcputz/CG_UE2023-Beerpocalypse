@@ -526,6 +526,8 @@ int main(int argc, char** argv) {
 	scene->addObject(&leftWallCorridorSecondFifth);
 	scene->addObject(&groundCorridorSecondFifth);
 	
+
+
 	// Init Zombies
 	Zombie zombieOne{ &animationShader, gPhysics };
 	scene->addObject(&zombieOne, true);
@@ -545,6 +547,8 @@ int main(int argc, char** argv) {
 	zombieTwoAnimator.setAnimationSpeedMultiplier(2.0f);
 	zombieTwo.setAnimator(zombieTwoAnimator);
 	zombieTwo.follow(player);
+
+
 
 	/*
 	Vampire vampire(&animationShader, gPhysics);
@@ -590,20 +594,56 @@ int main(int argc, char** argv) {
 	playerFlashLight->addLightToShader(animationShader);
 
 	MySpotLight spotLightOne(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(-0.3f, 0.0f, -1.0f),
+		true, beerOne.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
 		12.5f, 15.0f, nullptr);
 	spotLightOne.addLightToShader(defaultShader);
 	spotLightOne.addLightToShader(animationShader);
 
+	MySpotLight spotLightTwo(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, beerTwo.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		1.0f, 0.09f, 0.032f,
+		12.5f, 15.0f, nullptr);
+	spotLightTwo.addLightToShader(defaultShader);
+	spotLightTwo.addLightToShader(animationShader);
+
+	MySpotLight spotLightThree(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, beerThree.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		1.0f, 0.09f, 0.032f,
+		12.5f, 15.0f, nullptr);
+	spotLightThree.addLightToShader(defaultShader);
+	spotLightThree.addLightToShader(animationShader);
+
+	MySpotLight spotLightFour(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, beerFour.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		1.0f, 0.09f, 0.032f,
+		12.5f, 15.0f, nullptr);
+	spotLightFour.addLightToShader(defaultShader);
+	spotLightFour.addLightToShader(animationShader);
+
+	MySpotLight spotLightFive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		true, beerFive.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		1.0f, 0.09f, 0.032f,
+		12.5f, 15.0f, nullptr);
+	spotLightFive.addLightToShader(defaultShader);
+	spotLightFive.addLightToShader(animationShader);
+
+
 	// Add lights to the game
+	// dir
 	scene->addLight(&dirLight);
+	// point
 	scene->addLight(&pointLightOne);
 	scene->addLight(&pointLightTwo);
 	scene->addLight(&pointLightThree);
 	scene->addLight(&pointLightFour);
+	// spot
 	scene->addLight(playerFlashLight);
 	scene->addLight(&spotLightOne);
+	scene->addLight(&spotLightTwo);
+	scene->addLight(&spotLightThree);
+	scene->addLight(&spotLightFour);
+	scene->addLight(&spotLightFive);
 
 	// Setup lights shader
 	lightSourceShader = MyAssetManager::loadShader("simpleLightSource.vert", "simpleLightSource.frag", "lightShader");

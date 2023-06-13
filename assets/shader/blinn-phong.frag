@@ -1,7 +1,7 @@
 #version 330 core
 
 #define NR_POINT_LIGHTS 4
-#define NR_SPOT_LIGHTS 2
+#define NR_SPOT_LIGHTS 6
 
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out vec4 BrightColor;
