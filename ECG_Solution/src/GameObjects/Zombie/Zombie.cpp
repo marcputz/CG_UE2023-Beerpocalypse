@@ -84,6 +84,7 @@ void Zombie::onHealthChange(int oldHealth, int newHealth) {
 
 	if (newHealth <= 0) {
 		setVisible(false);
+		enableCollider(false);
 	}
 	this->highlighted_ = true;
 	this->remainingHighlightDuration_ = this->highlightDuration_;

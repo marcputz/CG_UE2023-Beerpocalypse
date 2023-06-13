@@ -69,6 +69,7 @@ void Player::onCollision(NewGameObject* otherObject) {
 			this->setHealth(this->getHealth() + 20);
 			score++;
 			beer->setVisible(false);
+			beer->enableCollider(false);
 			MyAssetManager::playSound("bell");
 		}
 		return;
@@ -83,6 +84,7 @@ void Player::onCollision(NewGameObject* otherObject) {
 				damageCooldown = targetDamageCooldown;
 			}
 		}
+		return;
 	}
 }
 
