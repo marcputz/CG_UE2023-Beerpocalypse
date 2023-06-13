@@ -1,8 +1,10 @@
 #include "Button.h"
 
-Button::Button(MyShader* shader, PxPhysics* physics) : NewGameObject("Button", shader, physics, "", true) {
+Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate) : NewGameObject("Button", shader, physics, "", true) {
+	linkedObject_ = objectToActivate;
+	
 	PxMaterial* material = physics->createMaterial(0.8, 0.8, 0.1);
-	PxBoxGeometry geometry = PxBoxGeometry(1, 0.4f, 1);y
+	PxBoxGeometry geometry = PxBoxGeometry(1, 0.4f, 1);
 	PxShape* collider = physics->createShape(geometry, *material);
 
 	setCollider(collider);
@@ -26,11 +28,17 @@ Button::~Button() {
 void Button::interact() {
 	isActivated = !isActivated;
 
+	MyAssetManager::playSound("button_click");
+
 	if (isActivated) {
 		model_ = greenButtonModel;
+		if (linkedObject_ != nullptr) 
+			linkedObject_->onActivate();
 	}
 	else {
 		model_ = redButtonModel;
+		if (linkedObject_ != nullptr)
+			linkedObject_->onDeactivate();
 	}
 }
 

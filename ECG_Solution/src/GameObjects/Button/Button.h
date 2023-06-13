@@ -1,8 +1,17 @@
 #pragma once
 
 #include "../NewGameObject.h"
-#include "ButtonRed.h"
-#include "ButtonGreen.h"
+
+class Activatable {
+private:
+	Activatable() = delete;
+	~Activatable() = delete;
+	Activatable(Activatable&&) = delete;
+	Activatable(const Activatable&) = delete;
+public:
+	virtual void onActivate() = 0;
+	virtual void onDeactivate() = 0;
+};
 
 class Button : public NewGameObject {
 private:
@@ -11,8 +20,10 @@ private:
 
 	bool isActivated = false;
 
+	Activatable* linkedObject_ = nullptr;
+
 public:
-	Button(MyShader* shader, PxPhysics* physics);
+	Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate);
 	~Button();
 
 	void interact();
