@@ -1,7 +1,7 @@
 #version 330 core
 
-#define NR_POINT_LIGHTS 4
-#define NR_SPOT_LIGHTS 2
+//#define NR_POINT_LIGHTS 4
+//#define NR_SPOT_LIGHTS 2
 
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
@@ -56,9 +56,9 @@ out VS_OUT {
     mat3 TBN;
 } vs_out;
 
-uniform DirLight dirLight;
-uniform PointLight pointLights[NR_POINT_LIGHTS];
-uniform SpotLight spotLights[NR_SPOT_LIGHTS];
+//uniform DirLight dirLight;
+//uniform PointLight pointLights[NR_POINT_LIGHTS];
+//uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 
 uniform mat4 model;
 uniform mat4 view;
