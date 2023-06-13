@@ -7,9 +7,6 @@ private:
 	const float movementSpeed = 2.0f;
 	GameObject* followObject = nullptr;
 
-public:
-	bool canSeePlayer = false;
-
 private:
 	void onBeforeUpdate();
 	void onUpdate(float deltaTime);

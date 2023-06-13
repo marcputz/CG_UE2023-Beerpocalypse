@@ -26,28 +26,26 @@ void Zombie::onBeforeUpdate() {}
 void Zombie::onUpdate(float deltaTime) {
 	if (isVisible()) {
 		if (isFollowing()) {
-			if (canSeePlayer) {
-				glm::vec3 targetPosition = followObject->getWorldPosition();
-				glm::vec3 zombiePosition = getWorldPosition();
-				glm::vec3 direction = targetPosition - zombiePosition;
-				direction.y = 0;
-				direction = glm::normalize(direction);
+			glm::vec3 targetPosition = followObject->getWorldPosition();
+			glm::vec3 zombiePosition = getWorldPosition();
+			glm::vec3 direction = targetPosition - zombiePosition;
+			direction.y = 0;
+			direction = glm::normalize(direction);
 
-				// give targetPosition a little safety distance to avoid clipping into it completely
-				const float safetyDistance = 0.8f;
-				targetPosition = targetPosition - (direction * safetyDistance);
-				glm::vec3 correctedDirection = targetPosition - zombiePosition;
-				correctedDirection.y = 0;
-				correctedDirection = glm::normalize(correctedDirection);
+			// give targetPosition a little safety distance to avoid clipping into it completely
+			const float safetyDistance = 0.8f;
+			targetPosition = targetPosition - (direction * safetyDistance);
+			glm::vec3 correctedDirection = targetPosition - zombiePosition;
+			correctedDirection.y = 0;
+			correctedDirection = glm::normalize(correctedDirection);
 
-				this->setWorldPosition(zombiePosition + (correctedDirection * deltaTime * movementSpeed));
+			this->setWorldPosition(zombiePosition + (correctedDirection * deltaTime * movementSpeed));
 
-				direction.x *= (-1.0f);
-				glm::mat4 rotationMatrix = glm::lookAt(zombiePosition, zombiePosition - direction, glm::vec3(0, 1, 0));
-				glm::quat rotation = glm::quat(rotationMatrix);
+			direction.x *= (-1.0f);
+			glm::mat4 rotationMatrix = glm::lookAt(zombiePosition, zombiePosition - direction, glm::vec3(0, 1, 0));
+			glm::quat rotation = glm::quat(rotationMatrix);
 
-				this->setLocalRotation(rotation);
-			}
+			this->setLocalRotation(rotation);
 		}
 	}
 }

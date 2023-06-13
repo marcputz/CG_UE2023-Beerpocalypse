@@ -314,10 +314,11 @@ void Scene::step(float deltaTime) {
 		// Check if zombies can see player
 		Zombie* zombie = dynamic_cast<Zombie*>(go);
 		if (zombie != nullptr) {
-			PxVec3 rayOrigin = asPxVec3(zombie->getWorldPosition());
-			PxVec3 rayDestination = asPxVec3(playerGo->getWorldPosition());
+			PxVec3 rayOrigin = asPxVec3(zombie->getLocalPosition());
+			PxVec3 rayDestination = asPxVec3(playerGo->getLocalPosition());
 			PxVec3 rayDirection = (rayDestination - rayOrigin).getNormalized();
-			std::cout << rayDirection.x << "/" << rayDirection.y << "/" << rayDirection.z << std::endl;
+			rayDirection.y = 0;
+			rayDirection.normalize();
 			const PxU32 hitBufferSize = 32;
 			PxRaycastHit hitBuffer[hitBufferSize];
 			PxRaycastBuffer buf(hitBuffer, hitBufferSize);
@@ -329,18 +330,19 @@ void Scene::step(float deltaTime) {
 					GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
 					if (object != nullptr) {
 						// Raycast hit game object
+						std::cout << "Hit " << object->name_ << std::endl;
 						// Skip zombies
 						Zombie* z = dynamic_cast<Zombie*>(object);
 						if (z == nullptr) {
 							// if game object isn't a player either, something is blocking the view
 							Player* p = dynamic_cast<Player*>(object);
 							if (p == nullptr) {
-								zombie->canSeePlayer = false;
+								zombie->follow(nullptr);
 								break;
 							}
 							else {
 								// zombie can see player
-								zombie->canSeePlayer = true;
+								zombie->follow(playerGo);
 								break;
 							}
 						}

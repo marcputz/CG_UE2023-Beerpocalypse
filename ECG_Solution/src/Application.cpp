@@ -657,7 +657,6 @@ int main(int argc, char** argv) {
 	MyAnimator zombieTwoAnimator(&zombieWalkAnim);
 	zombieTwoAnimator.setAnimationSpeedMultiplier(2.0f);
 	zombieTwo.setAnimator(zombieTwoAnimator);
-	zombieTwo.follow(player);
 
 
 
