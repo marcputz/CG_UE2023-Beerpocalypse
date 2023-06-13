@@ -39,6 +39,8 @@ public:
 	void addLight(MySpotLight* spotLight);
 	void setParticleGenerator(MyParticleGenerator* newParticleGenerator);
 
+	void startPlayerInteraction();
+
 	void handleKeyboardInput(GLFWwindow* window, float deltaTime);
 	void handleMouseInput(float xOffset, float yOffset);
 	void handleMouseButtonInput(GLFWwindow* window, int button, int action, int mods);
