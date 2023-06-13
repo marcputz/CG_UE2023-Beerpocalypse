@@ -155,6 +155,6 @@ void MyGUIRenderer::initTextures() {
 	beerSilhouetteTexture_ = MyAssetManager::loadTexture("assets/textures/beersilhouette.png", My2DTextureTypes::DIFFUSE, true, "beerSilhouette");
 	bulletTexture_ = MyAssetManager::loadTexture("assets/textures/bullettransparent.png", My2DTextureTypes::DIFFUSE, true, "bulletTransparent");
 	bulletSilhouetteTexture_ = MyAssetManager::loadTexture("assets/textures/bulletsilhouette.png", My2DTextureTypes::DIFFUSE, true, "bulletSilhouette");
-	healthTexture_ = MyAssetManager::loadTexture("assets/textures/health.png", My2DTextureTypes::DIFFUSE, true, "health");
+	healthTexture_ = MyAssetManager::loadTexture("assets/textures/lifebar.png", My2DTextureTypes::DIFFUSE, true, "lifebar");
 	stbi_set_flip_vertically_on_load(false);
 }

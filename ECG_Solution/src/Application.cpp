@@ -97,7 +97,6 @@ float cameraFar = 0.0f;
 // audio
 float audioVolume = 0.0f;
 
-
 // bloom
 unsigned int hdrFrameBuffer;
 unsigned int colorBuffers[2];
@@ -110,7 +109,6 @@ unsigned int pingPongColorBuffers[2];
 
 unsigned int bloomQuadVAO = 0;
 unsigned int bloomQuadVBO;
-
 
 // Shaders
 MyShader bloomBlurShader;
@@ -148,6 +146,8 @@ bool enableNormalMapping = false;
 bool enableShowNormals = false;
 bool enableGUIHUD = true;
 bool enableBloom = true;
+float gamma = 1.0f;
+float exposure = 1.0f;
 
 // Frame Processing
 float deltaTime = 0.0f;
@@ -311,7 +311,7 @@ int main(int argc, char** argv) {
 	Beer beerOne{ &defaultShader, gPhysics };
 	beerOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(-5, 1.5f, 0));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
-	particleGen.createParticles(beerOne.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerOne.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, &beerOne);
 
 	DynamicCube testCubeTwo{ &defaultShader, gPhysics };
 	testCubeTwo.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(5.0f, 8.0f, 0));
@@ -367,7 +367,7 @@ int main(int argc, char** argv) {
 	Beer beerTwo{ &defaultShader, gPhysics };
 	beerTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(-5, 1.5f, 2));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
-	particleGen.createParticles(beerTwo.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerTwo.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, &beerTwo);
 
 	DynamicCube testCubeThree{ &defaultShader, gPhysics };
 	testCubeThree.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(5.6f, 10.0f, 0.1f));
@@ -416,7 +416,7 @@ int main(int argc, char** argv) {
 	Beer beerThree{ &defaultShader, gPhysics };
 	beerThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(-5, 1.5f, 4));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
-	particleGen.createParticles(beerThree.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerThree.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, &beerThree);
 		
 	scene->addObject(&beerThree);
 	scene->addObject(&rightWallFrontExitRoomThree);
@@ -455,7 +455,7 @@ int main(int argc, char** argv) {
 	Beer beerFour{ &defaultShader, gPhysics };
 	beerFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(-5, 1.5f, 6));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
-	particleGen.createParticles(beerFour.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerFour.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, &beerFour);
 		
 	scene->addObject(&beerFour);
 	scene->addObject(&rightWallRoomFour);
@@ -494,7 +494,7 @@ int main(int argc, char** argv) {
 	Beer beerFive{ &defaultShader, gPhysics };
 	beerFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(-5, 1.0f, 8));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
-	particleGen.createParticles(beerFive.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false);
+	particleGen.createParticles(beerFive.getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, &beerFive);
 		
 	scene->addObject(&beerFive);
 	scene->addObject(&rightWallRoomFive);
@@ -526,25 +526,39 @@ int main(int argc, char** argv) {
 	// floor
 	Ground groundCorridorSecondThird{ &defaultShader, gPhysics };
 	groundCorridorSecondThird.setLocalPosition(glm::vec3(17.5f, -0.5f, 35.0f));
-	groundCorridorSecondThird.setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
+	groundCorridorSecondThird.setScale(glm::vec3(7.5f, 1.0f, 2.0f), true);
 	// right wall
-	StaticCube rightWallCorridorSecondFifth{ &defaultShader, gPhysics };
-	rightWallCorridorSecondFifth.setLocalPosition(groundCorridorSecondThird.getWorldPosition() + glm::vec3(0.0f, 2.5f, -3.0f));
-	rightWallCorridorSecondFifth.setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
+	StaticCube rightWallCorridorSecondThird{ &defaultShader, gPhysics };
+	rightWallCorridorSecondThird.setLocalPosition(groundCorridorSecondThird.getWorldPosition() + glm::vec3(0.0f, 2.5f, -3.0f));
+	rightWallCorridorSecondThird.setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
 	// left wall
-	StaticCube leftWallCorridorSecondFifth{ &defaultShader, gPhysics };
-	leftWallCorridorSecondFifth.setLocalPosition(groundCorridorSecondThird.getWorldPosition() + glm::vec3(0.0f, 2.5f, 3.0f));
-	leftWallCorridorSecondFifth.setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
+	StaticCube leftWallCorridorSecondThird{ &defaultShader, gPhysics };
+	leftWallCorridorSecondThird.setLocalPosition(groundCorridorSecondThird.getWorldPosition() + glm::vec3(0.0f, 2.5f, 3.0f));
+	leftWallCorridorSecondThird.setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
 
-	scene->addObject(&rightWallCorridorSecondFifth);
-	scene->addObject(&leftWallCorridorSecondFifth);
+	scene->addObject(&rightWallCorridorSecondThird);
+	scene->addObject(&leftWallCorridorSecondThird);
 	scene->addObject(&groundCorridorSecondThird);
 
 	// corridor second and fourth room
+	Ground groundCorridorSecondFourth{ &defaultShader, gPhysics };
+	groundCorridorSecondFourth.setLocalPosition(glm::vec3(-17.5f, -0.5f, 35.0f));
+	groundCorridorSecondFourth.setScale(glm::vec3(7.5f, 1.0f, 2.0f), true);
+	// right wall
+	StaticCube rightWallCorridorSecondFourth{ &defaultShader, gPhysics };
+	rightWallCorridorSecondFourth.setLocalPosition(groundCorridorSecondFourth.getWorldPosition() + glm::vec3(0.0f, 2.5f, -3.0f));
+	rightWallCorridorSecondFourth.setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
+	// left wall
+	StaticCube leftWallCorridorSecondFourth{ &defaultShader, gPhysics };
+	leftWallCorridorSecondFourth.setLocalPosition(groundCorridorSecondFourth.getWorldPosition() + glm::vec3(0.0f, 2.5f, 3.0f));
+	leftWallCorridorSecondFourth.setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
+
+	scene->addObject(&rightWallCorridorSecondFourth);
+	scene->addObject(&leftWallCorridorSecondFourth);
+	scene->addObject(&groundCorridorSecondFourth);
 
 	// corridor second and fifth room
 	// floor
-	/*
 	Ground groundCorridorSecondFifth{ &defaultShader, gPhysics };
 	groundCorridorSecondFifth.setLocalPosition(glm::vec3(0.0f, -0.5f, 52.5f));
 	groundCorridorSecondFifth.setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
@@ -560,7 +574,7 @@ int main(int argc, char** argv) {
 	scene->addObject(&rightWallCorridorSecondFifth);
 	scene->addObject(&leftWallCorridorSecondFifth);
 	scene->addObject(&groundCorridorSecondFifth);
-	*/
+	
 
 	// Init Zombies
 	Zombie zombieOne{ &animationShader, gPhysics };
@@ -820,7 +834,8 @@ int main(int argc, char** argv) {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, pingPongColorBuffers[!horizontal]);
 		bloomCombineShader.setInt("bloom", enableBloom);
-		bloomCombineShader.setFloat("exposure", 1.0f);
+		bloomCombineShader.setFloat("exposure", exposure);
+		bloomCombineShader.setFloat("gamma", gamma);
 		renderBloomQuad();
 		
 
@@ -905,11 +920,11 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		textRenderer.renderText(textShader, "[F3] Game-HUD: " + std::string(enableGUIHUD ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 76.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F5] Display Normals: " + std::string(enableShowNormals ? "ON" : "OFF"), 14.0f, (float)screenHeight - 90.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F6] Close Debug HUD", 14.0f, (float)screenHeight - 110.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no"), 14.0f, (float)screenHeight - 124.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F6] Bloom: " + std::string(enableBloom ? "ON" : "OFF"), 14.0f, (float)screenHeight - 104.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F7] Close Debug HUD", 14.0f, (float)screenHeight - 124.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no") + std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure), 14.0f, (float)screenHeight - 138.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 	}
 }
-
 
 void renderBloomQuad() {
 	if (bloomQuadVAO == 0) {
@@ -1092,12 +1107,52 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		enableShowNormals = !enableShowNormals;
 		break;
 	case GLFW_KEY_F6:
+		// toggle bloom
+		enableBloom = !enableBloom;
+		break;
+	case GLFW_KEY_F7:
 		// toggle debug text hud
 		enableDebugHUD = !enableDebugHUD;
 		break;
 	case GLFW_KEY_F8:
 		// toggle view-frustum culling
 		std::cout << "Toggle view-frustum culling" << std::endl;
+		break;
+	case GLFW_KEY_UP:
+		// increase volume
+		audioVolume += 0.1f;
+		if (audioVolume > 1.0f) {
+			audioVolume = 1.0f;
+		}
+		MyAssetManager::irrKlangSoundEngine_->setSoundVolume(audioVolume);
+		break;
+	case GLFW_KEY_DOWN:
+		// increase volume
+		audioVolume -= 0.1f;
+		if (audioVolume < 0.0f) {
+			audioVolume = 0.0f;
+		}
+		MyAssetManager::irrKlangSoundEngine_->setSoundVolume(audioVolume);
+		break;
+	case GLFW_KEY_KP_ADD:
+		// increase illumination
+		exposure += 0.1f;
+		break;
+	case GLFW_KEY_KP_SUBTRACT:
+		// decrease illumination
+		exposure -= 0.1f;
+		if (exposure < 0.1f) {
+			exposure = 0.1f;
+		}
+		break;
+	case GLFW_KEY_PAGE_UP:
+		gamma += 0.1f;
+		break;
+	case GLFW_KEY_PAGE_DOWN: 
+		gamma -= 0.1f;
+		if (gamma < 0.1f) {
+			gamma = 0.1f;
+		}
 		break;
 	}
 
@@ -1118,14 +1173,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		case GLFW_KEY_R:
 			// reload
 			bullets = maxBullets;
-			break;
-		case GLFW_KEY_KP_ADD:
-			// increase illumination
-			std::cout << "Press +" << std::endl;
-			break;
-		case GLFW_KEY_KP_SUBTRACT:
-			// decrease illumination
-			std::cout << "Press -" << std::endl;
 			break;
 		}
 	} else {

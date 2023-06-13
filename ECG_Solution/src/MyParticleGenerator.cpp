@@ -56,14 +56,20 @@ void MyParticleGenerator::update(float deltaTime) {
 	for (int i = 0; i < MaxParticles; i++) {
 		MyParticle& p = particlesContainer_[i];
 
-		if (p.remainingLife > 0.0f) {
-			p.remainingLife -= deltaTime;
+		if (p.remainingLife > 0.0f || p.isImmortal == true) {
 
 			// reset lifetime of sparkles and reverse their movement
-			if (p.remainingLife < 0.0f && p.textureSelect == 2) {
-				p.remainingLife = p.maxLife;
-				p.velocity = (p.velocity * -1.0f);
+			if (p.remainingLife < 0.0f && p.isImmortal == true && p.boundTo != nullptr) {
+				if (p.boundTo->isVisible() == true) {
+					// revive immortal particle if the bound to object still exists
+					p.remainingLife = p.maxLife + deltaTime;
+					p.velocity = (p.velocity * -1.0f);
+				} else {
+					continue;
+				}
 			}
+
+			p.remainingLife -= deltaTime;
 
 			if (p.remainingLife > 0.0f) {
 				if (p.affectedByGravity) {
@@ -177,7 +183,7 @@ void MyParticleGenerator::draw() {
 	glBindVertexArray(0);
 }
 
-void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity) {
+void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity, NewGameObject* objectToBindTo) {
 	int texSelect;
 
 	switch (type) {
@@ -202,6 +208,7 @@ void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 directio
 				particlesContainer_[particleIndex].velocity = direction + randomDir * spread;
 				particlesContainer_[particleIndex].size = (rand() % 1000) / 5000.0f + 0.05f;
 				particlesContainer_[particleIndex].affectedByGravity = hasGravity;
+				particlesContainer_[particleIndex].boundTo = objectToBindTo;
 			}
 
 			break;
@@ -231,6 +238,8 @@ void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 directio
 				particlesContainer_[particleIndex].velocity = direction; // + randomDir * spread;
 				particlesContainer_[particleIndex].size = (rand() % 1000) / 5000.0f + 0.05f;
 				particlesContainer_[particleIndex].affectedByGravity = hasGravity;
+				particlesContainer_[particleIndex].isImmortal = true;
+				particlesContainer_[particleIndex].boundTo = objectToBindTo;
 			}
 
 			break;
@@ -332,14 +341,14 @@ unsigned int MyParticleGenerator::findFirstUnusedParticle() {
 	*/
 
 	for (unsigned int i = 0; i < MaxParticles; i++) {
-		if (particlesContainer_[i].remainingLife <= 0.0f) {
+		if (particlesContainer_[i].remainingLife <= 0.0f && particlesContainer_[i].isImmortal == false) {
 			lastUsedParticle_ = i;
 			return i;
 		}
 	}
 
 	for (unsigned int i = 0; i < lastUsedParticle_; i++) {
-		if (particlesContainer_[i].remainingLife <= 0.0f) {
+		if (particlesContainer_[i].remainingLife <= 0.0f && particlesContainer_[i].isImmortal == false) {
 			lastUsedParticle_ = i;
 			return i;
 		}

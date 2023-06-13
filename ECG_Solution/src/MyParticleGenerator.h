@@ -2,26 +2,28 @@
 
 #include <glm/glm.hpp>
 #include <vector>
-#include "GameObjects/GameObject.h"
 #include "MyShader.h"
 #include "My2DTexture.h"
 #include "GameObjects/Player/NewPlayer.h"
+#include "GameObjects/NewGameObject.h"
 
 struct MyParticle {
 	glm::vec3 position;
 	glm::vec3 velocity;
 	int textureSelect;
 	bool affectedByGravity;
+	bool isImmortal;
 	float size;
 	float remainingLife;
 	float maxLife;
 	float cameraDistance;
+	NewGameObject* boundTo;
 	//float angle;
 	//float weight;
 	//glm::vec4 color;
 	//char r, g, b, a;
 
-	MyParticle() : position(0.0f), velocity(0.0f)/*, r(255), g(255), b(255), a(255)*/, size(1.0f)/*, angle(0.0f), weight(1.0f)*/, remainingLife(0.0f), maxLife(0.0f) {}
+	MyParticle() : position(0.0f), velocity(0.0f)/*, r(255), g(255), b(255), a(255)*/, size(1.0f)/*, angle(0.0f), weight(1.0f)*/, remainingLife(0.0f), maxLife(0.0f), boundTo(nullptr), isImmortal(false) {}
 	bool operator<(const MyParticle& that) const {
 		return this->cameraDistance > that.cameraDistance;
 	}
@@ -41,7 +43,7 @@ public:
 	void update(float deltaTime);
 	void draw();
 
-	void createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity);
+	void createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity, NewGameObject* objectToBindTo);
 
 protected:
 
