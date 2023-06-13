@@ -56,7 +56,7 @@ Scene::Scene(PxPhysics* physics) {
 	this->physics = physics;
 }
 
-void Scene::addObject(NewGameObject* gameObject, bool addToPhysics) {
+void Scene::addObject(GameObject* gameObject, bool addToPhysics) {
 	objects.push_back(gameObject);
 
 	if (addToPhysics) {
@@ -85,8 +85,8 @@ void Scene::startPlayerInteraction() {
 	static const PxReal maxInteractDistance = PxReal(5.0f);
 
 	// Find player
-	NewGameObject* playerGo = nullptr;
-	for (NewGameObject* go : objects) {
+	GameObject* playerGo = nullptr;
+	for (GameObject* go : objects) {
 		if (go->name_ == "Player") {
 			playerGo = go;
 			break;
@@ -117,7 +117,7 @@ void Scene::startPlayerInteraction() {
 			// raycast has hit something
 			for (PxU32 i = 0; i < buf.nbTouches; i++) {
 				PxRaycastHit currentHit = buf.touches[i];
-				NewGameObject* object = static_cast<NewGameObject*>(currentHit.actor->userData);
+				GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
 				if (object != nullptr) {
 					// Raycast hit game object
 					// Skip player as it is always hit
@@ -143,13 +143,13 @@ void Scene::startPlayerInteraction() {
 }
 
 void Scene::handleKeyboardInput(GLFWwindow* window, float deltaTime) {
-	for (NewGameObject* go : objects) {
+	for (GameObject* go : objects) {
 		go->processWindowInput(window, deltaTime);
 	}
 }
 
 void Scene::handleMouseInput(float xOffset, float yOffset) {
-	for (NewGameObject* go : objects) {
+	for (GameObject* go : objects) {
 		go->processMouseInput(xOffset, yOffset);
 	}
 }
@@ -169,8 +169,8 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 		static const PxReal maxShootDistance = 20.0f;
 
 		// Find player
-		NewGameObject* playerGo = nullptr;
-		for (NewGameObject* go : objects) {
+		GameObject* playerGo = nullptr;
+		for (GameObject* go : objects) {
 			if (go->name_ == "Player") {
 				playerGo = go;
 				break;
@@ -200,7 +200,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 				// Raycast has hit something
 				for (PxU32 i = 0; i < buf.nbTouches; i++) {
 					PxRaycastHit currentHit = buf.touches[i];
-					NewGameObject* object = static_cast<NewGameObject*>(currentHit.actor->userData);
+					GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
 					if (object != nullptr) {
 						// Raycast hit game object
 						// Skip player as it is always hit
@@ -244,7 +244,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 
 void Scene::step(float deltaTime) {
 	// Make pre-update calls
-	for (NewGameObject* go : objects) {
+	for (GameObject* go : objects) {
 		go->beforeUpdate();
 	}
 
@@ -268,7 +268,7 @@ void Scene::step(float deltaTime) {
 	}
 
 	// Call update methods
-	for (NewGameObject* go : objects) {
+	for (GameObject* go : objects) {
 		go->update(deltaTime);
 
 		// player ground check via raycast, also creates frustum
@@ -287,7 +287,7 @@ void Scene::step(float deltaTime) {
 					// Raycast has hit something
 					for (PxU32 i = 0; i < buf.nbTouches; i++) {
 						PxRaycastHit currentHit = buf.touches[i];
-						NewGameObject* object = static_cast<NewGameObject*>(currentHit.actor->userData);
+						GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
 						if (object != nullptr) {
 							// Raycast hit game object
 							// Skip player as it is always hit
@@ -312,7 +312,7 @@ void Scene::step(float deltaTime) {
 }
 
 void Scene::draw() {
-	for (NewGameObject* go : objects) {
+	for (GameObject* go : objects) {
 		go->draw();
 		/*
 		if (go->isInsideFrustum(frustum)) {
@@ -328,7 +328,7 @@ void Scene::draw() {
 
 
 void Scene::reset() {
-	for (NewGameObject* go : objects) {
+	for (GameObject* go : objects) {
 		go->reset();
 	}
 }
@@ -358,8 +358,8 @@ void Scene::onContact(const PxContactPairHeader& pairHeader, const PxContactPair
 		const physx::PxContactPair& cp = pairs[i];
 		PxShape* shapeOne = cp.shapes[0];
 		PxShape* shapeTwo = cp.shapes[1];
-		NewGameObject* objectOne = static_cast<NewGameObject*>(shapeOne->userData);
-		NewGameObject* objectTwo = static_cast<NewGameObject*>(shapeTwo->userData);
+		GameObject* objectOne = static_cast<GameObject*>(shapeOne->userData);
+		GameObject* objectTwo = static_cast<GameObject*>(shapeTwo->userData);
 
 		if (objectOne != objectTwo) {
 			//std::cout << "Collision: '" << objectOne->name_ << "' collided with '" << objectTwo->name_ << "'" << std::endl;

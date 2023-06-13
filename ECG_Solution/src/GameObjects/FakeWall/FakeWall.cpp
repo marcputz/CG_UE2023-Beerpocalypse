@@ -1,6 +1,6 @@
 #include "FakeWall.h"
 
-FakeWall::FakeWall(MyShader * shader, PxPhysics * physics) : NewGameObject("Fake Wall", shader, physics, "cube/brick_cube/cube.obj", true) 
+FakeWall::FakeWall(MyShader * shader, PxPhysics * physics) : GameObject("Fake Wall", shader, physics, "cube/brick_cube/cube.obj", true) 
 {
 	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
@@ -29,7 +29,7 @@ void FakeWall::processMouseInput(float offsetX, float offsetY)
 {
 }
 
-void FakeWall::onCollision(NewGameObject* otherObject)
+void FakeWall::onCollision(GameObject* otherObject)
 {
 }
 

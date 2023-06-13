@@ -1,6 +1,6 @@
-#include "NewGameObject.h"
+#include "GameObject.h"
 
-NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, bool isStatic)
+GameObject::GameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, bool isStatic)
 	: shader_{ shader },
 	name_{ name },
 	physics_{ physics },
@@ -19,14 +19,14 @@ NewGameObject::NewGameObject(string name, MyShader* shader, PxPhysics* physics, 
 	physicsActor_->userData = this;
 }
 
-void NewGameObject::synchronizeTransforms() {
+void GameObject::synchronizeTransforms() {
 	// Get the transform coordinates of the physics object and put them into the object's transform
 	PxTransform physicsTransform = physicsActor_->getGlobalPose();
 	transform_->setWorldPosition(asGlmVec3(physicsTransform.p));
 	transform_->setWorldRotation(asGlmQuat(physicsTransform.q));
 }
 
-void NewGameObject::setCollider(PxShape* colliderShape) {
+void GameObject::setCollider(PxShape* colliderShape) {
 	physicsShape_ = colliderShape;
 
 	if (physicsShape_ != nullptr) {
@@ -46,7 +46,7 @@ void NewGameObject::setCollider(PxShape* colliderShape) {
 	}
 }
 
-void NewGameObject::enableCollider(bool enabled) {
+void GameObject::enableCollider(bool enabled) {
 	if (enabled) {
 		if (physicsShape_ != nullptr) {
 			physicsActor_->attachShape(*physicsShape_);
@@ -57,7 +57,7 @@ void NewGameObject::enableCollider(bool enabled) {
 	}
 }
 
-void NewGameObject::reset() {
+void GameObject::reset() {
 	this->setLocalPosition(this->originalPosition);
 	this->setHealth(100);
 	this->setVisible(true);
@@ -66,11 +66,11 @@ void NewGameObject::reset() {
 	this->resetSpecifics();
 }
 
-bool NewGameObject::isInsideFrustum(const Frustum& frustum) {
+bool GameObject::isInsideFrustum(const Frustum& frustum) {
 	return true;
 }
 
-void NewGameObject::setParent(NewGameObject* newParent) {
+void GameObject::setParent(GameObject* newParent) {
 	if (newParent != nullptr) {
 		this->transform_->setParent(newParent->transform_);
 	}
@@ -79,7 +79,7 @@ void NewGameObject::setParent(NewGameObject* newParent) {
 	}
 }
 
-void NewGameObject::setHealth(int newHealth) {
+void GameObject::setHealth(int newHealth) {
 	int oldHealth = health;
 	health = newHealth;
 
@@ -93,11 +93,11 @@ void NewGameObject::setHealth(int newHealth) {
 	onHealthChange(oldHealth, newHealth);
 }
 
-int NewGameObject::getHealth() {
+int GameObject::getHealth() {
 	return health;
 }
 
-void NewGameObject::setLocalPosition(glm::vec3 newPosition) {
+void GameObject::setLocalPosition(glm::vec3 newPosition) {
 	if (this->hasOriginalPosition == false) {
 		this->originalPosition = newPosition;
 		this->hasOriginalPosition = true;
@@ -110,7 +110,7 @@ void NewGameObject::setLocalPosition(glm::vec3 newPosition) {
 	physicsActor_->setGlobalPose(transf);
 }
 
-void NewGameObject::setLocalRotation(glm::quat newRotation) {
+void GameObject::setLocalRotation(glm::quat newRotation) {
 	this->transform_->setLocalRotation(newRotation);
 
 	PxTransform transf = physicsActor_->getGlobalPose();
@@ -118,7 +118,7 @@ void NewGameObject::setLocalRotation(glm::quat newRotation) {
 	physicsActor_->setGlobalPose(transf);
 }
 
-void NewGameObject::setWorldPosition(glm::vec3 newPosition) {
+void GameObject::setWorldPosition(glm::vec3 newPosition) {
 	this->transform_->setWorldPosition(newPosition);
 
 	PxTransform transf = physicsActor_->getGlobalPose();
@@ -126,7 +126,7 @@ void NewGameObject::setWorldPosition(glm::vec3 newPosition) {
 	physicsActor_->setGlobalPose(transf);
 }
 
-void NewGameObject::setScale(glm::vec3 newScale, bool applyTilingScale) {
+void GameObject::setScale(glm::vec3 newScale, bool applyTilingScale) {
 	this->transform_->setScale(newScale);
 
 	if (physicsShape_ != nullptr) {
@@ -149,42 +149,42 @@ void NewGameObject::setScale(glm::vec3 newScale, bool applyTilingScale) {
 	}
 }
 
-glm::vec3 NewGameObject::getLocalPosition() {
+glm::vec3 GameObject::getLocalPosition() {
 	return this->transform_->getLocalPosition();
 }
 
-glm::quat NewGameObject::getLocalRotation() {
+glm::quat GameObject::getLocalRotation() {
 	return this->transform_->getLocalRotation();
 }
 
-glm::vec3 NewGameObject::getWorldPosition() {
+glm::vec3 GameObject::getWorldPosition() {
 	return this->transform_->getWorldPosition();
 }
 
-glm::quat NewGameObject::getWorldRotation() {
+glm::quat GameObject::getWorldRotation() {
 	return this->transform_->getWorldRotation();
 }
 
-glm::vec3 NewGameObject::getScale() {
+glm::vec3 GameObject::getScale() {
 	return this->transform_->getScale();
 }
 
-glm::vec3 NewGameObject::getForwardVector() {
+glm::vec3 GameObject::getForwardVector() {
 	return this->transform_->getForwardVector();
 }
 
-MyModel* NewGameObject::getModel() {
+MyModel* GameObject::getModel() {
 	return this->model_;
 }
 
-void NewGameObject::setAnimator(MyAnimator& newAnimator) {
+void GameObject::setAnimator(MyAnimator& newAnimator) {
 	this->animator_ = &newAnimator;
 }
 
 /**
 * This update function must be called BEFORE the physics update
 */
-void NewGameObject::beforeUpdate() {
+void GameObject::beforeUpdate() {
 	// Call custom code
 	onBeforeUpdate();
 }
@@ -192,7 +192,7 @@ void NewGameObject::beforeUpdate() {
 /**
 * This update function must be called AFTER the physics update
 */
-void NewGameObject::update(float deltaTime) {
+void GameObject::update(float deltaTime) {
 	// synchronize physcis transform into object's transform
 	synchronizeTransforms();
 
@@ -215,7 +215,7 @@ void NewGameObject::update(float deltaTime) {
 //virtual void handleKeyboardInput(GLFWwindow* window, float deltaTime) = 0;
 //virtual void handleMouseInput(float xOffset, float yOffset) = 0;
 
-void NewGameObject::draw() {
+void GameObject::draw() {
 	if (!isVisible_) {
 		return;
 	}
@@ -249,18 +249,18 @@ void NewGameObject::draw() {
 	model_->draw(*shader_);
 }
 
-glm::vec3 NewGameObject::asGlmVec3(physx::PxVec3 vec) {
+glm::vec3 GameObject::asGlmVec3(physx::PxVec3 vec) {
 	return glm::vec3(vec.x, vec.y, vec.z);
 }
 
-physx::PxVec3 NewGameObject::asPxVec3(glm::vec3 vec) {
+physx::PxVec3 GameObject::asPxVec3(glm::vec3 vec) {
 	return physx::PxVec3(vec.x, vec.y, vec.z);
 }
 
-glm::quat NewGameObject::asGlmQuat(physx::PxQuat quat) {
+glm::quat GameObject::asGlmQuat(physx::PxQuat quat) {
 	return glm::quat(quat.w, quat.x, quat.y, quat.z);
 }
 
-physx::PxQuat NewGameObject::asPxQuat(glm::quat quat) {
+physx::PxQuat GameObject::asPxQuat(glm::quat quat) {
 	return physx::PxQuat(quat.x, quat.y, quat.z, quat.w);
 }

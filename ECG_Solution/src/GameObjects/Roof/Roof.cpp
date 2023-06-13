@@ -1,6 +1,6 @@
 #include "Roof.h"
 
-Roof::Roof(MyShader* shader, PxPhysics* physics) : NewGameObject("Roof", shader, physics, "roof/cube.obj", true) {
+Roof::Roof(MyShader* shader, PxPhysics* physics) : GameObject("Roof", shader, physics, "roof/cube.obj", true) {
 
 	PxMaterial* material = physics->createMaterial(0.8, 0.5, 0.2);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);

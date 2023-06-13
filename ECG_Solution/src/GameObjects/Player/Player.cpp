@@ -2,7 +2,7 @@
 
 extern int score;
 
-Player::Player(MyShader* shader, PxPhysics* physics) : NewGameObject("Player", shader, physics, "cube/brick_cube/cube.obj", false) {
+Player::Player(MyShader* shader, PxPhysics* physics) : GameObject("Player", shader, physics, "cube/brick_cube/cube.obj", false) {
 	
 	PxMaterial* material = physics->createMaterial(0.5, 0.5, 0.0);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
@@ -59,7 +59,7 @@ void Player::onUpdate(float deltaTime) {
 	}
 }
 
-void Player::onCollision(NewGameObject* otherObject) {
+void Player::onCollision(GameObject* otherObject) {
 	//std::cout << "Player collided with '" << otherObject->name_ << "'" << std::endl;
 
 	Beer* beer = dynamic_cast<Beer*>(otherObject);

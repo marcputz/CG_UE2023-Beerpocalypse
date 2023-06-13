@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../NewGameObject.h"
+#include "../GameObject.h"
 
-class Beer : public NewGameObject {
+class Beer : public GameObject {
 
 private:
 	bool animateRotation = true;
@@ -20,11 +20,11 @@ public:
 
 	void processWindowInput(GLFWwindow* window, float deltaTime) override;
 	void processMouseInput(float offsetX, float offsetY) override;
-	void onCollision(NewGameObject* otherObject) override;
+	void onCollision(GameObject* otherObject) override;
 
-	// Inherited via NewGameObject
+	// Inherited via GameObject
 	virtual void onHealthChange(int oldHealth, int newHealth) override;
 
-	// Inherited via NewGameObject
+	// Inherited via GameObject
 	virtual void resetSpecifics() override;
 };

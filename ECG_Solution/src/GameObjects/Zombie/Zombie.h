@@ -1,17 +1,17 @@
 #pragma once
 
-#include "../NewGameObject.h"
+#include "../GameObject.h"
 
-class Zombie : public NewGameObject {
+class Zombie : public GameObject {
 private:
 	const float movementSpeed = 2.0f;
-	NewGameObject* followObject = nullptr;
+	GameObject* followObject = nullptr;
 
 private:
 	void onBeforeUpdate();
 	void onUpdate(float deltaTime);
 
-	void onCollision(NewGameObject* otherObject) {}
+	void onCollision(GameObject* otherObject) {}
 
 public:
 	Zombie(MyShader* shader, PxPhysics* physics);
@@ -22,9 +22,9 @@ public:
 	virtual void onHealthChange(int oldHealth, int newHealth) override;
 
 	bool isFollowing();
-	NewGameObject* getFollowing();
-	void follow(NewGameObject* objectToFollow);
+	GameObject* getFollowing();
+	void follow(GameObject* objectToFollow);
 
-	// Inherited via NewGameObject
+	// Inherited via GameObject
 	virtual void resetSpecifics() override;
 };

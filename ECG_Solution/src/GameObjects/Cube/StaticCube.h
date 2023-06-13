@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../NewGameObject.h"
+#include "../GameObject.h"
 
-class StaticCube : public NewGameObject {
+class StaticCube : public GameObject {
 private:
 	void onBeforeUpdate();
 	void onUpdate(float deltaTime);
 
-	void onCollision(NewGameObject* otherObject) {}
+	void onCollision(GameObject* otherObject) {}
 
 public:
 	StaticCube(MyShader* shader, PxPhysics* physics);
@@ -15,9 +15,9 @@ public:
 	void processWindowInput(GLFWwindow* window, float deltaTime) {};
 	void processMouseInput(float offsetX, float offsetY) {};
 
-	// Inherited via NewGameObject
+	// Inherited via GameObject
 	virtual void onHealthChange(int oldHealth, int newHealth) override;
 
-	// Inherited via NewGameObject
+	// Inherited via GameObject
 	virtual void resetSpecifics() override;
 };

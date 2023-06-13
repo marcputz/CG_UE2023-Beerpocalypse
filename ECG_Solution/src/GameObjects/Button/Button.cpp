@@ -1,6 +1,6 @@
 #include "Button.h"
 
-Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate) : NewGameObject("Button", shader, physics, "button/button_red.obj", true) {
+Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate) : GameObject("Button", shader, physics, "button/button_red.obj", true) {
 	linkedObject_ = objectToActivate;
 	
 	PxMaterial* material = physics->createMaterial(0.8, 0.8, 0.1);
@@ -65,7 +65,7 @@ void Button::processMouseInput(float offsetX, float offsetY)
 {
 }
 
-void Button::onCollision(NewGameObject* otherObject)
+void Button::onCollision(GameObject* otherObject)
 {
 }
 

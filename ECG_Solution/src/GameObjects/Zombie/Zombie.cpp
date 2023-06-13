@@ -1,6 +1,6 @@
 #include "Zombie.h"
 
-Zombie::Zombie(MyShader* shader, PxPhysics* physics) : NewGameObject("Zombie", shader, physics, "zombie/Zombie.dae", false) {
+Zombie::Zombie(MyShader* shader, PxPhysics* physics) : GameObject("Zombie", shader, physics, "zombie/Zombie.dae", false) {
 	PxMaterial* material = physics->createMaterial(1, 1, 0.01f);
 	PxBoxGeometry geometry = PxBoxGeometry(0.3, 0.7, 0.3);
 	PxShape* collider = physics->createShape(geometry, *material);
@@ -54,11 +54,11 @@ bool Zombie::isFollowing() {
 	return followObject != nullptr;
 }
 
-NewGameObject* Zombie::getFollowing() {
+GameObject* Zombie::getFollowing() {
 	return followObject;
 }
 
-void Zombie::follow(NewGameObject* objectToFollow) {
+void Zombie::follow(GameObject* objectToFollow) {
 	followObject = objectToFollow;
 }
 

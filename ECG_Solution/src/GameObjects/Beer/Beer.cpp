@@ -1,7 +1,7 @@
 #include "Beer.h"
 
 Beer::Beer(MyShader* shader, PxPhysics* physics) 
-	: NewGameObject("Beer", shader, physics, "beer/14043_16_oz._Beer_Bottle_v1_l3.obj", false)
+	: GameObject("Beer", shader, physics, "beer/14043_16_oz._Beer_Bottle_v1_l3.obj", false)
 {
 	setScale(glm::vec3(0.07f, 0.07f, 0.07f));
 
@@ -59,7 +59,7 @@ void Beer::processMouseInput(float offsetX, float offsetY)
 {
 }
 
-void Beer::onCollision(NewGameObject* otherObject)
+void Beer::onCollision(GameObject* otherObject)
 {
 }
 

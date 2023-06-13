@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameObjects/NewGameObject.h"
+#include "GameObjects/GameObject.h"
 #include <stdlib.h>
 #include <GLFW/glfw3.h>
 #include "Lights/PointLight/MyPointLight.h"
@@ -11,7 +11,7 @@
 
 class Scene : public PxSimulationEventCallback {
 private:
-	vector<NewGameObject*> objects = {};
+	vector<GameObject*> objects = {};
 
 	MyParticleGenerator* particleGenerator;
 	MyDirectionalLight* directionLight;
@@ -33,7 +33,7 @@ public:
 
 	PxScene* getPhysicsScene();
 
-	void addObject(NewGameObject* gameObject, bool addToPhysics = true);
+	void addObject(GameObject* gameObject, bool addToPhysics = true);
 	void addLight(MyDirectionalLight* dirLight);
 	void addLight(MyPointLight* pointLight);
 	void addLight(MySpotLight* spotLight);

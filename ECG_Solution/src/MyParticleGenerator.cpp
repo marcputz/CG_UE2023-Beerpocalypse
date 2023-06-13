@@ -183,7 +183,7 @@ void MyParticleGenerator::draw() {
 	glBindVertexArray(0);
 }
 
-void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity, NewGameObject* objectToBindTo) {
+void MyParticleGenerator::createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity, GameObject* objectToBindTo) {
 	int texSelect;
 
 	switch (type) {

@@ -21,7 +21,7 @@ enum CollisionLayer : PxU32 {
 	LAYER_ENEMIES = (1 << 3)
 };
 
-class NewGameObject {
+class GameObject {
 /* VARIABLES */
 private:
 	bool isStatic_ = false;
@@ -71,13 +71,13 @@ private:
 
 protected:
 	// Constructors
-	explicit NewGameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, bool isStatic = false);
-	NewGameObject(NewGameObject&&) = delete; // move constructor
-	NewGameObject(const NewGameObject&) = delete; // copy constructor
+	explicit GameObject(string name, MyShader* shader, PxPhysics* physics, string modelPath, bool isStatic = false);
+	GameObject(GameObject&&) = delete; // move constructor
+	GameObject(const GameObject&) = delete; // copy constructor
 
 	// operators
-	NewGameObject& NewGameObject::operator=(const NewGameObject&) = delete;
-	bool operator==(const NewGameObject&) const = delete;
+	GameObject& GameObject::operator=(const GameObject&) = delete;
+	bool operator==(const GameObject&) const = delete;
 
 	/**
 	* These functions can be used by this class' derivates to define their functionality
@@ -93,7 +93,7 @@ protected:
 	physx::PxQuat asPxQuat(glm::quat quat);
 
 public:
-	void setParent(NewGameObject* newParent);
+	void setParent(GameObject* newParent);
 
 	bool isStatic() { return isStatic_; }
 
@@ -140,7 +140,7 @@ public:
 	virtual void processWindowInput(GLFWwindow* window, float deltaTime) = 0;
 	virtual void processMouseInput(float offsetX, float offsetY) = 0;
 
-	virtual void onCollision(NewGameObject* otherObject) = 0;
+	virtual void onCollision(GameObject* otherObject) = 0;
 
 	void setHealth(int newHealth);
 	int getHealth();

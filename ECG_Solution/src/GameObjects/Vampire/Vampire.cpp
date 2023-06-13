@@ -1,6 +1,6 @@
 #include "Vampire.h"
 
-Vampire::Vampire(MyShader* shader, PxPhysics* physics) : NewGameObject("Vampire", shader, physics, "vampire/Vampire.dae", true) {
+Vampire::Vampire(MyShader* shader, PxPhysics* physics) : GameObject("Vampire", shader, physics, "vampire/Vampire.dae", true) {
 
 }
 

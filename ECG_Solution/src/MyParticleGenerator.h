@@ -5,7 +5,7 @@
 #include "MyShader.h"
 #include "My2DTexture.h"
 #include "GameObjects/Player/Player.h"
-#include "GameObjects/NewGameObject.h"
+#include "GameObjects/GameObject.h"
 
 struct MyParticle {
 	glm::vec3 position;
@@ -17,7 +17,7 @@ struct MyParticle {
 	float remainingLife;
 	float maxLife;
 	float cameraDistance;
-	NewGameObject* boundTo;
+	GameObject* boundTo;
 	//float angle;
 	//float weight;
 	//glm::vec4 color;
@@ -43,7 +43,7 @@ public:
 	void update(float deltaTime);
 	void draw();
 
-	void createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity, NewGameObject* objectToBindTo);
+	void createParticles(glm::vec3 position, glm::vec3 direction, ParticleType type, float avgLifetime, int amount, bool hasGravity, GameObject* objectToBindTo);
 
 protected:
 

@@ -1,6 +1,6 @@
 #include "StaticCube.h"
 
-StaticCube::StaticCube(MyShader* shader, PxPhysics* physics) : NewGameObject("Static Cube", shader, physics, "cube/brick_cube/cube.obj", true) 
+StaticCube::StaticCube(MyShader* shader, PxPhysics* physics) : GameObject("Static Cube", shader, physics, "cube/brick_cube/cube.obj", true) 
 {
 	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);

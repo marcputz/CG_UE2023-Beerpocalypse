@@ -167,12 +167,12 @@ PxFoundation* gFoundation = nullptr;
 PxPhysics* gPhysics = nullptr;
 PxPvd* gPvd = nullptr;
 
-std::vector<NewGameObject*> roomOne;
-std::vector<NewGameObject*> roomTwo;
-std::vector<NewGameObject*> roomThree;
-std::vector<NewGameObject*> roomFour;
-std::vector<NewGameObject*> roomFive;
-std::vector<NewGameObject*> corridors;
+std::vector<GameObject*> roomOne;
+std::vector<GameObject*> roomTwo;
+std::vector<GameObject*> roomThree;
+std::vector<GameObject*> roomFour;
+std::vector<GameObject*> roomFive;
+std::vector<GameObject*> corridors;
 std::vector<int> beerIdx;
 
 /* ------------------------- */

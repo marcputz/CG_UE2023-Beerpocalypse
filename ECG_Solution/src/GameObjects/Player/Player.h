@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../NewGameObject.h"
+#include "../GameObject.h"
 #include "Camera/PlayerCameraThirdPerson.h"
 #include "Camera/PlayerCameraFirstPerson.h"
 #include "../Beer/Beer.h"
@@ -11,7 +11,7 @@ enum PlayerCameraType {
 	CAMERA_THIRD_PERSON
 };
 
-class Player : public NewGameObject {
+class Player : public GameObject {
 private:
 	const float movementSpeed = 5.0f;
 	const float turningSpeed = 9.0f;
@@ -37,7 +37,7 @@ private:
 	void onBeforeUpdate();
 	void onUpdate(float deltaTime);
 
-	void onCollision(NewGameObject* otherObject);
+	void onCollision(GameObject* otherObject);
 
 public:
 	// Constructors

@@ -1,7 +1,7 @@
 #include "MySpotLight.h"
 
 MySpotLight::MySpotLight(const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, bool enabled, const glm::vec3& position, const glm::vec3& direction,
-	float attenuationConstant, float attenuationLinear, float attenuationQuadratic, float cutOffAngle, float outerCutOffAngle, Player* player, NewGameObject* lightingSubject) : MyLight(ambient, diffuse, specular, enabled) {
+	float attenuationConstant, float attenuationLinear, float attenuationQuadratic, float cutOffAngle, float outerCutOffAngle, Player* player, GameObject* lightingSubject) : MyLight(ambient, diffuse, specular, enabled) {
 	position_ = position;
 	direction_ = direction;
 	attenuationConstant_ = attenuationConstant;
