@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <sstream>
 #include "../MyModel.h"
-#include "GameObjectInfo.h"
 #include <PxPhysicsAPI.h>
 #include "Transform.h"
 #include <glm/glm.hpp>
@@ -11,6 +10,9 @@
 #include <GLFW/glfw3.h>
 #include "../MyAnimator.h"
 #include "../MyFrustum.h"
+
+using namespace physx;
+using namespace std;
 
 enum CollisionLayer : PxU32 {
 	LAYER_DEFAULT = (1 << 0),
