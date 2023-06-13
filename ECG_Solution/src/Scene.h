@@ -11,6 +11,8 @@
 
 class Scene : public PxSimulationEventCallback {
 private:
+	const float ZOMBIE_SEE_DISTANCE = 7.0f;
+
 	vector<GameObject*> objects = {};
 
 	MyParticleGenerator* particleGenerator;
