@@ -49,11 +49,15 @@ void GameObject::setCollider(PxShape* colliderShape) {
 void GameObject::enableCollider(bool enabled) {
 	if (enabled) {
 		if (physicsShape_ != nullptr) {
-			physicsActor_->attachShape(*physicsShape_);
+			physicsShape_->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, true);
+			physicsShape_->setFlag(PxShapeFlag::eSIMULATION_SHAPE, true);
 		}
 	}
 	else {
-		physicsActor_->detachShape(*physicsShape_);
+		if (physicsShape_ != nullptr) {
+			physicsShape_->setFlag(PxShapeFlag::eSCENE_QUERY_SHAPE, false);
+			physicsShape_->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
+		}
 	}
 }
 

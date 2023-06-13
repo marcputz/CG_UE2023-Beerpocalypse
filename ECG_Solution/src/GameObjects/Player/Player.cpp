@@ -44,7 +44,7 @@ void Player::onUpdate(float deltaTime) {
 	}
 
 	// footstep sounds
-	if (playFootstepSound) {
+	if (playFootstepSound && onGround) {
 		if (footstepTimeCounter <= 0) {
 			MyAssetManager::playSound("footstep_0");
 			footstepTimeCounter = FOOTSTEP_SOUND_DELAY;
@@ -69,6 +69,7 @@ void Player::onCollision(GameObject* otherObject) {
 			this->setHealth(this->getHealth() + 20);
 			score++;
 			beer->setVisible(false);
+			beer->enableCollider(false);
 			MyAssetManager::playSound("bell");
 		}
 		return;
