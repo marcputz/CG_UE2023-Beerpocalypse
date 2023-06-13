@@ -1,6 +1,6 @@
 #include "Button.h"
 
-Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate) : NewGameObject("Button", shader, physics, "", true) {
+Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate) : NewGameObject("Button", shader, physics, "button/button_red.obj", true) {
 	linkedObject_ = objectToActivate;
 	
 	PxMaterial* material = physics->createMaterial(0.8, 0.8, 0.1);
@@ -9,7 +9,7 @@ Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActiva
 
 	setCollider(collider);
 
-	redButtonModel = new MyModel("button/button_red.obj");
+	redButtonModel = model_;
 	greenButtonModel = new MyModel("button/button_green.obj");
 
 	if (isActivated) {

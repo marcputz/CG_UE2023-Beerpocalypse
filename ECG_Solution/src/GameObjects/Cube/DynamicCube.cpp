@@ -12,6 +12,16 @@ DynamicCube::DynamicCube(MyShader* shader, PxPhysics* physics)
 
 void DynamicCube::onHealthChange(int oldHealth, int newHealth)
 {
+	if (newHealth < oldHealth) {
+		if (newHealth <= 0) {
+			setVisible(false);
+			enableCollider(false);
+			MyAssetManager::playSound("wood_destroyed");
+		}
+		else {
+			MyAssetManager::playSound("wood_hit");
+		}
+	}
 }
 
 void DynamicCube::resetSpecifics() {

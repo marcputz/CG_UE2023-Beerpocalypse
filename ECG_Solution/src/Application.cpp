@@ -1899,8 +1899,9 @@ void static initIrrKlang() {
 	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_5.mp3", "zombie_attack_5");
 	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_6.mp3", "zombie_attack_6");
 	MyAssetManager::loadSoundSource("assets/sounds/button_click.wav", "button_click");
+	MyAssetManager::loadSoundSource("assets/sounds/wood_hit.mp3", "wood_hit");
+	MyAssetManager::loadSoundSource("assets/sounds/wood_destroyed.mp3", "wood_destroyed");
 	MyAssetManager::loadSoundSource("assets/sounds/footstep_0.mp3", "footstep_0");
-	// add more
 }
 
 void error_callback(int errorCode, const char* description) {

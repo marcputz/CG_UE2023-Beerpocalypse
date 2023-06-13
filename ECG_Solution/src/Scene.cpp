@@ -229,7 +229,8 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 								DynamicCube* cube = dynamic_cast<DynamicCube*>(object);
 								if (cube != nullptr) {
 									PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(cube->getRigidActor());
-									dyn->addForce(rayDirection * 2.0, PxForceMode::eIMPULSE);
+									dyn->addForce(rayDirection * 3.0, PxForceMode::eIMPULSE);
+									cube->setHealth(cube->getHealth() - 30);
 									return;
 								}
 							}
