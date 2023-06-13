@@ -55,6 +55,7 @@ void renderBloomQuad();
 void setupBloomBuffers();
 void adjustBloomBuffers();
 void createTextProjection();
+void initLevel(MyParticleGenerator& particleGenerator);
 
 // PhysX
 void static initPhysX();
@@ -166,6 +167,14 @@ PxFoundation* gFoundation = nullptr;
 PxPhysics* gPhysics = nullptr;
 PxPvd* gPvd = nullptr;
 
+std::vector<NewGameObject*> roomOne;
+std::vector<NewGameObject*> roomTwo;
+std::vector<NewGameObject*> roomThree;
+std::vector<NewGameObject*> roomFour;
+std::vector<NewGameObject*> roomFive;
+std::vector<NewGameObject*> corridors;
+std::vector<int> beerIdx;
+
 /* ------------------------- */
 /*           MAIN            */
 /* ------------------------- */
@@ -235,6 +244,33 @@ int main(int argc, char** argv) {
 	MyParticleGenerator particleGen(particleShader/*, particleTexture*/, player, 50);
 	scene->setParticleGenerator(&particleGen);
 
+	initLevel(particleGen);
+
+	for (int i = 0; i < roomOne.size(); i++) {
+		scene->addObject(roomOne[i]);
+	}
+
+	for (int i = 0; i < roomTwo.size(); i++) {
+		scene->addObject(roomTwo[i]);
+	}
+
+	for (int i = 0; i < roomThree.size(); i++) {
+		scene->addObject(roomThree[i]);
+	}
+
+	for (int i = 0; i < roomFour.size(); i++) {
+		scene->addObject(roomFour[i]);
+	}
+
+	for (int i = 0; i < roomFive.size(); i++) {
+		scene->addObject(roomFive[i]);
+	}
+
+	for (int i = 0; i < corridors.size(); i++) {
+		scene->addObject(corridors[i]);
+	}
+
+	/*
 	// first room
 	// floor
 	Ground groundRoomOne{ &defaultShader, gPhysics };
@@ -357,6 +393,10 @@ int main(int argc, char** argv) {
 	StaticCube frontWallLeftExitRoomTwo{ &defaultShader, gPhysics };
 	frontWallLeftExitRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(6.0f, 2.5f, 10.0f));
 	frontWallLeftExitRoomTwo.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof roofRoomTwo{ &defaultShader, gPhysics };
+	roofRoomTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomTwo.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
 	Beer beerTwo{ &defaultShader, gPhysics };
 	beerTwo.setLocalPosition(groundRoomTwo.getWorldPosition() + glm::vec3(-5, 1.5f, 2));
@@ -375,6 +415,7 @@ int main(int argc, char** argv) {
 	scene->addObject(&frontWallRightExitRoomTwo);
 	scene->addObject(&frontWallLeftExitRoomTwo);
 	scene->addObject(&groundRoomTwo);
+	scene->addObject(&roofRoomTwo);
 
 	// third room (left)
 	// floor
@@ -401,6 +442,10 @@ int main(int argc, char** argv) {
 	StaticCube frontWallRoomThree{ &defaultShader, gPhysics };
 	frontWallRoomThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
 	frontWallRoomThree.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof roofRoomThree{ &defaultShader, gPhysics };
+	roofRoomThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomThree.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
 	Beer beerThree{ &defaultShader, gPhysics };
 	beerThree.setLocalPosition(groundRoomThree.getWorldPosition() + glm::vec3(-5, 1.5f, 4));
@@ -414,6 +459,7 @@ int main(int argc, char** argv) {
 	scene->addObject(&behindWallRoomThree);
 	scene->addObject(&frontWallRoomThree);
 	scene->addObject(&groundRoomThree);
+	scene->addObject(&roofRoomThree);
 
 	// fourth room (right)
 	// floor
@@ -440,6 +486,10 @@ int main(int argc, char** argv) {
 	StaticCube frontWallRoomFour{ &defaultShader, gPhysics };
 	frontWallRoomFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
 	frontWallRoomFour.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof roofRoomFour{ &defaultShader, gPhysics };
+	roofRoomFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomFour.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
 	Beer beerFour{ &defaultShader, gPhysics };
 	beerFour.setLocalPosition(groundRoomFour.getWorldPosition() + glm::vec3(-5, 1.5f, 6));
@@ -453,6 +503,7 @@ int main(int argc, char** argv) {
 	scene->addObject(&behindWallRoomFour);
 	scene->addObject(&frontWallRoomFour);
 	scene->addObject(&groundRoomFour);
+	scene->addObject(&roofRoomFour);
 
 	// fifth room (front front)
 	// floor
@@ -479,6 +530,10 @@ int main(int argc, char** argv) {
 	StaticCube frontWallRoomFive{ &defaultShader, gPhysics };
 	frontWallRoomFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
 	frontWallRoomFive.setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof roofRoomFive{ &defaultShader, gPhysics };
+	roofRoomFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomFive.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
 	Beer beerFive{ &defaultShader, gPhysics };
 	beerFive.setLocalPosition(groundRoomFive.getWorldPosition() + glm::vec3(-5, 1.0f, 8));
@@ -492,6 +547,7 @@ int main(int argc, char** argv) {
 	scene->addObject(&behindWallLeftExitRoomFive);
 	scene->addObject(&frontWallRoomFive);
 	scene->addObject(&groundRoomFive);
+	scene->addObject(&roofRoomFive);
 
 	// corridor into first room
 	Ground groundCorridorFirst{ &defaultShader, gPhysics };
@@ -580,7 +636,7 @@ int main(int argc, char** argv) {
 	scene->addObject(&rightWallCorridorSecondFifth);
 	scene->addObject(&leftWallCorridorSecondFifth);
 	scene->addObject(&groundCorridorSecondFifth);
-	
+	*/
 
 
 	// Init Zombies
@@ -612,8 +668,8 @@ int main(int argc, char** argv) {
 	*/
 
 	// Init lights
-	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f),
-		false, glm::vec3(-0.2f, -1.0f, 0.3f));
+	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.3f, 0.3f, 0.3f),
+		true, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
 	dirLight.addLightToShader(animationShader);
 
@@ -649,37 +705,42 @@ int main(int argc, char** argv) {
 	playerFlashLight->addLightToShader(animationShader);
 
 	MySpotLight spotLightOne(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, beerOne.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		true,
+		roomOne[beerIdx[0]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, nullptr, &beerOne);
+		12.5f, 15.0f, nullptr, roomOne[beerIdx[0]]);
 	spotLightOne.addLightToShader(defaultShader);
 	spotLightOne.addLightToShader(animationShader);
 
 	MySpotLight spotLightTwo(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, beerTwo.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		true,
+		roomTwo[beerIdx[1]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, nullptr, &beerTwo);
+		12.5f, 15.0f, nullptr, roomTwo[beerIdx[1]]);
 	spotLightTwo.addLightToShader(defaultShader);
 	spotLightTwo.addLightToShader(animationShader);
 
 	MySpotLight spotLightThree(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, beerThree.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		true,
+		roomThree[beerIdx[2]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, nullptr, &beerThree);
+		12.5f, 15.0f, nullptr, roomThree[beerIdx[2]]);
 	spotLightThree.addLightToShader(defaultShader);
 	spotLightThree.addLightToShader(animationShader);
 
 	MySpotLight spotLightFour(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, beerFour.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		true,
+		roomFour[beerIdx[3]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, nullptr, &beerFour);
+		12.5f, 15.0f, nullptr, roomFour[beerIdx[3]]);
 	spotLightFour.addLightToShader(defaultShader);
 	spotLightFour.addLightToShader(animationShader);
 
 	MySpotLight spotLightFive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, beerFive.getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		true,
+		roomFive[beerIdx[4]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, nullptr, &beerFive);
+		12.5f, 15.0f, nullptr, roomFive[beerIdx[4]]);
 	spotLightFive.addLightToShader(defaultShader);
 	spotLightFive.addLightToShader(animationShader);
 
@@ -909,6 +970,381 @@ int main(int argc, char** argv) {
 /* ------------------------- */
 /*        FUNCTIONS          */
 /* ------------------------- */
+
+void initLevel(MyParticleGenerator& particleGenerator) {
+	// first room
+	// floor
+	Ground* groundRoomOne = new Ground{ &defaultShader, gPhysics };
+	groundRoomOne->setLocalPosition(glm::vec3(0.0f, -0.5f, 0.0f));
+	groundRoomOne->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+	// right wall
+	StaticCube* rightWallRoomOne = new StaticCube{ &defaultShader, gPhysics };
+	rightWallRoomOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
+	rightWallRoomOne->setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
+	// left wall
+	StaticCube* leftWallRoomOne = new StaticCube{ &defaultShader, gPhysics };
+	leftWallRoomOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
+	leftWallRoomOne->setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
+	// behind wall
+	StaticCube* behindWallRightExitRoomOne = new StaticCube{ &defaultShader, gPhysics };
+	behindWallRightExitRoomOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(-6.0f, 2.5f, -10.0f));
+	behindWallRightExitRoomOne->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// behind wall - left part of exit
+	StaticCube* behindWallLeftExitRoomOne = new StaticCube{ &defaultShader, gPhysics };
+	behindWallLeftExitRoomOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(6.0f, 2.5f, -10.0f));
+	behindWallLeftExitRoomOne->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// front wall - right part of exit
+	StaticCube* frontWallRightExitRoomOne = new StaticCube{ &defaultShader, gPhysics };
+	frontWallRightExitRoomOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(-6.0f, 2.5f, 10.0f));
+	frontWallRightExitRoomOne->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// front wall - left part of exit
+	StaticCube* frontWallLeftExitRoomOne = new StaticCube{ &defaultShader, gPhysics };
+	frontWallLeftExitRoomOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(6.0f, 2.5f, 10.0f));
+	frontWallLeftExitRoomOne->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof* roofRoomOne = new Roof{ &defaultShader, gPhysics };
+	roofRoomOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomOne->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+
+	Beer* beerOne = new Beer{ &defaultShader, gPhysics };
+	beerOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(-5, 1.5f, 0));
+	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
+	particleGenerator.createParticles(beerOne->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerOne);
+
+	DynamicCube* dynCubeOne = new DynamicCube{ &defaultShader, gPhysics };
+	dynCubeOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(1.25f, 1.5f, 10.0f));
+	dynCubeOne->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	DynamicCube* dynCubeTwo = new DynamicCube{ &defaultShader, gPhysics };
+	dynCubeTwo->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(-1.25f, 1.5f, 10.0f));
+	dynCubeTwo->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	DynamicCube* dynCubeThree = new DynamicCube{ &defaultShader, gPhysics };
+	dynCubeThree->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(0.0f, 1.5f, 10.0f));
+	dynCubeThree->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	DynamicCube* dynCubeFour = new DynamicCube{ &defaultShader, gPhysics };
+	dynCubeFour->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(1.25f, 2.5f, 10.0f));
+	dynCubeFour->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	DynamicCube* dynCubeFive = new DynamicCube{ &defaultShader, gPhysics };
+	dynCubeFive->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(-1.25f, 2.5f, 10.0f));
+	dynCubeFive->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	DynamicCube* dynCubeSix = new DynamicCube{ &defaultShader, gPhysics };
+	dynCubeSix->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
+	dynCubeSix->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	Button* buttonOne = new Button{ &defaultShader, gPhysics };
+	buttonOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(1.0f, 1.5f, 1.0f));
+	buttonOne->setScale(glm::vec3(0.5, 0.5, 0.5));
+	buttonOne->setLocalRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
+
+	roomOne.push_back(dynCubeOne);
+	roomOne.push_back(dynCubeTwo);
+	roomOne.push_back(dynCubeThree);
+	roomOne.push_back(dynCubeFour);
+	roomOne.push_back(dynCubeFive);
+	roomOne.push_back(dynCubeSix);
+	beerIdx.push_back(roomOne.size());
+	roomOne.push_back(beerOne);
+	roomOne.push_back(buttonOne);
+	roomOne.push_back(rightWallRoomOne);
+	roomOne.push_back(leftWallRoomOne);
+	roomOne.push_back(behindWallRightExitRoomOne);
+	roomOne.push_back(behindWallLeftExitRoomOne);
+	roomOne.push_back(frontWallRightExitRoomOne);
+	roomOne.push_back(frontWallLeftExitRoomOne);
+	roomOne.push_back(groundRoomOne);
+	roomOne.push_back(roofRoomOne);
+
+	// second room (front/center)
+	// ground
+	Ground* groundRoomTwo = new Ground{ &defaultShader, gPhysics };
+	groundRoomTwo->setLocalPosition(glm::vec3(0.0f, -0.5f, 35.0f));
+	groundRoomTwo->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+	// right wall - front part of exit
+	StaticCube* rightWallFrontExitRoomTwo = new StaticCube{ &defaultShader, gPhysics };
+	rightWallFrontExitRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(-10.0f, 2.5f, 6.0f));
+	rightWallFrontExitRoomTwo->setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
+	// right wall - behind part of exit
+	StaticCube* rightWallBehindExitRoomTwo = new StaticCube{ &defaultShader, gPhysics };
+	rightWallBehindExitRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(-10.0f, 2.5f, -6.0f));
+	rightWallBehindExitRoomTwo->setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
+	// left wall - front part of exit
+	StaticCube* leftWallFrontExitRoomTwo = new StaticCube{ &defaultShader, gPhysics };
+	leftWallFrontExitRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(10.0f, 2.5f, 6.0f));
+	leftWallFrontExitRoomTwo->setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
+	// left wall - behind part of exit 
+	StaticCube* leftWallBehindExitRoomTwo = new StaticCube{ &defaultShader, gPhysics };
+	leftWallBehindExitRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(10.0f, 2.5f, -6.0f));
+	leftWallBehindExitRoomTwo->setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
+	// behind wall - right part of exit
+	StaticCube* behindWallRightExitRoomTwo = new StaticCube{ &defaultShader, gPhysics };
+	behindWallRightExitRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(-6.0f, 2.5f, -10.0f));
+	behindWallRightExitRoomTwo->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// behind wall - left part of exit
+	StaticCube* behindWallLeftExitRoomTwo = new StaticCube{ &defaultShader, gPhysics };
+	behindWallLeftExitRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(6.0f, 2.5f, -10.0f));
+	behindWallLeftExitRoomTwo->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// front wall - right part of exit
+	StaticCube* frontWallRightExitRoomTwo = new StaticCube{ &defaultShader, gPhysics };
+	frontWallRightExitRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(-6.0f, 2.5f, 10.0f));
+	frontWallRightExitRoomTwo->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// front wall - left part of exit
+	StaticCube* frontWallLeftExitRoomTwo = new StaticCube{ &defaultShader, gPhysics };
+	frontWallLeftExitRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(6.0f, 2.5f, 10.0f));
+	frontWallLeftExitRoomTwo->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof* roofRoomTwo = new Roof{ &defaultShader, gPhysics };
+	roofRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomTwo->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+
+	Beer* beerTwo = new Beer{ &defaultShader, gPhysics };
+	beerTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(-5, 1.5f, 2));
+	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
+	particleGenerator.createParticles(beerTwo->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerTwo);
+
+	pointLightOnePosition = groundRoomTwo->getWorldPosition() + glm::vec3(0.0f, 2.0f, 0.0f);
+
+	beerIdx.push_back(roomTwo.size());
+	roomTwo.push_back(beerTwo);
+	roomTwo.push_back(rightWallFrontExitRoomTwo);
+	roomTwo.push_back(rightWallBehindExitRoomTwo);
+	roomTwo.push_back(leftWallFrontExitRoomTwo);
+	roomTwo.push_back(leftWallBehindExitRoomTwo);
+	roomTwo.push_back(behindWallRightExitRoomTwo);
+	roomTwo.push_back(behindWallLeftExitRoomTwo);
+	roomTwo.push_back(frontWallRightExitRoomTwo);
+	roomTwo.push_back(frontWallLeftExitRoomTwo);
+	roomTwo.push_back(groundRoomTwo);
+	roomTwo.push_back(roofRoomTwo);
+
+	// third room (left)
+	// floor
+	Ground* groundRoomThree = new Ground{ &defaultShader, gPhysics };
+	groundRoomThree->setLocalPosition(glm::vec3(35.0f, -0.5f, 35.0f));
+	groundRoomThree->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+	// right wall - front part of exit
+	StaticCube* rightWallFrontExitRoomThree = new StaticCube{ &defaultShader, gPhysics };
+	rightWallFrontExitRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(-10.0f, 2.5f, 6.0f));
+	rightWallFrontExitRoomThree->setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
+	// right wall - behind part of exit
+	StaticCube* rightWallBehindExitRoomThree = new StaticCube{ &defaultShader, gPhysics };
+	rightWallBehindExitRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(-10.0f, 2.5f, -6.0f));
+	rightWallBehindExitRoomThree->setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
+	// left wall
+	StaticCube* leftWallRoomThree = new StaticCube{ &defaultShader, gPhysics };
+	leftWallRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
+	leftWallRoomThree->setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
+	// behind wall
+	StaticCube* behindWallRoomThree = new StaticCube{ &defaultShader, gPhysics };
+	behindWallRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(0.0f, 2.5f, -10.0f));
+	behindWallRoomThree->setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
+	// front wall
+	StaticCube* frontWallRoomThree = new StaticCube{ &defaultShader, gPhysics };
+	frontWallRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
+	frontWallRoomThree->setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof* roofRoomThree = new Roof{ &defaultShader, gPhysics };
+	roofRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomThree->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+
+	Beer* beerThree = new Beer{ &defaultShader, gPhysics };
+	beerThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(-5, 1.5f, 4));
+	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
+	particleGenerator.createParticles(beerThree->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerThree);
+
+	beerIdx.push_back(roomThree.size());
+	roomThree.push_back(beerThree);
+	roomThree.push_back(rightWallFrontExitRoomThree);
+	roomThree.push_back(rightWallBehindExitRoomThree);
+	roomThree.push_back(leftWallRoomThree);
+	roomThree.push_back(behindWallRoomThree);
+	roomThree.push_back(frontWallRoomThree);
+	roomThree.push_back(groundRoomThree);
+	roomThree.push_back(roofRoomThree);
+
+	// fourth room (right)
+	// floor
+	Ground* groundRoomFour = new Ground{ &defaultShader, gPhysics };
+	groundRoomFour->setLocalPosition(glm::vec3(-35.0f, -0.5f, 35.0f));
+	groundRoomFour->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+	// right wall
+	StaticCube* rightWallRoomFour = new StaticCube{ &defaultShader, gPhysics };
+	rightWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
+	rightWallRoomFour->setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
+	// left wall - front part of exit
+	StaticCube* leftWallFrontExitRoomFour = new StaticCube{ &defaultShader, gPhysics };
+	leftWallFrontExitRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(10.0f, 2.5f, 6.0f));
+	leftWallFrontExitRoomFour->setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
+	// left wall - behind part of exit 
+	StaticCube* leftWallBehindExitRoomFour = new StaticCube{ &defaultShader, gPhysics };
+	leftWallBehindExitRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(10.0f, 2.5f, -6.0f));
+	leftWallBehindExitRoomFour->setScale(glm::vec3(1.0f, 2.0f, 4.0f), true);
+	// behind wall
+	StaticCube* behindWallRoomFour = new StaticCube{ &defaultShader, gPhysics };
+	behindWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, 2.5f, -10.0f));
+	behindWallRoomFour->setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
+	// front wall
+	StaticCube* frontWallRoomFour = new StaticCube{ &defaultShader, gPhysics };
+	frontWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
+	frontWallRoomFour->setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof* roofRoomFour = new Roof{ &defaultShader, gPhysics };
+	roofRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomFour->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+
+	Beer* beerFour = new Beer{ &defaultShader, gPhysics };
+	beerFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-5, 1.5f, 6));
+	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
+	particleGenerator.createParticles(beerFour->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerFour);
+
+	beerIdx.push_back(roomFour.size());
+	roomFour.push_back(beerFour);
+	roomFour.push_back(rightWallRoomFour);
+	roomFour.push_back(leftWallFrontExitRoomFour);
+	roomFour.push_back(leftWallBehindExitRoomFour);
+	roomFour.push_back(behindWallRoomFour);
+	roomFour.push_back(frontWallRoomFour);
+	roomFour.push_back(groundRoomFour);
+	roomFour.push_back(roofRoomFour);
+
+	// fifth room (front front)
+	// floor
+	Ground* groundRoomFive = new Ground{ &defaultShader, gPhysics };
+	groundRoomFive->setLocalPosition(glm::vec3(0.0f, -0.5f, 70.0f));
+	groundRoomFive->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+	// right wall
+	StaticCube* rightWallRoomFive = new StaticCube{ &defaultShader, gPhysics };
+	rightWallRoomFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(-10.0f, 2.5f, 0.0f));
+	rightWallRoomFive->setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
+	// left wall
+	StaticCube* leftWallRoomFive = new StaticCube{ &defaultShader, gPhysics };
+	leftWallRoomFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
+	leftWallRoomFive->setScale(glm::vec3(1.0f, 2.0f, 10.0f), true);
+	// behind wall - right part of exit
+	StaticCube* behindWallRightExitRoomFive = new StaticCube{ &defaultShader, gPhysics };
+	behindWallRightExitRoomFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(-6.0f, 2.5f, -10.0f));
+	behindWallRightExitRoomFive->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// behind wall - left part of exit
+	StaticCube* behindWallLeftExitRoomFive = new StaticCube{ &defaultShader, gPhysics };
+	behindWallLeftExitRoomFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(6.0f, 2.5f, -10.0f));
+	behindWallLeftExitRoomFive->setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// front wall
+	StaticCube* frontWallRoomFive = new StaticCube{ &defaultShader, gPhysics };
+	frontWallRoomFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
+	frontWallRoomFive->setScale(glm::vec3(10.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof* roofRoomFive = new Roof{ &defaultShader, gPhysics };
+	roofRoomFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomFive->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+
+	Beer* beerFive = new Beer{ &defaultShader, gPhysics };
+	beerFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(-5, 1.0f, 8));
+	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
+	particleGenerator.createParticles(beerFive->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerFive);
+
+	beerIdx.push_back(roomFive.size());
+	roomFive.push_back(beerFive);
+	roomFive.push_back(rightWallRoomFive);
+	roomFive.push_back(leftWallRoomFive);
+	roomFive.push_back(behindWallRightExitRoomFive);
+	roomFive.push_back(behindWallLeftExitRoomFive);
+	roomFive.push_back(frontWallRoomFive);
+	roomFive.push_back(groundRoomFive);
+	roomFive.push_back(roofRoomFive);
+
+	// ----------------------------------------------------
+
+	// corridor into first room
+	Ground* groundCorridorFirst = new Ground{ &defaultShader, gPhysics };
+	groundCorridorFirst->setLocalPosition(glm::vec3(0.0f, -0.5f, -17.5f));
+	groundCorridorFirst->setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
+	// right wall
+	StaticCube* rightWallCorridorFirst = new StaticCube{ &defaultShader, gPhysics };
+	rightWallCorridorFirst->setLocalPosition(groundCorridorFirst->getWorldPosition() + glm::vec3(-3.0f, 2.5f, 0.0f));
+	rightWallCorridorFirst->setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
+	// left wall
+	StaticCube* leftWallCorridorFirst = new StaticCube{ &defaultShader, gPhysics };
+	leftWallCorridorFirst->setLocalPosition(groundCorridorFirst->getWorldPosition() + glm::vec3(3.0f, 2.5f, 0.0f));
+	leftWallCorridorFirst->setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
+
+	corridors.push_back(rightWallCorridorFirst);
+	corridors.push_back(leftWallCorridorFirst);
+	corridors.push_back(groundCorridorFirst);
+
+	// corridor first and second room
+	// floor
+	Ground* groundCorridorFirstSecond = new Ground{ &defaultShader, gPhysics };
+	groundCorridorFirstSecond->setLocalPosition(glm::vec3(0.0f, -0.5f, 17.5f));
+	groundCorridorFirstSecond->setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
+	// right wall
+	StaticCube* rightWallCorridorFirstSecond = new StaticCube{ &defaultShader, gPhysics };
+	rightWallCorridorFirstSecond->setLocalPosition(groundCorridorFirstSecond->getWorldPosition() + glm::vec3(-3.0f, 2.5f, 0.0f));
+	rightWallCorridorFirstSecond->setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
+	// left wall
+	StaticCube* leftWallCorridorFirstSecond = new StaticCube{ &defaultShader, gPhysics };
+	leftWallCorridorFirstSecond->setLocalPosition(groundCorridorFirstSecond->getWorldPosition() + glm::vec3(3.0f, 2.5f, 0.0f));
+	leftWallCorridorFirstSecond->setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
+
+	corridors.push_back(rightWallCorridorFirstSecond);
+	corridors.push_back(leftWallCorridorFirstSecond);
+	corridors.push_back(groundCorridorFirstSecond);
+
+	// corridor second and third room
+	// floor
+	Ground* groundCorridorSecondThird = new Ground{ &defaultShader, gPhysics };
+	groundCorridorSecondThird->setLocalPosition(glm::vec3(17.5f, -0.5f, 35.0f));
+	groundCorridorSecondThird->setScale(glm::vec3(7.5f, 1.0f, 2.0f), true);
+	// right wall
+	StaticCube* rightWallCorridorSecondThird = new StaticCube{ &defaultShader, gPhysics };
+	rightWallCorridorSecondThird->setLocalPosition(groundCorridorSecondThird->getWorldPosition() + glm::vec3(0.0f, 2.5f, -3.0f));
+	rightWallCorridorSecondThird->setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
+	// left wall
+	StaticCube* leftWallCorridorSecondThird = new StaticCube{ &defaultShader, gPhysics };
+	leftWallCorridorSecondThird->setLocalPosition(groundCorridorSecondThird->getWorldPosition() + glm::vec3(0.0f, 2.5f, 3.0f));
+	leftWallCorridorSecondThird->setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
+
+	corridors.push_back(rightWallCorridorSecondThird);
+	corridors.push_back(leftWallCorridorSecondThird);
+	corridors.push_back(groundCorridorSecondThird);
+
+	// corridor second and fourth room
+	Ground* groundCorridorSecondFourth = new Ground{ &defaultShader, gPhysics };
+	groundCorridorSecondFourth->setLocalPosition(glm::vec3(-17.5f, -0.5f, 35.0f));
+	groundCorridorSecondFourth->setScale(glm::vec3(7.5f, 1.0f, 2.0f), true);
+	// right wall
+	StaticCube* rightWallCorridorSecondFourth = new StaticCube{ &defaultShader, gPhysics };
+	rightWallCorridorSecondFourth->setLocalPosition(groundCorridorSecondFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, -3.0f));
+	rightWallCorridorSecondFourth->setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
+	// left wall
+	StaticCube* leftWallCorridorSecondFourth = new StaticCube{ &defaultShader, gPhysics };
+	leftWallCorridorSecondFourth->setLocalPosition(groundCorridorSecondFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, 3.0f));
+	leftWallCorridorSecondFourth->setScale(glm::vec3(6.5f, 2.0f, 1.0f), true);
+
+	corridors.push_back(rightWallCorridorSecondFourth);
+	corridors.push_back(leftWallCorridorSecondFourth);
+	corridors.push_back(groundCorridorSecondFourth);
+
+	// corridor second and fifth room
+	// floor
+	Ground* groundCorridorSecondFifth = new Ground{ &defaultShader, gPhysics };
+	groundCorridorSecondFifth->setLocalPosition(glm::vec3(0.0f, -0.5f, 52.5f));
+	groundCorridorSecondFifth->setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
+	// right wall
+	StaticCube* rightWallCorridorSecondFifth = new StaticCube{ &defaultShader, gPhysics };
+	rightWallCorridorSecondFifth->setLocalPosition(groundCorridorSecondFifth->getWorldPosition() + glm::vec3(-3.0f, 2.5f, 0.0f));
+	rightWallCorridorSecondFifth->setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
+	// left wall
+	StaticCube* leftWallCorridorSecondFifth = new StaticCube{ &defaultShader, gPhysics };
+	leftWallCorridorSecondFifth->setLocalPosition(groundCorridorSecondFifth->getWorldPosition() + glm::vec3(3.0f, 2.5f, 0.0f));
+	leftWallCorridorSecondFifth->setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
+
+	corridors.push_back(rightWallCorridorSecondFifth);
+	corridors.push_back(leftWallCorridorSecondFifth);
+	corridors.push_back(groundCorridorSecondFifth);
+}
 
 void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 	if (isPaused == false) {
