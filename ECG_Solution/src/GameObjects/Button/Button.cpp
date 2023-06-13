@@ -1,15 +1,39 @@
 #include "Button.h"
 
-Button::Button(MyShader* shader, PxPhysics* physics) : NewGameObject("Button", shader, physics, "button/uploads_files_2691895_button.obj", true) {
+Button::Button(MyShader* shader, PxPhysics* physics) : NewGameObject("Button", shader, physics, "", true) {
 	PxMaterial* material = physics->createMaterial(0.8, 0.8, 0.1);
-	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 0.4f);
+	PxBoxGeometry geometry = PxBoxGeometry(1, 0.4f, 1);
 	PxShape* collider = physics->createShape(geometry, *material);
 
 	setCollider(collider);
+
+	redButtonModel = new MyModel("button/button_red.obj");
+	greenButtonModel = new MyModel("button/button_green.obj");
+
+	if (isActivated) {
+		model_ = greenButtonModel;
+	}
+	else {
+		model_ = redButtonModel;
+	}
+}
+
+Button::~Button() {
+	delete redButtonModel;
+	delete greenButtonModel;
 }
 
 void Button::interact() {
-	std::printf("Button Interaction\n");
+	isActivated = !isActivated;
+
+	std::cout << "Button is " << (isActivated ? "active" : "inactive") << std::endl;
+
+	if (isActivated) {
+		model_ = greenButtonModel;
+	}
+	else {
+		model_ = redButtonModel;
+	}
 }
 
 void Button::onBeforeUpdate()

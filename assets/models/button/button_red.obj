@@ -1,6 +1,6 @@
 # Blender 3.5.0
 # www.blender.org
-mtllib uploads_files_2691895_button.mtl
+mtllib button_red.mtl
 o button2_Cylinder.001
 v 0.234934 0.272660 -0.774697
 v 0.157858 0.272660 -0.793973

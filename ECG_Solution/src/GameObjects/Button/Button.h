@@ -1,11 +1,19 @@
 #pragma once
 
 #include "../NewGameObject.h"
+#include "ButtonRed.h"
+#include "ButtonGreen.h"
 
 class Button : public NewGameObject {
+private:
+	MyModel* greenButtonModel;
+	MyModel* redButtonModel;
+
+	bool isActivated = false;
 
 public:
 	Button(MyShader* shader, PxPhysics* physics);
+	~Button();
 
 	void interact();
 
