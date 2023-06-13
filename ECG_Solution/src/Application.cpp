@@ -1317,6 +1317,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			bullets = maxBullets;
 			MyAssetManager::playSound("reload");
 			break;
+		case GLFW_KEY_SPACE:
+			player->jump();
+			break;
 		}
 	} else {
 		// these buttons only work if the game is paused

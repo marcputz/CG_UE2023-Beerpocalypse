@@ -59,6 +59,7 @@ public:
 
 	void setRespawnPoint(glm::vec3& newRespawnPoint);
 	void setCameraFOVs(float newFov);
+	void jump();
 
 	// Inherited via NewGameObject
 	virtual void resetSpecifics() override;
