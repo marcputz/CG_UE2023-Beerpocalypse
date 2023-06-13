@@ -52,6 +52,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void renderBloomQuad();
 void setupBloomBuffers();
 void adjustBloomBuffers();
+void createTextProjection();
 
 // PhysX
 void static initPhysX();
@@ -119,6 +120,9 @@ MyShader defaultShader;
 MyShader animationShader;
 MyShader particleShader;
 MyShader lightSourceShader;
+
+// text renderer projection matrix
+glm::mat4 textProjection;
 
 // Game Logic
 Scene* scene;
@@ -256,9 +260,7 @@ int main(int argc, char** argv) {
 	MyTextRenderer textRenderer("arial/arial.ttf");
 	textShader = MyAssetManager::loadShader("text.vert", "text.frag", "textShader");
 	// set the "camera" to be used for text rendering (static fixed orthogonal view-projection)
-	glm::mat4 textProjection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
-	textShader.use();
-	textShader.setMat4("projection", textProjection);
+	createTextProjection();
 
 	// Prepare GUI Renderer and shader
 	MyGUIRenderer guiRenderer;
@@ -909,11 +911,17 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		static int delayFrameCounter = 0;
 		static float previousFPS = framesPerSecond;
 		if (delayFrameCounter-- == 0) {
-			textRenderer.renderText(textShader, "FPS: " + std::to_string((double)framesPerSecond), 14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+			textRenderer.renderText(textShader,
+				"FPS: " + std::to_string((double)framesPerSecond) + 
+				std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure) + std::string(", Player on Ground: ") + std::string(player->isOnGround() ? "yes" : "no"),
+				14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 			previousFPS = framesPerSecond;
 			delayFrameCounter += 4; // draw only every few frames, because otherwise it's unreadable
 		} else {
-			textRenderer.renderText(textShader, "FPS: " + std::to_string((double)previousFPS), 14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+			textRenderer.renderText(textShader,
+				"FPS: " + std::to_string((double)previousFPS) +
+				std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure) + std::string(", Player on Ground: ") + std::string(player->isOnGround() ? "yes" : "no"),
+				14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		}
 		textRenderer.renderText(textShader, "[F1] Wireframe Mode: " + std::string(enableWireframe ? "ON" : "OFF"), 14.0f, (float)screenHeight - 34.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F2] Backface Culling: " + std::string(enableBackfaceCulling ? "ON" : "OFF"), 14.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
@@ -922,7 +930,7 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		textRenderer.renderText(textShader, "[F5] Display Normals: " + std::string(enableShowNormals ? "ON" : "OFF"), 14.0f, (float)screenHeight - 90.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F6] Bloom: " + std::string(enableBloom ? "ON" : "OFF"), 14.0f, (float)screenHeight - 104.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F7] Close Debug HUD", 14.0f, (float)screenHeight - 124.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no") + std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure), 14.0f, (float)screenHeight - 138.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		//textRenderer.renderText(textShader, ", Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no") + std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure), 14.0f, (float)screenHeight - 138.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 	}
 }
 
@@ -1002,7 +1010,6 @@ void setupBloomBuffers() {
 void adjustBloomBuffers() {
 	glBindFramebuffer(GL_FRAMEBUFFER, hdrFrameBuffer);
 	// 2 floating point color buffers, 1 for normal rendering, 2 for brightness thresholds
-	glGenTextures(2, colorBuffers);
 	for (unsigned int i = 0; i < 2; i++) {
 		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, screenWidth, screenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -1042,6 +1049,12 @@ void adjustBloomBuffers() {
 			std::cout << "Framebuffer (blur) not complete!" << std::endl;
 		}
 	}
+}
+
+void createTextProjection() {
+	textProjection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
+	textShader.use();
+	textShader.setMat4("projection", textProjection);
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -1231,6 +1244,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	screenHeight = height;
 
 	adjustBloomBuffers();
+
+	createTextProjection();
 
 	//std::cout << "Viewport event" << std::endl;
 }
