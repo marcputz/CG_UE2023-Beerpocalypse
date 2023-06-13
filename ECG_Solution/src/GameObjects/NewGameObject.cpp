@@ -46,10 +46,22 @@ void NewGameObject::setCollider(PxShape* colliderShape) {
 	}
 }
 
+void NewGameObject::enableCollider(bool enabled) {
+	if (enabled) {
+		if (physicsShape_ != nullptr) {
+			physicsActor_->attachShape(*physicsShape_);
+		}
+	}
+	else {
+		physicsActor_->detachShape(*physicsShape_);
+	}
+}
+
 void NewGameObject::reset() {
 	this->setLocalPosition(this->originalPosition);
 	this->setHealth(100);
 	this->setVisible(true);
+	this->enableCollider(true);
 
 	this->resetSpecifics();
 }

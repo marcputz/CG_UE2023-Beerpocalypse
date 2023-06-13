@@ -23,7 +23,7 @@
 #include "Scene.h"
 #include "GameObjects/Cube/StaticCube.h"
 #include "GameObjects/Cube/DynamicCube.h"
-#include "GameObjects/Player/NewPlayer.h"
+#include "GameObjects/Player/Player.h"
 #include "GameObjects/Beer/Beer.h"
 #include "GameObjects/Ground/Ground.h"
 #include "GameObjects/Zombie/Zombie.h"
@@ -129,7 +129,7 @@ glm::mat4 textProjection;
 
 // Game Logic
 Scene* scene;
-NewPlayer* player = nullptr;
+Player* player = nullptr;
 MySpotLight* playerFlashLight = nullptr;
 
 glm::vec3 pointLightOnePosition;
@@ -232,7 +232,7 @@ int main(int argc, char** argv) {
 	scene = new Scene(gPhysics);
 
 	// Init Player
-	player = new NewPlayer{ &defaultShader, gPhysics };
+	player = new Player{ &defaultShader, gPhysics };
 	player->setLocalPosition(glm::vec3(0.0f, 0.5f, -16.0f));
 	player->setRespawnPoint(glm::vec3(0.0f, 0.5f, -16.0f));
 	player->setScale(glm::vec3(0.5, 1, 0.5), true);
@@ -334,7 +334,7 @@ int main(int argc, char** argv) {
 	dynCubeSix.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
 	dynCubeSix.setScale(glm::vec3(0.5, 0.5, 0.5));
 
-	Button buttonOne{ &defaultShader, gPhysics };
+	Button buttonOne{ &defaultShader, gPhysics, nullptr };
 	buttonOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(1.0f, 1.5f, 1.0f));
 	buttonOne.setScale(glm::vec3(0.5, 0.5, 0.5));
 	buttonOne.setLocalRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
@@ -1898,6 +1898,7 @@ void static initIrrKlang() {
 	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_4.mp3", "zombie_attack_4");
 	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_5.mp3", "zombie_attack_5");
 	MyAssetManager::loadSoundSource("assets/sounds/zombie_attack_6.mp3", "zombie_attack_6");
+	MyAssetManager::loadSoundSource("assets/sounds/button_click.wav", "button_click");
 	MyAssetManager::loadSoundSource("assets/sounds/footstep_0.mp3", "footstep_0");
 	// add more
 }

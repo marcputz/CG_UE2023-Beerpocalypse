@@ -1,6 +1,6 @@
 #include "MyParticleGenerator.h"
 
-MyParticleGenerator::MyParticleGenerator(MyShader& shader/*, My2DTexture& texture*/, NewPlayer* player, unsigned int amount) : shader_(&shader)/*, zombieBloodTexture_(&texture)*/, player_(player), amount_(amount) {
+MyParticleGenerator::MyParticleGenerator(MyShader& shader/*, My2DTexture& texture*/, Player* player, unsigned int amount) : shader_(&shader)/*, zombieBloodTexture_(&texture)*/, player_(player), amount_(amount) {
 	init();
 }
 

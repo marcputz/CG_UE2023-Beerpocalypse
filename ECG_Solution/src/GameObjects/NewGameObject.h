@@ -98,6 +98,8 @@ public:
 	bool isVisible() { return isVisible_; }
 	void setVisible(bool isVisible) { isVisible_ = isVisible; }
 
+	void enableCollider(bool enabled);
+
 	void setLocalPosition(glm::vec3 newPosition);
 	void setLocalRotation(glm::quat newRotation);
 	void setWorldPosition(glm::vec3 newPosition);
