@@ -10,7 +10,6 @@
 #include "MyModel.h"
 #include "MyTextRenderer.h"
 #include "MyGUIRenderer.h"
-#include "MyTransform.h"
 #include "MyAssetManager.h"
 #include "PxPhysicsAPI.h"
 #include "INIReader.h"

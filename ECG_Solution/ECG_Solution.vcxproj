@@ -32,7 +32,6 @@
     <ClCompile Include="src\MyParticleGenerator.cpp" />
     <ClCompile Include="src\MyShader.cpp" />
     <ClCompile Include="src\MyTextRenderer.cpp" />
-    <ClCompile Include="src\MyTransform.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClInclude Include="src\GameObjects\Beer\Beer.h" />
@@ -70,7 +69,6 @@
     <ClInclude Include="src\MyTextRenderer.h" />
     <ClInclude Include="src\INIReader.h" />
     <ClInclude Include="src\Light.h" />
-    <ClInclude Include="src\MyTransform.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Utils.h" />
