@@ -4,7 +4,7 @@
 
 class Zombie : public GameObject {
 private:
-	const float movementSpeed = 2.0f;
+	const float MOVEMENT_SPEED = 2.0f;
 	GameObject* followObject = nullptr;
 
 private:

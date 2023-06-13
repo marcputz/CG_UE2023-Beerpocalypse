@@ -47,7 +47,7 @@ void Player::onUpdate(float deltaTime) {
 	if (playFootstepSound && onGround) {
 		if (footstepTimeCounter <= 0) {
 			MyAssetManager::playSound("footstep_0");
-			footstepTimeCounter = FOOTSTEP_SOUND_DELAY;
+			footstepTimeCounter = (isSprinting ? FOOTSTEP_SOUND_DELAY / SPRINT_MULTIPLIER : FOOTSTEP_SOUND_DELAY);
 		}
 		else {
 			footstepTimeCounter -= deltaTime;
@@ -129,27 +129,34 @@ void Player::processWindowInput(GLFWwindow* window, float deltaTime) {
 	glm::vec3 right = glm::normalize(glm::cross(forward, glm::vec3(0, 1, 0)));
 	glm::vec3 left = -right;
 
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		isSprinting = true;
+	}
+	else {
+		isSprinting = false;
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		glm::vec3 position = getLocalPosition();
-		position += forward * (movementSpeed * deltaTime);
+		position += forward * (MOVEMENT_SPEED * deltaTime * (isSprinting ? SPRINT_MULTIPLIER : 1));
 		setLocalPosition(position);
 		playFootstepSound = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		glm::vec3 position = getLocalPosition();
-		position += backward * (movementSpeed * deltaTime);
+		position += backward * (MOVEMENT_SPEED * deltaTime * (isSprinting ? SPRINT_MULTIPLIER : 1));
 		setLocalPosition(position);
 		playFootstepSound = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		glm::vec3 position = getLocalPosition();
-		position += left * (movementSpeed * deltaTime);
+		position += left * (MOVEMENT_SPEED * deltaTime * (isSprinting ? SPRINT_MULTIPLIER : 1));
 		setLocalPosition(position);
 		playFootstepSound = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		glm::vec3 position = getLocalPosition();
-		position += right * (movementSpeed * deltaTime);
+		position += right * (MOVEMENT_SPEED * deltaTime * (isSprinting ? SPRINT_MULTIPLIER : 1));
 		setLocalPosition(position);
 		playFootstepSound = true;
 	}
@@ -176,7 +183,7 @@ void Player::processMouseInput(float offsetX, float offsetY) {
 	firstPersonCamera->processMouseInput(offsetX, offsetY);
 	thirdPersonCamera->processMouseInput(offsetX, offsetY);
 
-	facingAngle += -offsetX / 200.0f * turningSpeed;
+	facingAngle += -offsetX / 200.0f * TURNING_SPEED;
 
 	if (facingAngle < 0) {
 		facingAngle += 360;
@@ -224,7 +231,7 @@ void Player::setCameraFOVs(float newFov) {
 void Player::jump() {
 	if (onGround) {
 		PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
-		dyn->addForce(PxVec3(0, 1, 0) * jumpForce, PxForceMode::eIMPULSE);
+		dyn->addForce(PxVec3(0, 1, 0) * JUMP_FORCE, PxForceMode::eIMPULSE);
 		//dyn->setForceAndTorque(PxVec3(0, 1, 0) * jumpForce, PxVec3(0, 0, 0), PxForceMode::eIMPULSE);
 		this->onGround = false;
 	}

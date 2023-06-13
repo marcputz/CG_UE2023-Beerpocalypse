@@ -13,9 +13,12 @@ enum PlayerCameraType {
 
 class Player : public GameObject {
 private:
-	const float movementSpeed = 5.0f;
-	const float turningSpeed = 9.0f;
-	const float jumpForce = 5.0f;
+	const float MOVEMENT_SPEED = 5.0f;
+	const float TURNING_SPEED = 9.0f;
+	const float JUMP_FORCE = 5.0f;
+
+	const float SPRINT_MULTIPLIER = 1.5f;
+	bool isSprinting = false;
 
 	float facingAngle = 0.0f;
 	bool onGround = true;
