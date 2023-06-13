@@ -12,7 +12,7 @@ enum Animation_Enum {
 class MyAnimator {
 public:
 	MyAnimator();
-	MyAnimator(MyAnimation* animation);
+
 	void updateAnimation(float deltaTime);
 	void playAnimation(MyAnimation* animationToPlay);
 	void calculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform);
@@ -32,7 +32,6 @@ private:
 	bool animationComplete_;
 	std::map<Animation_Enum, MyAnimation*> animations_;
 	float currentTime_;
-	float deltaTime_;
 	float animationSpeedMultiplier_;
 
 };
