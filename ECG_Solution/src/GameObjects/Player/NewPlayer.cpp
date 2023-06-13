@@ -43,23 +43,20 @@ void NewPlayer::onUpdate(float deltaTime) {
 		this->setWorldPosition(this->respawnPoint_);
 	}
 
-	// check if player is on the ground
-	/*PxVec3 groundRayDirection = PxVec3(0, -1, 0);
-	PxVec3 groundRayOrigin = asPxVec3(getWorldPosition());
-	const PxU32 hitBufferSize = 2;
-	PxRaycastHit hitBuffer[hitBufferSize];
-	PxRaycastBuffer buf(hitBuffer, hitBufferSize);
-	bool raycastStatus = scene->getPhysicsScene()->raycast(groundRayOrigin, groundRayDirection, 1.1f, buf);
-	if (raycastStatus) {
-		// Raycast has hit something
-		for (PxU32 i = 0; i < buf.nbTouches; i++) {
-			NewGameObject* object = static_cast<NewGameObject*>(buf.touches[i].actor->userData);
-			std::cout << object->name_ << std::endl;
+	// footstep sounds
+	if (playFootstepSound) {
+		if (footstepTimeCounter <= 0) {
+			MyAssetManager::playSound("footstep_0");
+			footstepTimeCounter = FOOTSTEP_SOUND_DELAY;
+		}
+		else {
+			footstepTimeCounter -= deltaTime;
 		}
 	}
 	else {
-		onGround = false;
-	}*/
+		// play footstep faster when player start walking again
+		footstepTimeCounter = FOOTSTEP_SOUND_DELAY / 8.0f;
+	}
 }
 
 void NewPlayer::onCollision(NewGameObject* otherObject) {
@@ -133,21 +130,28 @@ void NewPlayer::processWindowInput(GLFWwindow* window, float deltaTime) {
 		glm::vec3 position = getLocalPosition();
 		position += forward * (movementSpeed * deltaTime);
 		setLocalPosition(position);
+		playFootstepSound = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		glm::vec3 position = getLocalPosition();
 		position += backward * (movementSpeed * deltaTime);
 		setLocalPosition(position);
+		playFootstepSound = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		glm::vec3 position = getLocalPosition();
 		position += left * (movementSpeed * deltaTime);
 		setLocalPosition(position);
+		playFootstepSound = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		glm::vec3 position = getLocalPosition();
 		position += right * (movementSpeed * deltaTime);
 		setLocalPosition(position);
+		playFootstepSound = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE) {
+		playFootstepSound = false;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {

@@ -25,6 +25,10 @@ private:
 	float damageCooldown = 0.0f;
 	const float targetDamageCooldown = 0.5f;
 
+	const float FOOTSTEP_SOUND_DELAY = 0.6f;
+	bool playFootstepSound = false;
+	float footstepTimeCounter = 0.0f;
+
 	PlayerCameraType activeCameraType = PlayerCameraType::CAMERA_FIRST_PERSON;
 	PlayerCameraFirstPerson* firstPersonCamera;
 	PlayerCameraThirdPerson* thirdPersonCamera;
