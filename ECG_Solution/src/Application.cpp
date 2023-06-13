@@ -1035,7 +1035,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	dynCubeSix->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
 	dynCubeSix->setScale(glm::vec3(0.5, 0.5, 0.5));
 
-	Button* buttonOne = new Button{ &defaultShader, gPhysics };
+	Button* buttonOne = new Button{ &defaultShader, gPhysics, nullptr };
 	buttonOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(1.0f, 1.5f, 1.0f));
 	buttonOne->setScale(glm::vec3(0.5, 0.5, 0.5));
 	buttonOne->setLocalRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
