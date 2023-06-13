@@ -69,7 +69,6 @@ void Player::onCollision(GameObject* otherObject) {
 			this->setHealth(this->getHealth() + 20);
 			score++;
 			beer->setVisible(false);
-			beer->enableCollider(false);
 			MyAssetManager::playSound("bell");
 		}
 		return;

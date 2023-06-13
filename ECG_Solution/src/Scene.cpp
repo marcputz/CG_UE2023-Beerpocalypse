@@ -2,6 +2,7 @@
 #include "GameObjects/Zombie/Zombie.h"
 #include "GameObjects/Cube/DynamicCube.h"
 #include "GameObjects/Button/Button.h"
+#include "GameObjects/Ground/Ground.h"
 
 extern unsigned int screenWidth;
 extern unsigned int screenHeight;
@@ -276,40 +277,9 @@ void Scene::step(float deltaTime) {
 		}
 	}
 
-	// player ground check
-	Player* p = dynamic_cast<Player*>(playerGo);
-	if (p != nullptr) {
-		//frustum = Frustum::createFrustumFromCamera(*p->getActiveCamera(), (float)screenWidth/(float)screenHeight, glm::radians(p->getActiveCamera()->getFov()), cameraNear, cameraFar);
-
-		PxVec3 rayOrigin = asPxVec3(p->getWorldPosition());
-		PxVec3 rayDirection = asPxVec3(glm::vec3(0.0f, -1.0f, 0.0f));
-		const PxU32 hitBufferSize = 32;
-		PxRaycastHit hitBuffer[hitBufferSize];
-		PxRaycastBuffer buf(hitBuffer, hitBufferSize);
-		bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, 1.01f, buf);
-		if (raycastStatus) {
-			// Raycast has hit something
-			for (PxU32 i = 0; i < buf.nbTouches; i++) {
-				PxRaycastHit currentHit = buf.touches[i];
-				GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
-				if (object != nullptr) {
-					// Raycast hit game object
-					// Skip player as it is always hit
-					Player* player = dynamic_cast<Player*>(object);
-					Zombie* zombie = dynamic_cast<Zombie*>(object);
-					Beer* beer = dynamic_cast<Beer*>(object);
-					if (player == nullptr && zombie == nullptr && beer == nullptr) {
-						//std::cout << "Hit '" << object->name_ << "'" << std::endl;
-
-						p->setIsOnGround(true);
-					}
-				}
-			}
-		}
-	}
-
-	// Call update methods
 	for (GameObject* go : objects) {
+		// Call gameObjects update methods
+		go->update(deltaTime);
 
 		// Check if zombies can see player
 		Zombie* zombie = dynamic_cast<Zombie*>(go);
@@ -334,7 +304,7 @@ void Scene::step(float deltaTime) {
 					if (object != nullptr) {
 						// Raycast hit game object
 						float distance = buf.touches[i].distance;
-						
+
 						// Skip zombies
 						Zombie* z = dynamic_cast<Zombie*>(object);
 						if (z == nullptr) {
@@ -353,7 +323,7 @@ void Scene::step(float deltaTime) {
 						}
 					}
 				}
-				
+
 				if (playerDistance < nearestBlockingHit) {
 					// all blocking objects are farther than the player
 					// --> zombie can see player
@@ -368,9 +338,38 @@ void Scene::step(float deltaTime) {
 				}
 			}
 		}
+	}
 
-		// Call gameObject's update method
-		go->update(deltaTime);
+	// player ground check
+	Player* p = dynamic_cast<Player*>(playerGo);
+	if (p != nullptr) {
+		//frustum = Frustum::createFrustumFromCamera(*p->getActiveCamera(), (float)screenWidth/(float)screenHeight, glm::radians(p->getActiveCamera()->getFov()), cameraNear, cameraFar);
+
+		p->setIsOnGround(false);
+		PxVec3 rayOrigin = asPxVec3(p->getWorldPosition());
+		PxVec3 rayDirection = asPxVec3(glm::vec3(0.0f, -1.0f, 0.0f));
+		const PxU32 hitBufferSize = 32;
+		PxRaycastHit hitBuffer[hitBufferSize];
+		PxRaycastBuffer buf(hitBuffer, hitBufferSize);
+		bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, 1.01f, buf);
+		if (raycastStatus) {
+			// Raycast has hit something
+			for (PxU32 i = 0; i < buf.nbTouches; i++) {
+				PxRaycastHit currentHit = buf.touches[i];
+				GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
+				if (object != nullptr) {
+					// Raycast hit game object
+					// Skip player as it is always hit
+					Ground* ground = dynamic_cast<Ground*>(object);
+					if (ground != nullptr) {
+						if (currentHit.distance <= 1.1f) {
+							p->setIsOnGround(true);
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 
 	if (particleGenerator != nullptr) {
