@@ -27,6 +27,7 @@
 #include "GameObjects/Beer/Beer.h"
 #include "GameObjects/Ground/Ground.h"
 #include "GameObjects/Zombie/Zombie.h"
+#include "GameObjects/Button/Button.h"
 
 using namespace physx;
 using std::cout;
@@ -292,6 +293,11 @@ int main(int argc, char** argv) {
 	dynCubeSix.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
 	dynCubeSix.setScale(glm::vec3(0.5, 0.5, 0.5));
 
+	Button buttonOne{ &defaultShader, gPhysics };
+	buttonOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(1.0f, 1.5f, 1.0f));
+	buttonOne.setScale(glm::vec3(0.5, 0.5, 0.5));
+	buttonOne.setLocalRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
+
 	scene->addObject(&dynCubeOne);
 	scene->addObject(&dynCubeTwo);
 	scene->addObject(&dynCubeThree);
@@ -299,6 +305,7 @@ int main(int argc, char** argv) {
 	scene->addObject(&dynCubeFive);
 	scene->addObject(&dynCubeSix);
 	scene->addObject(&beerOne);
+	scene->addObject(&buttonOne);
 	scene->addObject(&rightWallRoomOne);
 	scene->addObject(&leftWallRoomOne);
 	scene->addObject(&behindWallRightExitRoomOne);
@@ -1204,8 +1211,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		// these buttons only work if the game is unpaused
 		switch (key) {
 		case GLFW_KEY_E:
-			// interact
-			std::cout << "Press E" << std::endl;
+			scene->startPlayerInteraction();
 			break;
 		case GLFW_KEY_F:
 			playerFlashLight->setEnabled(!playerFlashLight->isEnabled());
@@ -1221,6 +1227,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 		}
 	} else {
+		// these buttons only work if the game is paused
 		switch (key) {
 		case GLFW_KEY_X:
 			glfwSetWindowShouldClose(window, true);
