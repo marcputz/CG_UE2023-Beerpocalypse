@@ -100,6 +100,8 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 			return;
 		}
 
+		MyAssetManager::playSound("gunshot");
+
 		// make a raycast and see what you've hit
 		static const PxReal maxShootDistance = 20.0f;
 
@@ -113,9 +115,6 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 		}
 
 		if (playerGo != nullptr) {
-
-			MyAssetManager::playSound("explosion");
-
 			NewPlayer* player = static_cast<NewPlayer*>(playerGo);
 
 			// Define Ray
