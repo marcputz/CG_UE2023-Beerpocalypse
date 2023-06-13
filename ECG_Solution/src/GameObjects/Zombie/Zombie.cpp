@@ -1,5 +1,7 @@
 #include "Zombie.h"
 
+extern bool freezeZombies;
+
 Zombie::Zombie(MyShader* shader, PxPhysics* physics) : GameObject("Zombie", shader, physics, "zombie/Zombie.dae", false) {
 	PxMaterial* material = physics->createMaterial(1, 1, 0.01f);
 	PxBoxGeometry geometry = PxBoxGeometry(0.3, 0.7, 0.3);
@@ -25,7 +27,7 @@ void Zombie::onBeforeUpdate() {}
 
 void Zombie::onUpdate(float deltaTime) {
 	if (isVisible()) {
-		if (isFollowing()) {
+		if (isFollowing() && !freezeZombies) {
 			glm::vec3 targetPosition = followObject->getWorldPosition();
 			glm::vec3 zombiePosition = getWorldPosition();
 			glm::vec3 direction = targetPosition - zombiePosition;
