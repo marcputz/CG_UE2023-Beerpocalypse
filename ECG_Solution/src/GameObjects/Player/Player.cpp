@@ -155,17 +155,20 @@ void Player::processWindowInput(GLFWwindow* window, float deltaTime) {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE) {
 		playFootstepSound = false;
 	}
-	/*
+	
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		// jump
+		/*
 		if (onGround) {
 			PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
 			dyn->addForce(PxVec3(0, 1, 0) * jumpForce, PxForceMode::eIMPULSE);
 			//dyn->setForceAndTorque(PxVec3(0, 1, 0) * jumpForce, PxVec3(0, 0, 0), PxForceMode::eIMPULSE);
 			this->onGround = false;
 		}
+		*/
+		jump();
 	}
-	*/
+	
 }
 
 void Player::processMouseInput(float offsetX, float offsetY) {
