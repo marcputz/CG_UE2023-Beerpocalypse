@@ -678,7 +678,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	dynCubeSix->setScale(glm::vec3(0.5, 0.5, 0.5));
 
 	Button* buttonOne = new Button{ &defaultShader, gPhysics, nullptr };
-	buttonOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(8.0f, 1.5f, 9.0f));
+	buttonOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(7.0f, 1.5f, 7.0f));
 	buttonOne->setScale(glm::vec3(0.5, 0.5, 0.5));
 	buttonOne->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
 
@@ -911,9 +911,14 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	StaticCube* leftWallCorridorFirst = new StaticCube{ &defaultShader, gPhysics };
 	leftWallCorridorFirst->setLocalPosition(groundCorridorFirst->getWorldPosition() + glm::vec3(3.0f, 2.5f, 0.0f));
 	leftWallCorridorFirst->setScale(glm::vec3(1.0f, 2.0f, 6.5f), true);
+	// Behind wall
+	StaticCube* behinWallCorridorFirst = new StaticCube{ &defaultShader, gPhysics };
+	behinWallCorridorFirst->setLocalPosition(groundCorridorFirst->getWorldPosition() + glm::vec3(0.0f, 2.5f, -5.5f));
+	behinWallCorridorFirst->setScale(glm::vec3(2.0f, 2.0f, 1.0f), true);
 
 	corridors.push_back(rightWallCorridorFirst);
 	corridors.push_back(leftWallCorridorFirst);
+	corridors.push_back(behinWallCorridorFirst);
 	corridors.push_back(groundCorridorFirst);
 
 	// corridor first and second room
@@ -1316,9 +1321,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			bullets = maxBullets;
 			MyAssetManager::playSound("reload");
 			break;
+		/*
 		case GLFW_KEY_SPACE:
 			player->jump();
 			break;
+		*/
 		}
 	} else {
 		// these buttons only work if the game is paused
