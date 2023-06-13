@@ -325,28 +325,44 @@ void Scene::step(float deltaTime) {
 			bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, PxReal(ZOMBIE_SEE_DISTANCE), buf);
 			if (raycastStatus) {
 				// Raycast has hit something
+				float nearestBlockingHit = 1000.0f;
+				float playerDistance = 1111.1f;
+
 				for (PxU32 i = 0; i < buf.nbTouches; i++) {
 					PxRaycastHit currentHit = buf.touches[i];
 					GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
 					if (object != nullptr) {
 						// Raycast hit game object
-						std::cout << "Hit " << object->name_ << std::endl;
+						float distance = buf.touches[i].distance;
+						
 						// Skip zombies
 						Zombie* z = dynamic_cast<Zombie*>(object);
 						if (z == nullptr) {
-							// if game object isn't a player either, something is blocking the view
+							// check if object is player or something else
 							Player* p = dynamic_cast<Player*>(object);
 							if (p == nullptr) {
-								zombie->follow(nullptr);
-								break;
+								// is something else
+								if (distance < nearestBlockingHit) {
+									nearestBlockingHit = distance;
+								}
 							}
 							else {
-								// zombie can see player
-								zombie->follow(playerGo);
-								break;
+								// is player
+								playerDistance = distance;
 							}
 						}
 					}
+				}
+				
+				if (playerDistance < nearestBlockingHit) {
+					// all blocking objects are farther than the player
+					// --> zombie can see player
+					zombie->follow(playerGo);
+				}
+				else {
+					// something is nearer than the player
+					// --> view is blocked
+					zombie->follow(nullptr);
 				}
 			}
 		}
