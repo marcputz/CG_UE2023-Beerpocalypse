@@ -3,8 +3,6 @@
   <ItemGroup>
     <ClCompile Include="src\GameObjects\Beer\Beer.cpp" />
     <ClCompile Include="src\GameObjects\Button\Button.cpp" />
-    <ClCompile Include="src\GameObjects\Button\ButtonGreen.cpp" />
-    <ClCompile Include="src\GameObjects\Button\ButtonRed.cpp" />
     <ClCompile Include="src\GameObjects\Cube\DynamicCube.cpp" />
     <ClCompile Include="src\GameObjects\Cube\StaticCube.cpp" />
     <ClCompile Include="src\GameObjects\Ground\Ground.cpp" />
@@ -40,8 +38,6 @@
     <ClCompile Include="src\stb_image.cpp" />
     <ClInclude Include="src\GameObjects\Beer\Beer.h" />
     <ClInclude Include="src\GameObjects\Button\Button.h" />
-    <ClInclude Include="src\GameObjects\Button\ButtonGreen.h" />
-    <ClInclude Include="src\GameObjects\Button\ButtonRed.h" />
     <ClInclude Include="src\GameObjects\Cube\DynamicCube.h" />
     <ClInclude Include="src\GameObjects\Cube\StaticCube.h" />
     <ClInclude Include="src\GameObjects\Ground\Ground.h" />

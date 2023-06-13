@@ -2,7 +2,7 @@
 
 Button::Button(MyShader* shader, PxPhysics* physics) : NewGameObject("Button", shader, physics, "", true) {
 	PxMaterial* material = physics->createMaterial(0.8, 0.8, 0.1);
-	PxBoxGeometry geometry = PxBoxGeometry(1, 0.4f, 1);
+	PxBoxGeometry geometry = PxBoxGeometry(1, 0.4f, 1);y
 	PxShape* collider = physics->createShape(geometry, *material);
 
 	setCollider(collider);
@@ -26,8 +26,6 @@ Button::~Button() {
 void Button::interact() {
 	isActivated = !isActivated;
 
-	std::cout << "Button is " << (isActivated ? "active" : "inactive") << std::endl;
-
 	if (isActivated) {
 		model_ = greenButtonModel;
 	}
@@ -42,6 +40,7 @@ void Button::onBeforeUpdate()
 
 void Button::onUpdate(float deltaTime)
 {
+
 }
 
 void Button::resetSpecifics()
