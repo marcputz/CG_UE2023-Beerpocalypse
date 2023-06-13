@@ -79,6 +79,7 @@ void Player::onCollision(GameObject* otherObject) {
 	if (zombie != nullptr) {
 		// Collided with zombie
 		if (zombie->isVisible()) {
+			zombie->playAttackAnim();
 			if (damageCooldown <= 0.01f) {
 				setHealth(getHealth() - 10);
 				damageCooldown = targetDamageCooldown;

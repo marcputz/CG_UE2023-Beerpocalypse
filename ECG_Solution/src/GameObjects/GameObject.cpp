@@ -179,6 +179,7 @@ MyModel* GameObject::getModel() {
 
 void GameObject::setAnimator(MyAnimator& newAnimator) {
 	this->animator_ = &newAnimator;
+	this->animator_->changeAnimation(Animation_Enum::IDLE);
 }
 
 /**

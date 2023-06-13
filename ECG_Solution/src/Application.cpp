@@ -285,14 +285,21 @@ int main(int argc, char** argv) {
 	MyAnimation zombieAttackAnim("assets/models/zombie/animations/ZombieAttack.dae", zombieOne.getModel());
 	MyAnimation zombieWalkAnim("assets/models/zombie/animations/ZombieWalk.dae", zombieOne.getModel());
 
-	MyAnimator zombieOneAnimator(&zombieIdleAnim);
+	MyAnimator zombieOneAnimator{};
+	zombieOneAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
+	zombieOneAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
+	zombieOneAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
 	zombieOne.setAnimator(zombieOneAnimator);
 
 	Zombie zombieTwo{ &animationShader, gPhysics };
 	scene->addObject(&zombieTwo, true);
 	zombieTwo.setLocalPosition(glm::vec3(5, 0.5, 8));
-	MyAnimator zombieTwoAnimator(&zombieWalkAnim);
-	zombieTwoAnimator.setAnimationSpeedMultiplier(2.0f);
+
+	MyAnimator zombieTwoAnimator{};
+	zombieTwoAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
+	zombieTwoAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
+	zombieTwoAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
+	//zombieTwoAnimator.setAnimationSpeedMultiplier(2.0f);
 	zombieTwo.setAnimator(zombieTwoAnimator);
 
 
@@ -672,9 +679,9 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	dynCubeSix->setScale(glm::vec3(0.5, 0.5, 0.5));
 
 	Button* buttonOne = new Button{ &defaultShader, gPhysics, nullptr };
-	buttonOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(1.0f, 1.5f, 1.0f));
+	buttonOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(8.0f, 1.5f, 9.0f));
 	buttonOne->setScale(glm::vec3(0.5, 0.5, 0.5));
-	buttonOne->setLocalRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
+	buttonOne->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
 
 	roomOne.push_back(dynCubeOne);
 	roomOne.push_back(dynCubeTwo);

@@ -64,6 +64,19 @@ void Zombie::follow(GameObject* objectToFollow) {
 	followObject = objectToFollow;
 }
 
+void Zombie::playIdleAnim() {
+	this->animator_->changeAnimation(Animation_Enum::IDLE);
+}
+
+void Zombie::playWalkingAnim() {
+	this->animator_->changeAnimation(Animation_Enum::WALKING, 2.0f);
+}
+
+void Zombie::playAttackAnim() {
+	this->animator_->changeAnimation(Animation_Enum::ATTACKING, 1.5f, true);
+}
+
+
 void Zombie::resetSpecifics() {
 	//std::cout << "Reset Zombie" << std::endl;
 }

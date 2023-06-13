@@ -358,11 +358,13 @@ void Scene::step(float deltaTime) {
 					// all blocking objects are farther than the player
 					// --> zombie can see player
 					zombie->follow(playerGo);
+					zombie->playWalkingAnim();
 				}
 				else {
 					// something is nearer than the player
 					// --> view is blocked
 					zombie->follow(nullptr);
+					zombie->playIdleAnim();
 				}
 			}
 		}

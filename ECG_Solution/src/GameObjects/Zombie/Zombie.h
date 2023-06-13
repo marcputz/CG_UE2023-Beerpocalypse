@@ -24,6 +24,9 @@ public:
 	bool isFollowing();
 	GameObject* getFollowing();
 	void follow(GameObject* objectToFollow);
+	void playIdleAnim();
+	void playWalkingAnim();
+	void playAttackAnim();
 
 	// Inherited via GameObject
 	virtual void resetSpecifics() override;
