@@ -4,11 +4,12 @@
 
 class Activatable {
 private:
-	Activatable() = delete;
-	~Activatable() = delete;
 	Activatable(Activatable&&) = delete;
 	Activatable(const Activatable&) = delete;
 public:
+	Activatable() {}
+	~Activatable() {}
+
 	virtual void onActivate() = 0;
 	virtual void onDeactivate() = 0;
 };

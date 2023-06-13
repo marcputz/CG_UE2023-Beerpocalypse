@@ -53,6 +53,8 @@ void Button::onUpdate(float deltaTime)
 
 void Button::resetSpecifics()
 {
+	isActivated = true;
+	interact(); // turn off button 
 }
 
 void Button::processWindowInput(GLFWwindow* window, float deltaTime)
