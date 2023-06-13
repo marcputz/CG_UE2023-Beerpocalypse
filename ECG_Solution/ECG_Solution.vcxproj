@@ -8,7 +8,6 @@
     <ClCompile Include="src\GameObjects\FakeWall\FakeWall.cpp" />
     <ClCompile Include="src\GameObjects\Ground\Ground.cpp" />
     <ClCompile Include="src\GameObjects\NewGameObject.cpp" />
-    <ClCompile Include="src\GameObjects\GameObjectInfo.cpp" />
     <ClCompile Include="src\GameObjects\Player\Camera\PlayerCameraFirstPerson.cpp" />
     <ClCompile Include="src\GameObjects\Player\Camera\PlayerCameraThirdPerson.cpp" />
     <ClCompile Include="src\GameObjects\Player\Player.cpp" />
@@ -26,7 +25,6 @@
     <ClCompile Include="src\MyAnimator.cpp" />
     <ClCompile Include="src\MyAssetManager.cpp" />
     <ClCompile Include="src\MyBone.cpp" />
-    <ClCompile Include="src\MyFPSCamera.cpp" />
     <ClCompile Include="src\MyFrustum.cpp" />
     <ClCompile Include="src\MyGUIRenderer.cpp" />
     <ClCompile Include="src\MyMesh.cpp" />
@@ -44,7 +42,6 @@
     <ClInclude Include="src\GameObjects\FakeWall\FakeWall.h" />
     <ClInclude Include="src\GameObjects\Ground\Ground.h" />
     <ClInclude Include="src\GameObjects\NewGameObject.h" />
-    <ClInclude Include="src\GameObjects\GameObjectInfo.h" />
     <ClInclude Include="src\GameObjects\Player\Camera\PlayerCameraFirstPerson.h" />
     <ClInclude Include="src\GameObjects\Player\Camera\PlayerCameraThirdPerson.h" />
     <ClInclude Include="src\GameObjects\Player\Player.h" />
@@ -62,10 +59,7 @@
     <ClInclude Include="src\MyAnimator.h" />
     <ClInclude Include="src\MyAssetManager.h" />
     <ClInclude Include="src\MyBone.h" />
-    <ClInclude Include="src\MyFPSCamera.h" />
-    <ClInclude Include="src\GameObjects\GameObject.h" />
     <ClInclude Include="src\Camera.h" />
-    <ClCompile Include="src\GameObjects\GameObject.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClInclude Include="src\MyFrustum.h" />
     <ClInclude Include="src\MyGUIRenderer.h" />
