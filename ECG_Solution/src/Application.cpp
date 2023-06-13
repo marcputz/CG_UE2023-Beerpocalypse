@@ -28,6 +28,7 @@
 #include "GameObjects/Ground/Ground.h"
 #include "GameObjects/Zombie/Zombie.h"
 #include "GameObjects/Button/Button.h"
+#include "GameObjects/Roof/Roof.h"
 
 using namespace physx;
 using std::cout;
@@ -223,8 +224,8 @@ int main(int argc, char** argv) {
 
 	// Init Player
 	player = new NewPlayer{ &defaultShader, gPhysics };
-	player->setLocalPosition(glm::vec3(0.0f, 0.5f, -2.0f));
-	player->setRespawnPoint(glm::vec3(0.0f, 0.5f, -2.0f));
+	player->setLocalPosition(glm::vec3(0.0f, 0.5f, -16.0f));
+	player->setRespawnPoint(glm::vec3(0.0f, 0.5f, -16.0f));
 	player->setScale(glm::vec3(0.5, 1, 0.5), true);
 	player->setCameraFOVs(cameraFov);
 	scene->addObject(player);
@@ -263,6 +264,10 @@ int main(int argc, char** argv) {
 	StaticCube frontWallLeftExitRoomOne{ &defaultShader, gPhysics };
 	frontWallLeftExitRoomOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(6.0f, 2.5f, 10.0f));
 	frontWallLeftExitRoomOne.setScale(glm::vec3(4.0f, 2.0f, 1.0f), true);
+	// roof
+	Roof roofRoomOne{ &defaultShader, gPhysics };
+	roofRoomOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofRoomOne.setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
 	Beer beerOne{ &defaultShader, gPhysics };
 	beerOne.setLocalPosition(groundRoomOne.getWorldPosition() + glm::vec3(-5, 1.5f, 0));
@@ -313,6 +318,7 @@ int main(int argc, char** argv) {
 	scene->addObject(&frontWallRightExitRoomOne);
 	scene->addObject(&frontWallLeftExitRoomOne);
 	scene->addObject(&groundRoomOne);
+	scene->addObject(&roofRoomOne);
 
 	// second room (front/center)
 	// ground
