@@ -146,9 +146,14 @@ int bullets = maxBullets;
 bool isPaused = false;
 bool isGameLost = false;
 bool isGameWon = false;
+bool freezeZombies = false;
 bool enableWireframe = false;
 bool enableBackfaceCulling = true;
+#if DEBUG
 bool enableDebugHUD = true;
+#else
+bool enableDebugHUD = false;
+#endif
 bool enableNormalMapping = true;
 bool enableShowNormals = false;
 bool enableGUIHUD = true;
@@ -1402,13 +1407,15 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 				std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure) + std::string(", Player on Ground: ") + std::string(player->isOnGround() ? "yes" : "no"),
 				14.0f, (float)screenHeight - 20.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		}
+
 		textRenderer.renderText(textShader, "[F1] Wireframe Mode: " + std::string(enableWireframe ? "ON" : "OFF"), 14.0f, (float)screenHeight - 34.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F2] Backface Culling: " + std::string(enableBackfaceCulling ? "ON" : "OFF"), 14.0f, (float)screenHeight - 48.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F3] Game-HUD: " + std::string(enableGUIHUD ? "ON" : "OFF"), 14.0f, (float)screenHeight - 62.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 76.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F5] Display Normals: " + std::string(enableShowNormals ? "ON" : "OFF"), 14.0f, (float)screenHeight - 90.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F6] Bloom: " + std::string(enableBloom ? "ON" : "OFF"), 14.0f, (float)screenHeight - 104.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F7] Close Debug HUD", 14.0f, (float)screenHeight - 124.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F8] View-Frustum Culling: OFF", 14.0f, (float)screenHeight - 118.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F10] Close Debug HUD", 14.0f, (float)screenHeight - 138.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		//textRenderer.renderText(textShader, ", Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no") + std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure), 14.0f, (float)screenHeight - 138.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 	}
 }
@@ -1602,13 +1609,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		// toggle bloom
 		enableBloom = !enableBloom;
 		break;
-	case GLFW_KEY_F7:
-		// toggle debug text hud
-		enableDebugHUD = !enableDebugHUD;
-		break;
 	case GLFW_KEY_F8:
 		// toggle view-frustum culling
 		std::cout << "Toggle view-frustum culling" << std::endl;
+		break;
+	case GLFW_KEY_F10:
+		// toggle debug text hud
+		enableDebugHUD = !enableDebugHUD;
 		break;
 	case GLFW_KEY_UP:
 		// increase volume
