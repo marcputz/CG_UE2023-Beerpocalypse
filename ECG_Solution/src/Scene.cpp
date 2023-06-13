@@ -85,62 +85,67 @@ void Scene::startPlayerInteraction() {
 	// Let player interact with objects
 	static const PxReal maxInteractDistance = PxReal(5.0f);
 
-	// Find player
-	GameObject* playerGo = nullptr;
 	for (GameObject* go : objects) {
-		if (go->name_ == "Player") {
-			playerGo = go;
-			break;
-		}
-	}
+		Player* player = dynamic_cast<Player*>(go);
+		if (player != nullptr) {
+			// Define Ray
+			PxVec3 rayOrigin = asPxVec3(player->getWorldPosition());
+			PxVec3 rayDirection;
+			const PxU32 hitBufferSize = 32;
+			PxRaycastHit hitBuffer[hitBufferSize];
+			PxRaycastBuffer buf(hitBuffer, hitBufferSize);
 
-	if (playerGo != nullptr) {
-		Player* player = static_cast<Player*>(playerGo);
+			// If first person camera, use camera direction, if third person, use player forward vector
+			if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
+				rayDirection = asPxVec3(player->getActiveCamera()->getDirection()).getNormalized();
+			}
+			else {
+				rayDirection = asPxVec3(player->getForwardVector()).getNormalized();
+			}
 
-		// Define Ray
-		PxVec3 rayOrigin = asPxVec3(player->getWorldPosition());
-		PxVec3 rayDirection;
-		const PxU32 hitBufferSize = 32;
-		PxRaycastHit hitBuffer[hitBufferSize];
-		PxRaycastBuffer buf(hitBuffer, hitBufferSize);
+			// Make Raycast for player interaction
+			bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, maxInteractDistance, buf);
+			if (raycastStatus) {
+				// raycast has hit something
+				float nearestBlockingHit = 1000.0f;
+				float buttonDistance = 1111.0f;
+				Button* button = nullptr;
 
-		// If first person camera, use camera direction, if third person, use player forward vector
-		if (player->getActiveCameraType() == PlayerCameraType::CAMERA_FIRST_PERSON) {
-			rayDirection = asPxVec3(player->getActiveCamera()->getDirection()).getNormalized();
-		}
-		else {
-			rayDirection = asPxVec3(player->getForwardVector()).getNormalized();
-		}
-
-		// Make Raycast for player interaction
-		bool raycastStatus = physicsScene->raycast(rayOrigin, rayDirection, maxInteractDistance, buf);
-		if (raycastStatus) {
-			// raycast has hit something
-			for (PxU32 i = 0; i < buf.nbTouches; i++) {
-				PxRaycastHit currentHit = buf.touches[i];
-				GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
-				if (object != nullptr) {
-					// Raycast hit game object
-					// Skip player as it is always hit
-					Player* player = dynamic_cast<Player*>(object);
-					if (player == nullptr) {
-						// Skip invisble objects
-						if (object->isVisible()) {
-							//std::cout << "Interacting with '" << object->name_ << "'" << std::endl;
-
-							Button* button = dynamic_cast<Button*>(object);
-							if (button != nullptr) {
-								// Interacted with button
-								button->interact();
+				for (PxU32 i = 0; i < buf.nbTouches; i++) {
+					PxRaycastHit currentHit = buf.touches[i];
+					GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
+					if (object != nullptr) {
+						// Raycast hit game object
+						// Skip player as it is always hit
+						Player* player = dynamic_cast<Player*>(object);
+						if (player == nullptr) {
+							// Object is not player
+							// Skip invisble objects
+							if (object->isVisible()) {
+								button = dynamic_cast<Button*>(object);
+								if (button != nullptr) {
+									buttonDistance = currentHit.distance;
+								}
+								else {
+									if (nearestBlockingHit < currentHit.distance) {
+										nearestBlockingHit = currentHit.distance;
+									}
+								}
 							}
-
-							return; // End function, do not deal with other raycast objects
 						}
 					}
 				}
+
+				if (buttonDistance < nearestBlockingHit) {
+					if (button != nullptr) {
+						button->interact();
+					}
+				}
+
 			}
 		}
 	}
+
 }
 
 void Scene::handleKeyboardInput(GLFWwindow* window, float deltaTime) {
