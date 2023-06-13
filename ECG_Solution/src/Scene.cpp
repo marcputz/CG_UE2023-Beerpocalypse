@@ -94,7 +94,7 @@ void Scene::startPlayerInteraction() {
 	}
 
 	if (playerGo != nullptr) {
-		NewPlayer* player = static_cast<NewPlayer*>(playerGo);
+		Player* player = static_cast<Player*>(playerGo);
 
 		// Define Ray
 		PxVec3 rayOrigin = asPxVec3(player->getWorldPosition());
@@ -121,7 +121,7 @@ void Scene::startPlayerInteraction() {
 				if (object != nullptr) {
 					// Raycast hit game object
 					// Skip player as it is always hit
-					NewPlayer* player = dynamic_cast<NewPlayer*>(object);
+					Player* player = dynamic_cast<Player*>(object);
 					if (player == nullptr) {
 						// Skip invisble objects
 						if (object->isVisible()) {
@@ -178,7 +178,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 		}
 
 		if (playerGo != nullptr) {
-			NewPlayer* player = static_cast<NewPlayer*>(playerGo);
+			Player* player = static_cast<Player*>(playerGo);
 
 			// Define Ray
 			PxVec3 rayOrigin = asPxVec3(player->getWorldPosition());
@@ -204,7 +204,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 					if (object != nullptr) {
 						// Raycast hit game object
 						// Skip player as it is always hit
-						NewPlayer* player = dynamic_cast<NewPlayer*>(object);
+						Player* player = dynamic_cast<Player*>(object);
 						if (player == nullptr) {
 							//std::cout << "Hit '" << object->name_ << "'" << std::endl;
 
@@ -272,7 +272,7 @@ void Scene::step(float deltaTime) {
 
 		// player ground check via raycast, also creates frustum
 		{
-			NewPlayer* p = dynamic_cast<NewPlayer*>(go);
+			Player* p = dynamic_cast<Player*>(go);
 			if (p != nullptr) {
 				//frustum = Frustum::createFrustumFromCamera(*p->getActiveCamera(), (float)screenWidth/(float)screenHeight, glm::radians(p->getActiveCamera()->getFov()), cameraNear, cameraFar);
 
@@ -290,7 +290,7 @@ void Scene::step(float deltaTime) {
 						if (object != nullptr) {
 							// Raycast hit game object
 							// Skip player as it is always hit
-							NewPlayer* player = dynamic_cast<NewPlayer*>(object);
+							Player* player = dynamic_cast<Player*>(object);
 							Zombie* zombie = dynamic_cast<Zombie*>(object);
 							Beer* beer = dynamic_cast<Beer*>(object);
 							if (player == nullptr && zombie == nullptr && beer == nullptr) {

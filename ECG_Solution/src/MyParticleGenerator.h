@@ -4,7 +4,7 @@
 #include <vector>
 #include "MyShader.h"
 #include "My2DTexture.h"
-#include "GameObjects/Player/NewPlayer.h"
+#include "GameObjects/Player/Player.h"
 #include "GameObjects/NewGameObject.h"
 
 struct MyParticle {
@@ -38,7 +38,7 @@ const int MaxParticles = 100;
 
 class MyParticleGenerator {
 public:
-	MyParticleGenerator(MyShader& shader/*, My2DTexture& texture*/, NewPlayer* player, unsigned int amount);
+	MyParticleGenerator(MyShader& shader/*, My2DTexture& texture*/, Player* player, unsigned int amount);
 	//void update(float deltaTime, GameObject& object, unsigned int newParticles, glm::vec3 offset = glm::vec3(0.0f, 0.0f, 0.0f));
 	void update(float deltaTime);
 	void draw();
@@ -54,7 +54,7 @@ private:
 	MyShader* shader_;
 	My2DTexture zombieBloodTexture_;
 	My2DTexture beerParticleTexture_;
-	NewPlayer* player_;
+	Player* player_;
 	unsigned int VAO_;
 	unsigned int verticesVBO_, positionVBO_, textureVBO_, colorVBO_;
 	unsigned int lastUsedParticle_ = 0;

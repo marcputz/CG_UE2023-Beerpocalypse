@@ -23,7 +23,7 @@
 #include "Scene.h"
 #include "GameObjects/Cube/StaticCube.h"
 #include "GameObjects/Cube/DynamicCube.h"
-#include "GameObjects/Player/NewPlayer.h"
+#include "GameObjects/Player/Player.h"
 #include "GameObjects/Beer/Beer.h"
 #include "GameObjects/Ground/Ground.h"
 #include "GameObjects/Zombie/Zombie.h"
@@ -128,7 +128,7 @@ glm::mat4 textProjection;
 
 // Game Logic
 Scene* scene;
-NewPlayer* player = nullptr;
+Player* player = nullptr;
 MySpotLight* playerFlashLight = nullptr;
 
 glm::vec3 pointLightOnePosition;
@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
 	scene = new Scene(gPhysics);
 
 	// Init Player
-	player = new NewPlayer{ &defaultShader, gPhysics };
+	player = new Player{ &defaultShader, gPhysics };
 	player->setLocalPosition(glm::vec3(0.0f, 0.5f, -16.0f));
 	player->setRespawnPoint(glm::vec3(0.0f, 0.5f, -16.0f));
 	player->setScale(glm::vec3(0.5, 1, 0.5), true);
