@@ -1234,10 +1234,8 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 76.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F5] Display Normals: " + std::string(enableShowNormals ? "ON" : "OFF"), 14.0f, (float)screenHeight - 90.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F6] Bloom: " + std::string(enableBloom ? "ON" : "OFF"), 14.0f, (float)screenHeight - 104.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F8] View-Frustum Culling: OFF", 14.0f, (float)screenHeight - 118.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F9] Zombie Pathfinding: " + std::string(freezeZombies ? "DISABLED" : "ENABLED"), 14.0f, (float)screenHeight - 132.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F10] Close Debug HUD", 14.0f, (float)screenHeight - 152.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		//textRenderer.renderText(textShader, ", Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no") + std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure), 14.0f, (float)screenHeight - 138.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F7] Zombie Pathfinding: " + std::string(freezeZombies ? "DISABLED" : "ENABLED"), 14.0f, (float)screenHeight - 118.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F10] Close Debug HUD", 14.0f, (float)screenHeight - 138.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 	}
 }
 
@@ -1430,11 +1428,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		// toggle bloom
 		enableBloom = !enableBloom;
 		break;
-	case GLFW_KEY_F8:
-		// toggle view-frustum culling
-		std::cout << "Toggle view-frustum culling" << std::endl;
-		break;
-	case GLFW_KEY_F9:
+	case GLFW_KEY_F7:
 		// freeze zombies
 		freezeZombies = !freezeZombies;
 		break;
