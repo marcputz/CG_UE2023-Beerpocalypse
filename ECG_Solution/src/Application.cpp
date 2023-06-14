@@ -282,7 +282,7 @@ int main(int argc, char** argv) {
 	// Init Zombies
 	Zombie zombieOne{ &animationShader, gPhysics };
 	scene->addObject(&zombieOne, true);
-	zombieOne.setLocalPosition(zombiePositions[0] + glm::vec3(2.0f, 1.5f, 2.0f));
+	zombieOne.setLocalPosition(zombiePositions[0]);
 
 	MyAnimation zombieIdleAnim("assets/models/zombie/animations/ZombieIdle.dae", zombieOne.getModel());
 	MyAnimation zombieAttackAnim("assets/models/zombie/animations/ZombieAttack.dae", zombieOne.getModel());
@@ -296,7 +296,7 @@ int main(int argc, char** argv) {
 
 	Zombie zombieTwo{ &animationShader, gPhysics };
 	scene->addObject(&zombieTwo, true);
-	zombieTwo.setLocalPosition(zombiePositions[1] + glm::vec3(5.0f, 0.5f, 8.0f));
+	zombieTwo.setLocalPosition(zombiePositions[1]);
 
 	MyAnimator zombieTwoAnimator{};
 	zombieTwoAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
@@ -306,7 +306,7 @@ int main(int argc, char** argv) {
 
 	Zombie zombieThree{ &animationShader, gPhysics };
 	scene->addObject(&zombieThree, true);
-	zombieThree.setLocalPosition(zombiePositions[2] + glm::vec3(0.0f, 0.5f, 0.0f));
+	zombieThree.setLocalPosition(zombiePositions[2]);
 
 	MyAnimator zombieThreeAnimator{};
 	zombieThreeAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
@@ -316,13 +316,45 @@ int main(int argc, char** argv) {
 
 	Zombie zombieFour{ &animationShader, gPhysics };
 	scene->addObject(&zombieFour, true);
-	zombieFour.setLocalPosition(zombiePositions[3] + glm::vec3(-2.5f, 0.5f, 0.0f));
+	zombieFour.setLocalPosition(zombiePositions[3]);
 
 	MyAnimator zombieFourAnimator{};
 	zombieFourAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
 	zombieFourAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
 	zombieFourAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
 	zombieFour.setAnimator(zombieFourAnimator);
+
+	/*
+	Zombie zombieFive{ &animationShader, gPhysics };
+	scene->addObject(&zombieFive, true);
+	zombieFive.setLocalPosition(zombiePositions[4]);
+
+	MyAnimator zombieFiveAnimator{};
+	zombieFiveAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
+	zombieFiveAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
+	zombieFiveAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
+	zombieFive.setAnimator(zombieFiveAnimator);
+
+	Zombie zombieSix{ &animationShader, gPhysics };
+	scene->addObject(&zombieSix, true);
+	zombieSix.setLocalPosition(zombiePositions[5]);
+
+	MyAnimator zombieSixAnimator{};
+	zombieSixAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
+	zombieSixAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
+	zombieSixAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
+	zombieSix.setAnimator(zombieSixAnimator);
+
+	Zombie zombieSeven{ &animationShader, gPhysics };
+	scene->addObject(&zombieSeven, true);
+	zombieSeven.setLocalPosition(zombiePositions[6]);
+
+	MyAnimator zombieSevenAnimator{};
+	zombieSevenAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
+	zombieSevenAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
+	zombieSevenAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
+	zombieSeven.setAnimator(zombieSevenAnimator);
+	*/
 
 	/*
 	Vampire vampire(&animationShader, gPhysics);
@@ -718,8 +750,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomOne.push_back(groundRoomOne);
 	roomOne.push_back(roofRoomOne);
 
-	zombiePositions.push_back(groundRoomOne->getWorldPosition());
-	zombiePositions.push_back(groundRoomOne->getWorldPosition());
+	//zombiePositions.push_back(groundRoomOne->getWorldPosition() + glm::vec3(2.0f, 0.5f, 2.0f));
+	zombiePositions.push_back(groundRoomOne->getWorldPosition() + glm::vec3(5.0f, 0.5f, 8.0f));
 
 	// second room (front/center)
 	float wallYScaleRoomTwo = 2.0f;
@@ -794,6 +826,9 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomTwo.push_back(groundRoomTwo);
 	roomTwo.push_back(roofRoomTwo);
 
+	//zombiePositions.push_back(groundRoomTwo->getWorldPosition());
+	//zombiePositions.push_back(groundRoomTwo->getWorldPosition());
+
 	// third room (left)
 	float wallYScaleRoomThree = 2.0f;
 	// floor
@@ -845,6 +880,9 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomThree.push_back(frontWallRoomThree);
 	roomThree.push_back(groundRoomThree);
 	roomThree.push_back(roofRoomThree);
+
+	//zombiePositions.push_back(groundRoomThree->getWorldPosition() + glm::vec3(-6.0f, 0.5f, 2.5f));
+	zombiePositions.push_back(groundRoomThree->getWorldPosition() + glm::vec3(-6.0f, 0.5f, -2.5f));
 
 	// corridor at the top of room four
 	float wallYScaleCorridorTopOfFourth = 2.0f;
@@ -993,8 +1031,9 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomFour.push_back(groundRoomFour);
 	roomFour.push_back(roofRoomFour);
 
-	zombiePositions.push_back(groundRoomFour->getWorldPosition());
-	zombiePositions.push_back(groundCorridorTopOfFourth->getWorldPosition());
+	//zombiePositions.push_back(groundRoomFour->getWorldPosition() + glm::vec3(6.0f, 0.5f, 2.5f));
+	zombiePositions.push_back(groundRoomFour->getWorldPosition() + glm::vec3(-6.0f, 0.5f, 2.5f));
+	zombiePositions.push_back(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(-2.5f, 0.5f, 0.0f));
 
 	// fifth room (front front)
 	float wallYScaleRoomFive = 2.0f;
