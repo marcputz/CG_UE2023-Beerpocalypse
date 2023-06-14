@@ -1037,6 +1037,9 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 
 			textRenderer.renderText(textShader, "Page Up/Down", 24.0f, (float)screenHeight - 310.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 			textRenderer.renderText(textShader, "Increase/Decrease Gamma", 180.0f, (float)screenHeight - 310.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+
+			textRenderer.renderText(textShader, "Arrow Up/Down", 24.0f, (float)screenHeight - 330.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Increase/Decrease Volume", 180.0f, (float)screenHeight - 330.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		}
 
 		if (isGameLost == true) {
