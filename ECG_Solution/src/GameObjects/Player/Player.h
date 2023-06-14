@@ -16,6 +16,7 @@ private:
 	const float MOVEMENT_SPEED = 5.0f;
 	const float TURNING_SPEED = 9.0f;
 	const float JUMP_FORCE = 5.0f;
+	const float MAX_JUMP_VELOCITY = 5.0f;
 
 	const float SPRINT_MULTIPLIER = 1.5f;
 	bool isSprinting = false;

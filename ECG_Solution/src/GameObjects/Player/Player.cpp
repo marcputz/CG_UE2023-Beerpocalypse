@@ -34,6 +34,14 @@ void Player::onBeforeUpdate() {
 }
 
 void Player::onUpdate(float deltaTime) {
+	PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
+	// look the vertical velocity to prevent buggy jump
+	PxVec3 currVelocity = dyn->getLinearVelocity();
+	if (currVelocity.y > MAX_JUMP_VELOCITY) {
+		currVelocity.y = MAX_JUMP_VELOCITY;
+		dyn->setLinearVelocity(currVelocity);
+	}
+
 	if (damageCooldown > 0.01f) {
 		damageCooldown -= deltaTime;
 	}
@@ -164,15 +172,6 @@ void Player::processWindowInput(GLFWwindow* window, float deltaTime) {
 	}
 	
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		// jump
-		/*
-		if (onGround) {
-			PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
-			dyn->addForce(PxVec3(0, 1, 0) * jumpForce, PxForceMode::eIMPULSE);
-			//dyn->setForceAndTorque(PxVec3(0, 1, 0) * jumpForce, PxVec3(0, 0, 0), PxForceMode::eIMPULSE);
-			this->onGround = false;
-		}
-		*/
 		jump();
 	}
 	
@@ -231,7 +230,6 @@ void Player::jump() {
 	if (onGround) {
 		PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
 		dyn->addForce(PxVec3(0, 1, 0) * JUMP_FORCE, PxForceMode::eIMPULSE);
-		//dyn->setForceAndTorque(PxVec3(0, 1, 0) * jumpForce, PxVec3(0, 0, 0), PxForceMode::eIMPULSE);
 		this->onGround = false;
 	}
 }
