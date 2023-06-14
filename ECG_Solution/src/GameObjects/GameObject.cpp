@@ -30,6 +30,10 @@ void GameObject::setCollider(PxGeometry* geometry, PxMaterial* material) {
 	physicsMaterial_ = material;
 
 	if (geometry != nullptr && material != nullptr) {
+		// create shape and attach (automatically)
+		physicsShape_ = PxRigidActorExt::createExclusiveShape(*(this->getRigidActor()), *geometry, *material);
+		physicsShape_->userData = this;
+
 		// apply scale to collider
 		if (physicsShape_ != nullptr) {
 			if (geometry->getType() == PxGeometryType::eBOX) {
@@ -39,10 +43,6 @@ void GameObject::setCollider(PxGeometry* geometry, PxMaterial* material) {
 				boxGeometry->halfExtents.z *= getScale().z;
 			}
 		}
-
-		// create shape and attach (automatically)
-		physicsShape_ = PxRigidActorExt::createExclusiveShape(*(this->getRigidActor()), *geometry, *material);
-		physicsShape_->userData = this;
 	}
 	else {
 		if (physicsShape_ != nullptr)
