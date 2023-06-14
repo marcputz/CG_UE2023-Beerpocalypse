@@ -66,10 +66,23 @@ void GameObject::enableCollider(bool enabled) {
 }
 
 void GameObject::reset() {
-	this->setLocalPosition(this->originalPosition);
-	this->setHealth(100);
 	this->setVisible(true);
 	this->enableCollider(true);
+	this->setLocalPosition(this->originalPosition);
+	this->setHealth(100);
+
+	if (!isStatic_) {
+		PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(this->physicsActor_);
+		if (dyn != nullptr) {
+			// reset forces
+			dyn->clearForce();
+			dyn->clearTorque();
+			dyn->setLinearVelocity(PxVec3(0.0f, 0.0f, 0.0f));
+			dyn->setAngularVelocity(PxVec3(0.0f, 0.0f, 0.0f));
+		}
+	}
+
+	std::cout << name_ << " is at " << this->getLocalPosition().x << "/" << getLocalPosition().y << "/" << getLocalPosition().z << std::endl;
 
 	this->resetSpecifics();
 }
