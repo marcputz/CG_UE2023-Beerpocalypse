@@ -40,10 +40,18 @@ void FakeWall::onActivate()
 {
 	setVisible(false);
 	enableCollider(false);
+
+	PxFilterData filterData;
+	filterData.word0 = CollisionLayer::LAYER_DEFAULT; // own ID
+	filterData.word1 = CollisionLayer::LAYER_DEFAULT | CollisionLayer::LAYER_PLAYER | CollisionLayer::LAYER_ENEMIES;
+	physicsShape_->setSimulationFilterData(filterData);
 }
 
 void FakeWall::onDeactivate()
 {
 	setVisible(true);
 	enableCollider(true);
+
+	PxFilterData filterData;
+	physicsShape_->setSimulationFilterData(filterData);
 }
