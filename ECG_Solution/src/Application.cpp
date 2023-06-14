@@ -180,7 +180,7 @@ std::vector<GameObject*> roomOne;
 std::vector<GameObject*> roomTwo;
 std::vector<GameObject*> roomThree;
 std::vector<GameObject*> roomFour;
-std::vector<GameObject*> roomFive;
+//std::vector<GameObject*> roomFive;
 std::vector<GameObject*> corridors;
 std::vector<int> beerIdx;
 std::vector<glm::vec3> zombiePositions;
@@ -271,10 +271,11 @@ int main(int argc, char** argv) {
 	for (unsigned int i = 0; i < roomFour.size(); i++) {
 		scene->addObject(roomFour[i]);
 	}
-
+	/*
 	for (unsigned int i = 0; i < roomFive.size(); i++) {
 		scene->addObject(roomFive[i]);
 	}
+	*/
 
 	for (unsigned int i = 0; i < corridors.size(); i++) {
 		scene->addObject(corridors[i]);
@@ -434,9 +435,9 @@ int main(int argc, char** argv) {
 
 	MySpotLight spotLightFive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		true,
-		roomFive[beerIdx[4]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
+		corridors[beerIdx[4]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
-		12.5f, 15.0f, nullptr, roomFive[beerIdx[4]]);
+		12.5f, 15.0f, nullptr, corridors[beerIdx[4]]);
 	spotLightFive.addLightToShader(defaultShader);
 	spotLightFive.addLightToShader(animationShader);
 
@@ -998,7 +999,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomFourPlatformTen->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(3.0f, 10.0f, 0.0f));
 	roomFourPlatformTen->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
 
-	Button* buttonRoomFour = new Button{ &defaultShader, gPhysics, nullptr };
+	Button* buttonRoomFour = new Button{ &defaultShader, gPhysics, fakeWallRoomTwoButtonFour };
 	buttonRoomFour->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, 2.0f));
 	buttonRoomFour->setScale(glm::vec3(0.5, 0.5, 0.5));
 	buttonRoomFour->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
@@ -1036,6 +1037,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	zombiePositions.push_back(groundRoomFour->getWorldPosition() + glm::vec3(-6.0f, 0.5f, 2.5f));
 	zombiePositions.push_back(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(-2.5f, 0.5f, 0.0f));
 
+	/*
 	// fifth room (front front)
 	float wallYScaleRoomFive = 2.0f;
 	// floor
@@ -1067,13 +1069,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roofRoomFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
 	roofRoomFive->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
-	Beer* beerFive = new Beer{ &defaultShader, gPhysics };
-	beerFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(-5, beerYOffset, 8));
-	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
-	particleGenerator.createParticles(beerFive->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerFive);
+	MOVED BEER FIVE TO CORRIDOR
 
-	beerIdx.push_back(roomFive.size());
-	roomFive.push_back(beerFive);
 	roomFive.push_back(rightWallRoomFive);
 	roomFive.push_back(leftWallRoomFive);
 	roomFive.push_back(behindWallRightExitRoomFive);
@@ -1081,6 +1078,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomFive.push_back(frontWallRoomFive);
 	roomFive.push_back(groundRoomFive);
 	roomFive.push_back(roofRoomFive);
+	*/
 
 	// ----------------------------------------------------
 
@@ -1199,13 +1197,25 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	StaticCube* leftWallCorridorSecondFifth = new StaticCube{ &defaultShader, gPhysics };
 	leftWallCorridorSecondFifth->setLocalPosition(groundCorridorSecondFifth->getWorldPosition() + glm::vec3(3.0f, 2.5f, 0.0f));
 	leftWallCorridorSecondFifth->setScale(glm::vec3(1.0f, wallYScaleCorridorSecondFifth, 6.5f), true);
+	// front wall
+	StaticCube* frontWallCorridorSecondFifth = new StaticCube{ &defaultShader, gPhysics };
+	frontWallCorridorSecondFifth->setLocalPosition(groundCorridorSecondFifth->getWorldPosition() + glm::vec3(0.0f, 2.5f, 6.0f));
+	frontWallCorridorSecondFifth->setScale(glm::vec3(2.0f, wallYScaleCorridorSecondFifth, 1.0f), true);
 	// roof
 	Roof* roofCorridorSecondFifth = new Roof{ &defaultShader, gPhysics };
 	roofCorridorSecondFifth->setLocalPosition(groundCorridorSecondFifth->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
 	roofCorridorSecondFifth->setScale(glm::vec3(2.0f, 1.0f, 7.5f), true);
 
+	Beer* beerFive = new Beer{ &defaultShader, gPhysics };
+	beerFive->setLocalPosition(groundCorridorSecondFifth->getWorldPosition() + glm::vec3(0.0f, beerYOffset, 3.0f));
+	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
+	particleGenerator.createParticles(beerFive->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerFive);
+
+	beerIdx.push_back(corridors.size());
+	corridors.push_back(beerFive);
 	corridors.push_back(rightWallCorridorSecondFifth);
 	corridors.push_back(leftWallCorridorSecondFifth);
+	corridors.push_back(frontWallCorridorSecondFifth);
 	corridors.push_back(groundCorridorSecondFifth);
 	corridors.push_back(roofCorridorSecondFifth);
 }
