@@ -1,6 +1,7 @@
 #include "Player.h"
 
 extern int score;
+extern bool enableInfiniteJumping;
 
 Player::Player(MyShader* shader, PxPhysics* physics) : GameObject("Player", shader, physics, "cube/brick_cube/cube.obj", false) {
 	
@@ -227,7 +228,7 @@ void Player::setCameraFOVs(float newFov) {
 }
 
 void Player::jump() {
-	if (onGround) {
+	if (onGround || enableInfiniteJumping) {
 		PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);
 		dyn->addForce(PxVec3(0, 1, 0) * JUMP_FORCE, PxForceMode::eIMPULSE);
 		this->onGround = false;

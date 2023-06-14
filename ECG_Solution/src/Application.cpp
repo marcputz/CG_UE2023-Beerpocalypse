@@ -157,6 +157,7 @@ bool freezeZombies = true;
 bool enableDebugHUD = false;
 bool freezeZombies = false;
 #endif
+bool enableInfiniteJumping = false;
 bool enableNormalMapping = true;
 bool enableShowNormals = false;
 bool enableGUIHUD = true;
@@ -1307,10 +1308,9 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 		textRenderer.renderText(textShader, "[F4] Normal Mapping: " + std::string(enableNormalMapping ? "ON" : "OFF"), 14.0f, (float)screenHeight - 76.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F5] Display Normals: " + std::string(enableShowNormals ? "ON" : "OFF"), 14.0f, (float)screenHeight - 90.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F6] Bloom: " + std::string(enableBloom ? "ON" : "OFF"), 14.0f, (float)screenHeight - 104.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F8] View-Frustum Culling: OFF", 14.0f, (float)screenHeight - 118.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		textRenderer.renderText(textShader, "[F9] Zombie Pathfinding: " + std::string(freezeZombies ? "DISABLED" : "ENABLED"), 14.0f, (float)screenHeight - 132.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F7] Zombie Pathfinding: " + std::string(freezeZombies ? "DISABLED" : "ENABLED"), 14.0f, (float)screenHeight - 118.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
+		textRenderer.renderText(textShader, "[F8] Infinte Jumping: " + std::string(enableInfiniteJumping ? "ENABLED" : "DISABLED"), 14.0f, (float)screenHeight - 132.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 		textRenderer.renderText(textShader, "[F10] Close Debug HUD", 14.0f, (float)screenHeight - 152.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
-		//textRenderer.renderText(textShader, ", Player on Ground: " + std::string(player->isOnGround() ? "yes" : "no") + std::string(", FOV: ") + std::to_string(player->getActiveCamera()->getFov()) + std::string(", Gamma:") + std::to_string(gamma) + std::string(", Exposure:") + std::to_string(exposure), 14.0f, (float)screenHeight - 138.0f, 0.25f, glm::vec3(0.2f, 1.0f, 0.2f), enableWireframe);
 	}
 }
 
@@ -1475,42 +1475,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			isPaused = false;
 		}
 		break;
-	case GLFW_KEY_F1:
-		enableWireframe = !enableWireframe;
-		glPolygonMode(GL_FRONT_AND_BACK, enableWireframe ? GL_LINE : GL_FILL);
-		break;
-	case GLFW_KEY_F2:
-		enableBackfaceCulling = !enableBackfaceCulling;
-		if (enableBackfaceCulling) {
-			glEnable(GL_CULL_FACE);
-		} else {
-			glDisable(GL_CULL_FACE);
-		}
-		break;
-	case GLFW_KEY_F3:
-		// toggle GUI HUD
-		enableGUIHUD = !enableGUIHUD;
-		break;
-	case GLFW_KEY_F4:
-		// toggle normal mapping
-		enableNormalMapping = !enableNormalMapping;
-		break;
-	case GLFW_KEY_F5:
-		// toggle normal map value display
-		enableShowNormals = !enableShowNormals;
-		break;
-	case GLFW_KEY_F6:
-		// toggle bloom
-		enableBloom = !enableBloom;
-		break;
-	case GLFW_KEY_F8:
-		// toggle view-frustum culling
-		std::cout << "Toggle view-frustum culling" << std::endl;
-		break;
-	case GLFW_KEY_F9:
-		// freeze zombies
-		freezeZombies = !freezeZombies;
-		break;
 	case GLFW_KEY_F10:
 		// toggle debug text hud
 		enableDebugHUD = !enableDebugHUD;
@@ -1551,6 +1515,48 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			gamma = 0.1f;
 		}
 		break;
+	}
+
+	if (enableDebugHUD) {
+		switch (key) {
+		case GLFW_KEY_F1:
+			enableWireframe = !enableWireframe;
+			glPolygonMode(GL_FRONT_AND_BACK, enableWireframe ? GL_LINE : GL_FILL);
+			break;
+		case GLFW_KEY_F2:
+			enableBackfaceCulling = !enableBackfaceCulling;
+			if (enableBackfaceCulling) {
+				glEnable(GL_CULL_FACE);
+			}
+			else {
+				glDisable(GL_CULL_FACE);
+			}
+			break;
+		case GLFW_KEY_F3:
+			// toggle GUI HUD
+			enableGUIHUD = !enableGUIHUD;
+			break;
+		case GLFW_KEY_F4:
+			// toggle normal mapping
+			enableNormalMapping = !enableNormalMapping;
+			break;
+		case GLFW_KEY_F5:
+			// toggle normal map value display
+			enableShowNormals = !enableShowNormals;
+			break;
+		case GLFW_KEY_F6:
+			// toggle bloom
+			enableBloom = !enableBloom;
+			break;
+		case GLFW_KEY_F7:
+			// freeze zombies
+			freezeZombies = !freezeZombies;
+			break;
+		case GLFW_KEY_F8:
+			// enable infinite jumps
+			enableInfiniteJumping = !enableInfiniteJumping;
+			break;
+		}
 	}
 
 	if (!isPaused) {
