@@ -82,6 +82,8 @@ const bool START_FULLSCREEN_DEFAULT = false;
 const float CAMERA_FOV_DEFAULT = 60.0f;
 const float CAMERA_NEAR_DEFAULT = 0.1f;
 const float CAMERA_FAR_DEFAULT = 100.0f;
+const float CAMERA_EXPOSURE_DEFAULT = 1.0f;
+const float CAMERA_GAMMA_DEFAULT = 1.0f;
 
 const float AUDIO_VOLUME_DEFAULT = 0.5f;
 
@@ -180,6 +182,7 @@ std::vector<GameObject*> roomFour;
 std::vector<GameObject*> roomFive;
 std::vector<GameObject*> corridors;
 std::vector<int> beerIdx;
+std::vector<glm::vec3> zombiePositions;
 
 /* ------------------------- */
 /*           MAIN            */
@@ -818,36 +821,113 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomThree.push_back(groundRoomThree);
 	roomThree.push_back(roofRoomThree);
 
+	// corridor at the top of room four
+	float wallYScaleCorridorTopOfFourth = 2.0f;
+	// floor
+	Ground* groundCorridorTopOfFourth = new Ground{ &defaultShader, gPhysics };
+	groundCorridorTopOfFourth->setLocalPosition(glm::vec3(-17.5f, 9.5f, 35.0f));
+	groundCorridorTopOfFourth->setScale(glm::vec3(8.4999f, 1.0f, 2.0f), true);
+	// right wall
+	StaticCube* rightWallCorridorTopOfFourth = new StaticCube{ &defaultShader, gPhysics };
+	rightWallCorridorTopOfFourth->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, -3.0f));
+	rightWallCorridorTopOfFourth->setScale(glm::vec3(6.5f, wallYScaleCorridorTopOfFourth, 1.0f), true);
+	// left wall
+	StaticCube* leftWallCorridorTopOfFourth = new StaticCube{ &defaultShader, gPhysics };
+	leftWallCorridorTopOfFourth->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, 3.0f));
+	leftWallCorridorTopOfFourth->setScale(glm::vec3(6.5f, wallYScaleCorridorTopOfFourth, 1.0f), true);
+	// roof
+	Roof* roofCorridorTopOfFourth = new Roof{ &defaultShader, gPhysics };
+	roofCorridorTopOfFourth->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
+	roofCorridorTopOfFourth->setScale(glm::vec3(7.5f, 1.0f, 2.0f), true);
+
+	corridors.push_back(rightWallCorridorTopOfFourth);
+	corridors.push_back(leftWallCorridorTopOfFourth);
+	corridors.push_back(groundCorridorTopOfFourth);
+	corridors.push_back(roofCorridorTopOfFourth);
+
 	// fourth room (right)
-	float wallYScaleRoomFour = 12.0f;
+	float wallYScaleRoomFour = 7.0f;
+	float wallYOffsetRoomFour = 7.5f;
 	// floor
 	Ground* groundRoomFour = new Ground{ &defaultShader, gPhysics };
 	groundRoomFour->setLocalPosition(glm::vec3(-35.0f, -0.5f, 35.0f));
 	groundRoomFour->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 	// right wall
 	StaticCube* rightWallRoomFour = new StaticCube{ &defaultShader, gPhysics };
-	rightWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-10.0f, 12.5f, 0.0f));
+	rightWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-10.0f, wallYOffsetRoomFour, 0.0f));
 	rightWallRoomFour->setScale(glm::vec3(1.0f, wallYScaleRoomFour, 10.0f), true);
 	// left wall - front part of exit
 	StaticCube* leftWallFrontExitRoomFour = new StaticCube{ &defaultShader, gPhysics };
-	leftWallFrontExitRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(10.0f, 12.5f, 6.0f));
+	leftWallFrontExitRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(10.0f, wallYOffsetRoomFour, 6.0f));
 	leftWallFrontExitRoomFour->setScale(glm::vec3(1.0f, wallYScaleRoomFour, 4.0f), true);
 	// left wall - behind part of exit 
 	StaticCube* leftWallBehindExitRoomFour = new StaticCube{ &defaultShader, gPhysics };
-	leftWallBehindExitRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(10.0f, 12.5f, -6.0f));
+	leftWallBehindExitRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(10.0f, wallYOffsetRoomFour, -6.0f));
 	leftWallBehindExitRoomFour->setScale(glm::vec3(1.0f, wallYScaleRoomFour, 4.0f), true);
+	// TODO: patch hole
+	StaticCube* leftWallMiddlePatchRoomFour = new StaticCube{ &defaultShader, gPhysics };
+	leftWallMiddlePatchRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(9.5f, wallYOffsetRoomFour , 0.0f));
+	leftWallMiddlePatchRoomFour->setScale(glm::vec3(0.5f, 3.0f, 2.0f), true);
 	// behind wall
 	StaticCube* behindWallRoomFour = new StaticCube{ &defaultShader, gPhysics };
-	behindWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, 12.5f, -10.0f));
+	behindWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, wallYOffsetRoomFour, -10.0f));
 	behindWallRoomFour->setScale(glm::vec3(10.0f, wallYScaleRoomFour, 1.0f), true);
 	// front wall
 	StaticCube* frontWallRoomFour = new StaticCube{ &defaultShader, gPhysics };
-	frontWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, 12.5f, 10.0f));
+	frontWallRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, wallYOffsetRoomFour, 10.0f));
 	frontWallRoomFour->setScale(glm::vec3(10.0f, wallYScaleRoomFour, 1.0f), true);
 	// roof
 	Roof* roofRoomFour = new Roof{ &defaultShader, gPhysics };
-	roofRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, 25.5f, 0.0f));
+	roofRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, 15.5f, 0.0f));
 	roofRoomFour->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
+	// platforms to jump up
+	Ground* roomFourPlatformOne = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformOne->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(0.0f, 1.75f, -8.0f));
+	roomFourPlatformOne->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
+
+	Ground* roomFourPlatformTwo = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformTwo->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-3.0f, 3.0f, -8.0f));
+	roomFourPlatformTwo->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
+
+	Ground* roomFourPlatformThree = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformThree->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-7.0f, 4.25f, -7.0f));
+	roomFourPlatformThree->setScale(glm::vec3(2.0f, 0.15f, 2.0f), true);
+
+	DynamicCube* dynCubeOneRoomFour = new DynamicCube{ &defaultShader, gPhysics };
+	dynCubeOneRoomFour->setLocalPosition(roomFourPlatformThree->getWorldPosition() + glm::vec3(1.25f, 1.5f, 1.0f));
+	dynCubeOneRoomFour->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	DynamicCube* dynCubeTwoRoomFour = new DynamicCube{ &defaultShader, gPhysics };
+	dynCubeTwoRoomFour->setLocalPosition(roomFourPlatformThree->getWorldPosition() + glm::vec3(-1.25f, 1.5f, 1.0f));
+	dynCubeTwoRoomFour->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	Ground* roomFourPlatformFour = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(6.0f, 3.0f, 8.0f));
+	roomFourPlatformFour->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
+
+	Ground* roomFourPlatformFive = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformFive->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(1.0f, 4.25f, 8.0f));
+	roomFourPlatformFive->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
+
+	Ground* roomFourPlatformSix = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformSix->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-5.0f, 5.5f, 8.0f));
+	roomFourPlatformSix->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
+
+	Ground* roomFourPlatformSeven = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformSeven->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-8.0f, 6.75f, 2.0f));
+	roomFourPlatformSeven->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
+
+	Ground* roomFourPlatformEight = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformEight->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-8.0f, 8.0f, -3.0f));
+	roomFourPlatformEight->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
+
+	Ground* roomFourPlatformNine = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformNine->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-3.0f, 9.25f, 0.0f));
+	roomFourPlatformNine->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
+
+	Ground* roomFourPlatformTen = new Ground{ &defaultShader, gPhysics };
+	roomFourPlatformTen->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(3.0f, 10.0f, 0.0f));
+	roomFourPlatformTen->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
 
 	Button* buttonRoomFour = new Button{ &defaultShader, gPhysics, nullptr };
 	buttonRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(7.0f, 1.5f, 7.0f));
@@ -855,15 +935,28 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	buttonRoomFour->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
 
 	Beer* beerFour = new Beer{ &defaultShader, gPhysics };
-	beerFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(-5, beerYOffset, 6));
+	beerFour->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, beerYOffset, 0.0f));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
 	particleGenerator.createParticles(beerFour->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerFour);
 
 	beerIdx.push_back(roomFour.size());
 	roomFour.push_back(beerFour);
+	roomFour.push_back(dynCubeOneRoomFour);
+	roomFour.push_back(dynCubeTwoRoomFour);
+	roomFour.push_back(roomFourPlatformOne);
+	roomFour.push_back(roomFourPlatformTwo);
+	roomFour.push_back(roomFourPlatformThree);
+	roomFour.push_back(roomFourPlatformFour);
+	roomFour.push_back(roomFourPlatformFive);
+	roomFour.push_back(roomFourPlatformSix);
+	roomFour.push_back(roomFourPlatformSeven);
+	roomFour.push_back(roomFourPlatformEight);
+	roomFour.push_back(roomFourPlatformNine);
+	roomFour.push_back(roomFourPlatformTen);
 	roomFour.push_back(rightWallRoomFour);
 	roomFour.push_back(leftWallFrontExitRoomFour);
 	roomFour.push_back(leftWallBehindExitRoomFour);
+	roomFour.push_back(leftWallMiddlePatchRoomFour);
 	roomFour.push_back(behindWallRoomFour);
 	roomFour.push_back(frontWallRoomFour);
 	roomFour.push_back(groundRoomFour);
@@ -1285,7 +1378,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		break;
 	case GLFW_KEY_ENTER:
 		// restart game if over
-		if (isGameLost == true || isGameWon == true) {
+		if (isGameLost == true || isGameWon == true || isPaused == true) {
 			scene->reset();
 			bullets = maxBullets;
 			score = 0;
@@ -1462,16 +1555,53 @@ void readINIFile() {
 	INIReader iniReader = INIReader::INIReader("settings.ini");
 
 	screenWidth = iniReader.GetInteger("window", "width", SCR_WIDTH_DEFAULT);
+
+	if (screenWidth <= 640.0f) {
+		screenWidth = 640.0f;
+	}
+
 	screenHeight = iniReader.GetInteger("window", "height", SCR_HEIGHT_DEFAULT);
+
+	if (screenHeight <= 480.0f) {
+		screenHeight = 480.0f;
+	}
+
 	refreshRate = iniReader.GetInteger("window", "refresh_rate", REFRESH_RATE_DEFAULT);
 	windowTitle = iniReader.Get("window", "title", WINDOW_TITLE_DEFAULT);
 	startFullscreen = iniReader.GetBoolean("window", "fullscreen", START_FULLSCREEN_DEFAULT);
 
 	cameraFov = (float) iniReader.GetReal("camera", "fov", CAMERA_FOV_DEFAULT);
+	
+	if (cameraFov < 20.0f) {
+		cameraFov = 20.0f;
+	}
+
+	if (cameraFov > 90.0f) {
+		cameraFov = 90.0f;
+	}
+
 	cameraNear = (float) iniReader.GetReal("camera", "near", CAMERA_NEAR_DEFAULT);
 	cameraFar = (float) iniReader.GetReal("camera", "far", CAMERA_FAR_DEFAULT);
+	exposure = (float) iniReader.GetReal("camera", "exposure", CAMERA_EXPOSURE_DEFAULT);
+	gamma = (float)iniReader.GetReal("camera", "gamma", CAMERA_GAMMA_DEFAULT);
+
+	if (gamma < 0.1f) {
+		gamma = 0.1f;
+	}
+
+	if (exposure < 0.1f) {
+		exposure = 0.1f;
+	}
 
 	audioVolume = (float) iniReader.GetReal("audio", "volume", AUDIO_VOLUME_DEFAULT);
+
+	if (audioVolume < 0.0f) {
+		audioVolume = 0.0f;
+	}
+
+	if (audioVolume > 1.0f) {
+		audioVolume = 1.0f;
+	}
 }
 
 void static initOpenGL() {

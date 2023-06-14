@@ -366,7 +366,8 @@ void Scene::step(float deltaTime) {
 					// Raycast hit game object
 					// Skip player as it is always hit
 					Ground* ground = dynamic_cast<Ground*>(object);
-					if (ground != nullptr) {
+					DynamicCube* dynCube = dynamic_cast<DynamicCube*>(object);
+					if (ground != nullptr || dynCube != nullptr) {
 						if (currentHit.distance <= 1.1f) {
 							p->setIsOnGround(true);
 							break;
