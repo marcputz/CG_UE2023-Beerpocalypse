@@ -251,7 +251,7 @@ int main(int argc, char** argv) {
 
 	// Init particle generator
 	particleShader = MyAssetManager::loadShader("particle.vert", "particle.frag", "particle");
-	MyParticleGenerator particleGen(particleShader/*, particleTexture*/, player, 50);
+	MyParticleGenerator particleGen(particleShader/*, particleTexture*/, player, 75);
 	scene->setParticleGenerator(&particleGen);
 
 	initLevel(particleGen);

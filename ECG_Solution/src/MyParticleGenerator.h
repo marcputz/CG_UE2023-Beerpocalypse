@@ -34,7 +34,7 @@ enum ParticleType {
 	BEER_SPARKLE
 };
 
-const int MaxParticles = 100;
+const int MaxParticles = 175;
 
 class MyParticleGenerator {
 public:

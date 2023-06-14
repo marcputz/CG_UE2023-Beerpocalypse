@@ -224,7 +224,14 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 									if (particleGenerator != nullptr) {
 										particleGenerator->createParticles(
 											asGlmVec3(currentHit.position),
-											(asGlmVec3(rayDirection) * -1.0f), ParticleType::ZOMBIE_BLOOD, 1.0f, 5, true, nullptr);
+											(asGlmVec3(rayDirection) * -1.0f), ParticleType::ZOMBIE_BLOOD, 1.0f, 10, true, nullptr);
+
+
+										if (zombie->isVisible() == false) {
+											particleGenerator->createParticles(
+												asGlmVec3(currentHit.position),
+												glm::vec3(0.0f, 1.0f, 0.0f), ParticleType::ZOMBIE_BLOOD, 1.0f, 50, true, nullptr);
+										}
 									}
 
 									return; // skip the rest of this function, as only the first hit should be processed.
