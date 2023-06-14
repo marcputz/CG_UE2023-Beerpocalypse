@@ -282,7 +282,7 @@ int main(int argc, char** argv) {
 	// Init Zombies
 	Zombie zombieOne{ &animationShader, gPhysics };
 	scene->addObject(&zombieOne, true);
-	zombieOne.setLocalPosition(glm::vec3(2, 1.5, 2));
+	zombieOne.setLocalPosition(zombiePositions[0] + glm::vec3(2.0f, 1.5f, 2.0f));
 
 	MyAnimation zombieIdleAnim("assets/models/zombie/animations/ZombieIdle.dae", zombieOne.getModel());
 	MyAnimation zombieAttackAnim("assets/models/zombie/animations/ZombieAttack.dae", zombieOne.getModel());
@@ -296,16 +296,33 @@ int main(int argc, char** argv) {
 
 	Zombie zombieTwo{ &animationShader, gPhysics };
 	scene->addObject(&zombieTwo, true);
-	zombieTwo.setLocalPosition(glm::vec3(5, 0.5, 8));
+	zombieTwo.setLocalPosition(zombiePositions[1] + glm::vec3(5.0f, 0.5f, 8.0f));
 
 	MyAnimator zombieTwoAnimator{};
 	zombieTwoAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
 	zombieTwoAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
 	zombieTwoAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
-	//zombieTwoAnimator.setAnimationSpeedMultiplier(2.0f);
 	zombieTwo.setAnimator(zombieTwoAnimator);
 
+	Zombie zombieThree{ &animationShader, gPhysics };
+	scene->addObject(&zombieThree, true);
+	zombieThree.setLocalPosition(zombiePositions[2] + glm::vec3(0.0f, 0.5f, 0.0f));
 
+	MyAnimator zombieThreeAnimator{};
+	zombieThreeAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
+	zombieThreeAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
+	zombieThreeAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
+	zombieThree.setAnimator(zombieThreeAnimator);
+
+	Zombie zombieFour{ &animationShader, gPhysics };
+	scene->addObject(&zombieFour, true);
+	zombieFour.setLocalPosition(zombiePositions[3] + glm::vec3(-2.5f, 0.5f, 0.0f));
+
+	MyAnimator zombieFourAnimator{};
+	zombieFourAnimator.addAnimation(Animation_Enum::IDLE, &zombieIdleAnim);
+	zombieFourAnimator.addAnimation(Animation_Enum::WALKING, &zombieWalkAnim);
+	zombieFourAnimator.addAnimation(Animation_Enum::ATTACKING, &zombieAttackAnim);
+	zombieFour.setAnimator(zombieFourAnimator);
 
 	/*
 	Vampire vampire(&animationShader, gPhysics);
@@ -701,6 +718,9 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomOne.push_back(groundRoomOne);
 	roomOne.push_back(roofRoomOne);
 
+	zombiePositions.push_back(groundRoomOne->getWorldPosition());
+	zombiePositions.push_back(groundRoomOne->getWorldPosition());
+
 	// second room (front/center)
 	float wallYScaleRoomTwo = 2.0f;
 	// ground
@@ -744,9 +764,13 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roofRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
 	roofRoomTwo->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 	// fake wall that interacts with button press in room 3
-	FakeWall* fakeWallRoomTwo = new FakeWall{ &defaultShader, gPhysics };
-	fakeWallRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
-	fakeWallRoomTwo->setScale(glm::vec3(2.0f, wallYScaleRoomTwo, 1.0f), true);
+	FakeWall* fakeWallRoomTwoButtonThree = new FakeWall{ &defaultShader, gPhysics };
+	fakeWallRoomTwoButtonThree->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
+	fakeWallRoomTwoButtonThree->setScale(glm::vec3(2.0f, wallYScaleRoomTwo, 1.0f), true);
+	// fake wall that interacts with button press in room 4
+	FakeWall* fakeWallRoomTwoButtonFour = new FakeWall{ &defaultShader, gPhysics };
+	fakeWallRoomTwoButtonFour->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(10.0f, 2.5f, 0.0f));
+	fakeWallRoomTwoButtonFour->setScale(glm::vec3(1.0f, wallYScaleRoomTwo, 2.0f), true);
 	
 	Beer* beerTwo = new Beer{ &defaultShader, gPhysics };
 	beerTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(-5, beerYOffset, 2));
@@ -757,7 +781,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 
 	beerIdx.push_back(roomTwo.size());
 	roomTwo.push_back(beerTwo);
-	roomTwo.push_back(fakeWallRoomTwo);
+	roomTwo.push_back(fakeWallRoomTwoButtonThree);
+	roomTwo.push_back(fakeWallRoomTwoButtonFour);
 	roomTwo.push_back(rightWallFrontExitRoomTwo);
 	roomTwo.push_back(rightWallBehindExitRoomTwo);
 	roomTwo.push_back(leftWallFrontExitRoomTwo);
@@ -800,7 +825,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roofRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
 	roofRoomThree->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
-	Button* buttonRoomThree = new Button{ &defaultShader, gPhysics, fakeWallRoomTwo };
+	Button* buttonRoomThree = new Button{ &defaultShader, gPhysics, fakeWallRoomTwoButtonThree };
 	buttonRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(7.0f, 1.5f, 7.0f));
 	buttonRoomThree->setScale(glm::vec3(0.5, 0.5, 0.5));
 	buttonRoomThree->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
@@ -835,6 +860,10 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	StaticCube* leftWallCorridorTopOfFourth = new StaticCube{ &defaultShader, gPhysics };
 	leftWallCorridorTopOfFourth->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, 3.0f));
 	leftWallCorridorTopOfFourth->setScale(glm::vec3(6.5f, wallYScaleCorridorTopOfFourth, 1.0f), true);
+	// end of corridor
+	StaticCube* endWallCorridorTopOfFourth = new StaticCube{ &defaultShader, gPhysics };
+	endWallCorridorTopOfFourth->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(3.0f, 2.5f, 0.0f));
+	endWallCorridorTopOfFourth->setScale(glm::vec3(1.0f, wallYScaleCorridorTopOfFourth, 2.0f), true);
 	// roof
 	Roof* roofCorridorTopOfFourth = new Roof{ &defaultShader, gPhysics };
 	roofCorridorTopOfFourth->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
@@ -842,6 +871,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 
 	corridors.push_back(rightWallCorridorTopOfFourth);
 	corridors.push_back(leftWallCorridorTopOfFourth);
+	corridors.push_back(endWallCorridorTopOfFourth);
 	corridors.push_back(groundCorridorTopOfFourth);
 	corridors.push_back(roofCorridorTopOfFourth);
 
@@ -864,7 +894,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	StaticCube* leftWallBehindExitRoomFour = new StaticCube{ &defaultShader, gPhysics };
 	leftWallBehindExitRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(10.0f, wallYOffsetRoomFour, -6.0f));
 	leftWallBehindExitRoomFour->setScale(glm::vec3(1.0f, wallYScaleRoomFour, 4.0f), true);
-	// TODO: patch hole
+	// left wall hole patch
 	StaticCube* leftWallMiddlePatchRoomFour = new StaticCube{ &defaultShader, gPhysics };
 	leftWallMiddlePatchRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(9.5f, wallYOffsetRoomFour , 0.0f));
 	leftWallMiddlePatchRoomFour->setScale(glm::vec3(0.5f, 3.0f, 2.0f), true);
@@ -930,7 +960,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomFourPlatformTen->setScale(glm::vec3(1.0f, 0.15f, 1.0f), true);
 
 	Button* buttonRoomFour = new Button{ &defaultShader, gPhysics, nullptr };
-	buttonRoomFour->setLocalPosition(groundRoomFour->getWorldPosition() + glm::vec3(7.0f, 1.5f, 7.0f));
+	buttonRoomFour->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, 2.0f));
 	buttonRoomFour->setScale(glm::vec3(0.5, 0.5, 0.5));
 	buttonRoomFour->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
 
@@ -943,6 +973,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomFour.push_back(beerFour);
 	roomFour.push_back(dynCubeOneRoomFour);
 	roomFour.push_back(dynCubeTwoRoomFour);
+	roomFour.push_back(buttonRoomFour);
 	roomFour.push_back(roomFourPlatformOne);
 	roomFour.push_back(roomFourPlatformTwo);
 	roomFour.push_back(roomFourPlatformThree);
@@ -961,6 +992,9 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomFour.push_back(frontWallRoomFour);
 	roomFour.push_back(groundRoomFour);
 	roomFour.push_back(roofRoomFour);
+
+	zombiePositions.push_back(groundRoomFour->getWorldPosition());
+	zombiePositions.push_back(groundCorridorTopOfFourth->getWorldPosition());
 
 	// fifth room (front front)
 	float wallYScaleRoomFive = 2.0f;
