@@ -47,15 +47,15 @@ void Player::onUpdate(float deltaTime) {
 	if (playFootstepSound && onGround) {
 		if (footstepTimeCounter <= 0) {
 			MyAssetManager::playSound("footstep_0");
-			footstepTimeCounter = (isSprinting ? FOOTSTEP_SOUND_DELAY / SPRINT_MULTIPLIER : FOOTSTEP_SOUND_DELAY);
+			footstepTimeCounter = FOOTSTEP_SOUND_DELAY;
 		}
 		else {
-			footstepTimeCounter -= deltaTime;
+			footstepTimeCounter -= deltaTime * (isSprinting ? SPRINT_MULTIPLIER : 1.0f);
 		}
 	}
 	else {
 		// play footstep faster when player start walking again
-		footstepTimeCounter = FOOTSTEP_SOUND_DELAY / 8.0f;
+		footstepTimeCounter = FOOTSTEP_SOUND_DELAY / 16.0f;
 	}
 }
 
