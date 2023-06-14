@@ -82,8 +82,6 @@ void GameObject::reset() {
 		}
 	}
 
-	std::cout << name_ << " is at " << this->getLocalPosition().x << "/" << getLocalPosition().y << "/" << getLocalPosition().z << std::endl;
-
 	this->resetSpecifics();
 }
 
