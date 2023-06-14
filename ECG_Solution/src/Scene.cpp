@@ -111,14 +111,12 @@ void Scene::startPlayerInteraction() {
 				float buttonDistance = 1111.0f;
 				Button* button = nullptr;
 
-				std::cout << "RAYCAST" << std::endl;
 				for (PxU32 i = 0; i < buf.nbTouches; i++) {
 					PxRaycastHit currentHit = buf.touches[i];
 					GameObject* object = static_cast<GameObject*>(currentHit.actor->userData);
 					if (object != nullptr) {
 						// Raycast hit game object
 						// Skip player as it is always hit
-						std::cout << object->name_ << std::endl;
 						Player* player = dynamic_cast<Player*>(object);
 						if (player == nullptr) {
 							// Object is not player
@@ -138,12 +136,9 @@ void Scene::startPlayerInteraction() {
 						}
 					}
 				}
-				std::cout << "Blocking: " << nearestBlockingHit << " / Button: " << buttonDistance << std::endl;
 
 				if (buttonDistance < nearestBlockingHit) {
-					std::cout << "can interact" << std::endl;
 					if (button != nullptr) {
-						std::cout << "is interacting" << std::endl;
 						button->interact();
 					}
 				}
