@@ -1163,26 +1163,41 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader) {
 			textRenderer.renderText(textShader, "L SHIFT", 24.0f, (float)screenHeight - 190.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 			textRenderer.renderText(textShader, "Sprint", 180.0f, (float)screenHeight - 190.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-			textRenderer.renderText(textShader, "Mouse", 24.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Look Around", 180.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Spacebar", 24.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Jump", 180.0f, (float)screenHeight - 210.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-			textRenderer.renderText(textShader, "LMB", 24.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Shoot", 180.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Mouse", 24.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Look Around", 180.0f, (float)screenHeight - 230.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-			textRenderer.renderText(textShader, "E", 24.0f, (float)screenHeight - 250.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Interact", 180.0f, (float)screenHeight - 250.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "LMB", 24.0f, (float)screenHeight - 250.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Shoot", 180.0f, (float)screenHeight - 250.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-			textRenderer.renderText(textShader, "Escape", 24.0f, (float)screenHeight - 270.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Pause / Unpause", 180.0f, (float)screenHeight - 270.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "R", 24.0f, (float)screenHeight - 270.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Reload", 180.0f, (float)screenHeight - 270.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-			textRenderer.renderText(textShader, "+/- (Numpad)", 24.0f, (float)screenHeight - 290.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Increase/Decrease Exposure", 180.0f, (float)screenHeight - 290.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "E", 24.0f, (float)screenHeight - 290.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Interact", 180.0f, (float)screenHeight - 290.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-			textRenderer.renderText(textShader, "Page Up/Down", 24.0f, (float)screenHeight - 310.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Increase/Decrease Gamma", 180.0f, (float)screenHeight - 310.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "F", 24.0f, (float)screenHeight - 310.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Toggle Flashlight", 180.0f, (float)screenHeight - 310.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 
-			textRenderer.renderText(textShader, "Arrow Up/Down", 24.0f, (float)screenHeight - 330.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
-			textRenderer.renderText(textShader, "Increase/Decrease Volume", 180.0f, (float)screenHeight - 330.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Escape", 24.0f, (float)screenHeight - 330.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Pause / Unpause", 180.0f, (float)screenHeight - 330.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+
+			textRenderer.renderText(textShader, "Enter", 24.0f, (float)screenHeight - 350.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Restart Game", 180.0f, (float)screenHeight - 350.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+
+			textRenderer.renderText(textShader, "+/- (Numpad)", 24.0f, (float)screenHeight - 370.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Increase/Decrease Exposure", 180.0f, (float)screenHeight - 370.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+
+			textRenderer.renderText(textShader, "Page Up/Down", 24.0f, (float)screenHeight - 390.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Increase/Decrease Gamma", 180.0f, (float)screenHeight - 390.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+
+			textRenderer.renderText(textShader, "Arrow Up/Down", 24.0f, (float)screenHeight - 410.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Increase/Decrease Volume", 180.0f, (float)screenHeight - 410.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+
+			textRenderer.renderText(textShader, "Scroll Wheel", 24.0f, (float)screenHeight - 430.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
+			textRenderer.renderText(textShader, "Increase/Decrease FOV", 180.0f, (float)screenHeight - 430.0f, 0.35f, glm::vec3(1.0f, 1.0f, 1.0f), enableWireframe);
 		}
 
 		if (isGameLost == true) {
