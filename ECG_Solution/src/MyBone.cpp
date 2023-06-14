@@ -4,30 +4,30 @@ MyBone::MyBone(const std::string& name, int ID, const aiNodeAnim* channel) : nam
 	numPositions_ = channel->mNumPositionKeys;
 	for (int positionIndex = 0; positionIndex < numPositions_; positionIndex++) {
 		aiVector3D aiPosition = channel->mPositionKeys[positionIndex].mValue;
-		float timeStamp = channel->mPositionKeys[positionIndex].mTime;
+		double timeStamp = channel->mPositionKeys[positionIndex].mTime;
 		KeyPosition data;
 		data.position = glm::vec3(aiPosition.x, aiPosition.y, aiPosition.z);
-		data.timeStamp = timeStamp;
+		data.timeStamp = (float) timeStamp;
 		keyPositions_.push_back(data);
 	}
 
 	numRotations_ = channel->mNumRotationKeys;
 	for (int rotatationIndex = 0; rotatationIndex < numRotations_; rotatationIndex++) {
 		aiQuaternion aiOrientation = channel->mRotationKeys[rotatationIndex].mValue;
-		float timeStamp = channel->mRotationKeys[rotatationIndex].mTime;
+		double timeStamp = channel->mRotationKeys[rotatationIndex].mTime;
 		KeyRotation data;
 		data.orientation = glm::quat(aiOrientation.w, aiOrientation.x, aiOrientation.y, aiOrientation.z);
-		data.timeStamp = timeStamp;
+		data.timeStamp = (float) timeStamp;
 		keyRotations_.push_back(data);
 	}
 
 	numScales_ = channel->mNumScalingKeys;
 	for (int scaleIndex = 0; scaleIndex < numScales_; scaleIndex++) {
 		aiVector3D aiScale = channel->mScalingKeys[scaleIndex].mValue;
-		float timeStamp = channel->mScalingKeys[scaleIndex].mTime;
+		double timeStamp = channel->mScalingKeys[scaleIndex].mTime;
 		KeyScale data;
 		data.scale = glm::vec3(aiScale.x, aiScale.y, aiScale.z);
-		data.timeStamp = timeStamp;
+		data.timeStamp = (float) timeStamp;
 		keyScales_.push_back(data);
 	}
 }

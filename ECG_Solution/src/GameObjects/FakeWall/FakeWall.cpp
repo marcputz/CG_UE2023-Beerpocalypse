@@ -2,7 +2,7 @@
 
 FakeWall::FakeWall(MyShader * shader, PxPhysics * physics) : GameObject("Fake Wall", shader, physics, "cube/brick_cube/cube.obj", true) 
 {
-	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
+	PxMaterial* material = physics->createMaterial(PxReal(0.5f), PxReal(0.5f), PxReal(0.5f));
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
 
 	setCollider(&geometry, material);

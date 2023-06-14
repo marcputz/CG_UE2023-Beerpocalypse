@@ -3,7 +3,7 @@
 DynamicCube::DynamicCube(MyShader* shader, PxPhysics* physics) 
 	: GameObject("Dynamic Cube", shader, physics, "cube/wood_cube/cube.obj", false) {
 	
-	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
+	PxMaterial* material = physics->createMaterial(PxReal(0.5f), PxReal(0.2f), PxReal(0.8));
 	PxBoxGeometry* geometry = new PxBoxGeometry(1,1, 1);
 
 	setCollider(geometry, material);

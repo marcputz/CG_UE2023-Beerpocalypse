@@ -26,7 +26,7 @@ protected:
 
 private:
 	float duration_;
-	int ticksPerSecond_;
+	float ticksPerSecond_;
 	std::vector<MyBone> bones_;
 	AssimpNodeData rootNode_;
 	std::map<std::string, BoneInfo> boneInfoMap_;

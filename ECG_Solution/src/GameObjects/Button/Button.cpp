@@ -3,7 +3,7 @@
 Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate) : GameObject("Button", shader, physics, "button/button_red.obj", true) {
 	linkedObject_ = objectToActivate;
 	
-	PxMaterial* material = physics->createMaterial(0.8, 0.8, 0.1);
+	PxMaterial* material = physics->createMaterial(PxReal(0.8f), PxReal(0.8f), PxReal(0.1f));
 	PxBoxGeometry geometry = PxBoxGeometry(1, 0.4f, 1);
 
 	setCollider(&geometry, material);

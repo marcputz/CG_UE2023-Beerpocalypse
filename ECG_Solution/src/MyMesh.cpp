@@ -66,7 +66,7 @@ void MyMesh::draw(MyShader& shader) {
 }
 
 void MyMesh::applyTilingScaleToUVCoordinates(float xScale, float yScale, float zScale) {
-	for (int i = 0; i < vertices_.size(); i++) {
+	for (unsigned int i = 0; i < vertices_.size(); i++) {
 		// a face pointing left or right is only scaled by y or z
 		if (vertices_[i].normal.x == 1 || vertices_[i].normal.x == -1) {
 			vertices_[i].texCoords.x = vertices_[i].texCoords.x * zScale;

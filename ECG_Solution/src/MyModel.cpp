@@ -20,7 +20,7 @@ int& MyModel::getBoneCount() {
 }
 
 void MyModel::applyTilingScale(float xScale, float yScale, float zScale) {
-	for (int i = 0; i < meshes_.size(); i++) {
+	for (unsigned int i = 0; i < meshes_.size(); i++) {
 		meshes_[i].applyTilingScaleToUVCoordinates(xScale, yScale, zScale);
 	}
 }
@@ -214,7 +214,7 @@ void MyModel::setVertexBoneData(MyVertex& vertex, int boneID, float weight) {
 }
 
 void MyModel::extractBoneWeightsForVertices(std::vector<MyVertex>& vertices, aiMesh* mesh, const aiScene* scene) {
-	for (int boneIndex = 0; boneIndex < mesh->mNumBones; boneIndex++) {
+	for (unsigned int boneIndex = 0; boneIndex < mesh->mNumBones; boneIndex++) {
 		int boneID = -1;
 		std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
 		if (boneInfoMap_.find(boneName) == boneInfoMap_.end()) {
