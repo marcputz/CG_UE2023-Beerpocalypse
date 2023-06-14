@@ -5,9 +5,8 @@ Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActiva
 	
 	PxMaterial* material = physics->createMaterial(0.8, 0.8, 0.1);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 0.4f, 1);
-	PxShape* collider = physics->createShape(geometry, *material);
 
-	setCollider(collider);
+	setCollider(&geometry, material);
 
 	redButtonModel = model_;
 	greenButtonModel = new MyModel("button/button_green.obj");

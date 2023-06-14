@@ -7,13 +7,13 @@ Beer::Beer(MyShader* shader, PxPhysics* physics)
 
 	PxMaterial* material = physics->createMaterial(1, 1, 0.01f);
 	PxBoxGeometry geometry = PxBoxGeometry(3, 3, 30);
-	PxShape* collider = physics->createShape(geometry, *material);
+
+	setCollider(&geometry, material);
+
 	PxFilterData collissionFilterData;
 	collissionFilterData.word0 = CollisionLayer::LAYER_COLLECTABLES; // Own ID
 	collissionFilterData.word1 = CollisionLayer::LAYER_PLAYER; // IDs to do collision callback with
-	collider->setSimulationFilterData(collissionFilterData);
-
-	setCollider(collider);
+	physicsShape_->setSimulationFilterData(collissionFilterData);
 
 	PxRigidBody* body = static_cast<PxRigidBody*>(physicsActor_);
 	body->setRigidBodyFlag(PxRigidBodyFlag::eKINEMATIC, true);

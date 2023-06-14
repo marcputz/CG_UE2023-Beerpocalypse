@@ -4,9 +4,8 @@ FakeWall::FakeWall(MyShader * shader, PxPhysics * physics) : GameObject("Fake Wa
 {
 	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
-	PxShape* collider = physics->createShape(geometry, *material);
 
-	setCollider(collider);
+	setCollider(&geometry, material);
 }
 
 void FakeWall::onBeforeUpdate()
@@ -41,10 +40,18 @@ void FakeWall::onActivate()
 {
 	setVisible(false);
 	enableCollider(false);
+
+	PxFilterData filterData;
+	filterData.word0 = CollisionLayer::LAYER_DEFAULT; // own ID
+	filterData.word1 = CollisionLayer::LAYER_DEFAULT | CollisionLayer::LAYER_PLAYER | CollisionLayer::LAYER_ENEMIES;
+	physicsShape_->setSimulationFilterData(filterData);
 }
 
 void FakeWall::onDeactivate()
 {
 	setVisible(true);
 	enableCollider(true);
+
+	PxFilterData filterData;
+	physicsShape_->setSimulationFilterData(filterData);
 }
