@@ -28,6 +28,7 @@
 #include "GameObjects/Zombie/Zombie.h"
 #include "GameObjects/Button/Button.h"
 #include "GameObjects/Roof/Roof.h"
+#include "GameObjects/FakeWall/FakeWall.h"
 
 using namespace physx;
 using std::cout;
@@ -677,11 +678,6 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	dynCubeSix->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
 	dynCubeSix->setScale(glm::vec3(0.5, 0.5, 0.5));
 
-	Button* buttonOne = new Button{ &defaultShader, gPhysics, nullptr };
-	buttonOne->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(7.0f, 1.5f, 7.0f));
-	buttonOne->setScale(glm::vec3(0.5, 0.5, 0.5));
-	buttonOne->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
-
 	roomOne.push_back(dynCubeOne);
 	roomOne.push_back(dynCubeTwo);
 	roomOne.push_back(dynCubeThree);
@@ -690,7 +686,6 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomOne.push_back(dynCubeSix);
 	beerIdx.push_back(roomOne.size());
 	roomOne.push_back(beerOne);
-	roomOne.push_back(buttonOne);
 	roomOne.push_back(rightWallRoomOne);
 	roomOne.push_back(leftWallRoomOne);
 	roomOne.push_back(behindWallRightExitRoomOne);
@@ -741,7 +736,11 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	Roof* roofRoomTwo = new Roof{ &defaultShader, gPhysics };
 	roofRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
 	roofRoomTwo->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
-
+	// fake wall that interacts with button press in room 3
+	FakeWall* fakeWallRoomTwo = new FakeWall{ &defaultShader, gPhysics };
+	fakeWallRoomTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
+	fakeWallRoomTwo->setScale(glm::vec3(2.0f, 2.0f, 1.0f), true);
+	
 	Beer* beerTwo = new Beer{ &defaultShader, gPhysics };
 	beerTwo->setLocalPosition(groundRoomTwo->getWorldPosition() + glm::vec3(-5, 1.5f, 2));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
@@ -751,6 +750,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 
 	beerIdx.push_back(roomTwo.size());
 	roomTwo.push_back(beerTwo);
+	roomTwo.push_back(fakeWallRoomTwo);
 	roomTwo.push_back(rightWallFrontExitRoomTwo);
 	roomTwo.push_back(rightWallBehindExitRoomTwo);
 	roomTwo.push_back(leftWallFrontExitRoomTwo);
@@ -792,6 +792,11 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roofRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(0.0f, 5.5f, 0.0f));
 	roofRoomThree->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
+	Button* buttonRoomThree = new Button{ &defaultShader, gPhysics, fakeWallRoomTwo };
+	buttonRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(7.0f, 1.5f, 7.0f));
+	buttonRoomThree->setScale(glm::vec3(0.5, 0.5, 0.5));
+	buttonRoomThree->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
+
 	Beer* beerThree = new Beer{ &defaultShader, gPhysics };
 	beerThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(-5, 1.5f, 4));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
@@ -799,6 +804,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 
 	beerIdx.push_back(roomThree.size());
 	roomThree.push_back(beerThree);
+	roomThree.push_back(buttonRoomThree);
 	roomThree.push_back(rightWallFrontExitRoomThree);
 	roomThree.push_back(rightWallBehindExitRoomThree);
 	roomThree.push_back(leftWallRoomThree);
