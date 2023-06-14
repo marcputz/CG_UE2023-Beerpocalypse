@@ -1,0 +1,4 @@
+mixamo
+"Vampire A Lusth" - model
+"Idle" - animation
+"Tut Hip Hop Dance" - animation

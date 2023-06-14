@@ -1,10 +1,9 @@
 build/*
 .vs/*
-bin/Release/*
+bin/Release/Beerpocalypse.pdb
+bin/Release/Beerpocalypse.exe
 bin/Debug/Beerpocalypse.pdb
 bin/Debug/Beerpocalypse.exe
 /ECG_Solution/.vs/ECG_Solution/FileContentIndex
 /ECG_Solution/.vs/ECG_Solution/v17
 /ECG_Solution/.vs
-/bin/Release/Beerpocalypse.exe
-/bin/Release/Beerpocalypse.pdb
