@@ -889,7 +889,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roofRoomFive->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
 	Beer* beerFive = new Beer{ &defaultShader, gPhysics };
-	beerFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(-5, 1.0f, 8));
+	beerFive->setLocalPosition(groundRoomFive->getWorldPosition() + glm::vec3(-5, 1.5f, 8));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
 	particleGenerator.createParticles(beerFive->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerFive);
 

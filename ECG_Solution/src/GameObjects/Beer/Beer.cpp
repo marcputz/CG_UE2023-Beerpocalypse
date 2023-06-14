@@ -6,7 +6,7 @@ Beer::Beer(MyShader* shader, PxPhysics* physics)
 	setScale(glm::vec3(0.07f, 0.07f, 0.07f));
 
 	PxMaterial* material = physics->createMaterial(1, 1, 0.01f);
-	PxBoxGeometry geometry = PxBoxGeometry(3, 3, 30);
+	PxBoxGeometry geometry = PxBoxGeometry(0.4, 0.4, 1.25);
 
 	setCollider(&geometry, material);
 
