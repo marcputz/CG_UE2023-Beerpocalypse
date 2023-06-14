@@ -134,10 +134,7 @@ Scene* scene;
 Player* player = nullptr;
 MySpotLight* playerFlashLight = nullptr;
 
-glm::vec3 pointLightOnePosition;
-glm::vec3 pointLightTwoPosition;
-glm::vec3 pointLightThreePosition;
-glm::vec3 pointLightFourPosition;
+std::vector<glm::vec3> pointLightPositions;
 
 const int maxScore = 5;
 int score = 0;
@@ -371,25 +368,25 @@ int main(int argc, char** argv) {
 	dirLight.addLightToShader(animationShader);
 
 	MyPointLight pointLightOne(glm::vec3(0.00f, 0.00f, 0.00f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		true, pointLightOnePosition,
+		true, pointLightPositions[0],
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
 	pointLightOne.addLightToShader(animationShader);
 
 	MyPointLight pointLightTwo(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, glm::vec3(2.3f, -3.3f, -4.0f),
+		true, pointLightPositions[1],
 		1.0f, 0.09f, 0.032f);
 	pointLightTwo.addLightToShader(defaultShader);
 	pointLightTwo.addLightToShader(animationShader);
 
 	MyPointLight pointLightThree(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, glm::vec3(-4.0f, 2.0f, -12.0f),
+		true, pointLightPositions[2],
 		1.0f, 0.09f, 0.032f);
 	pointLightThree.addLightToShader(defaultShader);
 	pointLightThree.addLightToShader(animationShader);
 
 	MyPointLight pointLightFour(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
-		false, glm::vec3(0.0f, 0.0f, -3.0f),
+		true, pointLightPositions[3],
 		1.0f, 0.09f, 0.032f);
 	pointLightFour.addLightToShader(defaultShader);
 	pointLightFour.addLightToShader(animationShader);
@@ -591,20 +588,19 @@ int main(int argc, char** argv) {
 		}
 
 		// Render Light-Cubes
-		//glBindVertexArray(lightVAO);
+		glBindVertexArray(lightVAO);
 
-		/*lightSourceShader.use();
+		lightSourceShader.use();
 		lightSourceShader.setMat4("projection", projection);
 		lightSourceShader.setMat4("view", view);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		for (unsigned int i = 0; i < 4; i++) {
-			model = glm::mat4(1.0f);
+		for (unsigned int i = 0; i < pointLightPositions.size(); i++) {
+			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, pointLightPositions[i]);
 			model = glm::scale(model, glm::vec3(0.2f));
-			myLightSourceShader.setMat4("model", model);
+			lightSourceShader.setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}*/
+		}
 
 		renderHUD(textRenderer, textShader);
 
@@ -612,7 +608,6 @@ int main(int argc, char** argv) {
 			guiRenderer.renderGUI(guiShader, score, maxScore, bullets, maxBullets, player->getHealth(), player->maxHealth);
 		}
 
-		
 		// 2. blur bright fragments with two-pass Gaussian Blur
 		bool horizontal = true, firstIteration = true;
 		unsigned int amount = 10;
@@ -670,6 +665,7 @@ int main(int argc, char** argv) {
 
 void initLevel(MyParticleGenerator& particleGenerator) {
 	float beerYOffset = 1.5f;
+	float lightYOffset = -1.1f;
 
 	// first room
 	float wallYScaleRoomOne = 2.0f;
@@ -734,6 +730,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	DynamicCube* dynCubeSix = new DynamicCube{ &defaultShader, gPhysics };
 	dynCubeSix->setLocalPosition(groundRoomOne->getWorldPosition() + glm::vec3(0.0f, 2.5f, 10.0f));
 	dynCubeSix->setScale(glm::vec3(0.5, 0.5, 0.5));
+
+	pointLightPositions.push_back(roofRoomOne->getWorldPosition() + glm::vec3(0.0f, lightYOffset, 0.0f));
 
 	roomOne.push_back(dynCubeOne);
 	roomOne.push_back(dynCubeTwo);
@@ -811,7 +809,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
 	particleGenerator.createParticles(beerTwo->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerTwo);
 
-	pointLightOnePosition = groundRoomTwo->getWorldPosition() + glm::vec3(0.0f, 2.0f, 0.0f);
+	pointLightPositions.push_back(roofRoomTwo->getWorldPosition() + glm::vec3(0.0f, lightYOffset, 0.0f));
 
 	beerIdx.push_back(roomTwo.size());
 	roomTwo.push_back(beerTwo);
@@ -871,6 +869,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	beerThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(-5, beerYOffset, 4));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
 	particleGenerator.createParticles(beerThree->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerThree);
+
+	pointLightPositions.push_back(roofRoomThree->getWorldPosition() + glm::vec3(0.0f, lightYOffset, 0.0f));
 
 	beerIdx.push_back(roomThree.size());
 	roomThree.push_back(beerThree);
@@ -1008,6 +1008,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	beerFour->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, beerYOffset, 0.0f));
 	// sparkles never run out of life, when life is zero their life is reset and their direction inverted
 	particleGenerator.createParticles(beerFour->getWorldPosition(), glm::vec3(0.0f, 0.25f, 0.0f), ParticleType::BEER_SPARKLE, 3.0f, 10, false, beerFour);
+
+	pointLightPositions.push_back(roofRoomFour->getWorldPosition() + glm::vec3(0.0f, lightYOffset, 0.0f));
 
 	beerIdx.push_back(roomFour.size());
 	roomFour.push_back(beerFour);
