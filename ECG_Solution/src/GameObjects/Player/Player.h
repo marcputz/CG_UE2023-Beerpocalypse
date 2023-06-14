@@ -27,7 +27,7 @@ private:
 	glm::vec3 respawnPoint_;
 
 	float damageCooldown = 0.0f;
-	const float targetDamageCooldown = 0.5f;
+	const float targetDamageCooldown = 0.75f;
 
 	const float FOOTSTEP_SOUND_DELAY = 0.6f;
 	bool playFootstepSound = false;

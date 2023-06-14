@@ -219,7 +219,7 @@ void Scene::handleMouseButtonInput(GLFWwindow* window, int button, int action, i
 							Zombie* zombie = dynamic_cast<Zombie*>(object);
 							if (zombie != nullptr) {
 								if (zombie->isVisible()) {
-									zombie->setHealth(zombie->getHealth() - 40);
+									zombie->setHealth(zombie->getHealth() - 15);
 
 									if (particleGenerator != nullptr) {
 										particleGenerator->createParticles(

@@ -753,7 +753,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomOne.push_back(roofRoomOne);
 
 	//zombiePositions.push_back(groundRoomOne->getWorldPosition() + glm::vec3(2.0f, 0.5f, 2.0f));
-	zombiePositions.push_back(groundRoomOne->getWorldPosition() + glm::vec3(5.0f, 0.5f, 8.0f));
+	zombiePositions.push_back(groundRoomOne->getWorldPosition() + glm::vec3(5.0f, 0.5f, 0.0f));
 
 	// second room (front/center)
 	float wallYScaleRoomTwo = 2.0f;
@@ -863,7 +863,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roofRoomThree->setScale(glm::vec3(10.0f, 1.0f, 10.0f), true);
 
 	Button* buttonRoomThree = new Button{ &defaultShader, gPhysics, fakeWallRoomTwoButtonThree };
-	buttonRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(7.0f, 1.5f, 7.0f));
+	buttonRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(7.0f, 2.5f, 9.0f));
 	buttonRoomThree->setScale(glm::vec3(0.5, 0.5, 0.5));
 	buttonRoomThree->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
 
@@ -884,7 +884,7 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomThree.push_back(roofRoomThree);
 
 	//zombiePositions.push_back(groundRoomThree->getWorldPosition() + glm::vec3(-6.0f, 0.5f, 2.5f));
-	zombiePositions.push_back(groundRoomThree->getWorldPosition() + glm::vec3(-6.0f, 0.5f, -2.5f));
+	zombiePositions.push_back(groundRoomThree->getWorldPosition() + glm::vec3(-6.5f, 0.5f, -3.5f));
 
 	// corridor at the top of room four
 	float wallYScaleCorridorTopOfFourth = 2.0f;
@@ -1034,8 +1034,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	roomFour.push_back(roofRoomFour);
 
 	//zombiePositions.push_back(groundRoomFour->getWorldPosition() + glm::vec3(6.0f, 0.5f, 2.5f));
-	zombiePositions.push_back(groundRoomFour->getWorldPosition() + glm::vec3(-6.0f, 0.5f, 2.5f));
-	zombiePositions.push_back(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(-2.5f, 0.5f, 0.0f));
+	zombiePositions.push_back(groundRoomFour->getWorldPosition() + glm::vec3(6.5f, 0.5f, -4.5f));
+	zombiePositions.push_back(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(-3.0f, 0.5f, 0.0f));
 
 	/*
 	// fifth room (front front)
