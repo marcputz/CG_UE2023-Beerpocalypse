@@ -4,10 +4,9 @@ DynamicCube::DynamicCube(MyShader* shader, PxPhysics* physics)
 	: GameObject("Dynamic Cube", shader, physics, "cube/wood_cube/cube.obj", false) {
 	
 	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
-	PxBoxGeometry geometry = PxBoxGeometry(1,1, 1);
-	PxShape* collider = physics->createShape(geometry, *material);
+	PxBoxGeometry* geometry = new PxBoxGeometry(1,1, 1);
 
-	setCollider(collider);
+	setCollider(geometry, material);
 }
 
 void DynamicCube::onHealthChange(int oldHealth, int newHealth)

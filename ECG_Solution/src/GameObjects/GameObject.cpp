@@ -26,23 +26,27 @@ void GameObject::synchronizeTransforms() {
 	transform_->setWorldRotation(asGlmQuat(physicsTransform.q));
 }
 
-void GameObject::setCollider(PxShape* colliderShape) {
-	physicsShape_ = colliderShape;
+void GameObject::setCollider(PxGeometry* geometry, PxMaterial* material) {
+	physicsMaterial_ = material;
 
-	if (physicsShape_ != nullptr) {
-		// apply scale
-		PxGeometryHolder geometryHolder = colliderShape->getGeometry();
-		PxGeometry& geometry = geometryHolder.any();
-		if (geometryHolder.any().getType() == PxGeometryType::eBOX) {
-			PxBoxGeometry& boxGeometry = static_cast<PxBoxGeometry&>(geometry);
-			boxGeometry.halfExtents.x *= getScale().x;
-			boxGeometry.halfExtents.y *= getScale().y;
-			boxGeometry.halfExtents.z *= getScale().z;
-			colliderShape->setGeometry(boxGeometry);
+	if (geometry != nullptr && material != nullptr) {
+		// apply scale to collider
+		if (physicsShape_ != nullptr) {
+			if (geometry->getType() == PxGeometryType::eBOX) {
+				PxBoxGeometry* boxGeometry = static_cast<PxBoxGeometry*>(geometry);
+				boxGeometry->halfExtents.x *= getScale().x;
+				boxGeometry->halfExtents.y *= getScale().y;
+				boxGeometry->halfExtents.z *= getScale().z;
+			}
 		}
 
+		// create shape and attach (automatically)
+		physicsShape_ = PxRigidActorExt::createExclusiveShape(*(this->getRigidActor()), *geometry, *material);
 		physicsShape_->userData = this;
-		physicsActor_->attachShape(*physicsShape_);
+	}
+	else {
+		if (physicsShape_ != nullptr)
+			this->getRigidActor()->detachShape(*physicsShape_);
 	}
 }
 
@@ -131,6 +135,7 @@ void GameObject::setWorldPosition(glm::vec3 newPosition) {
 }
 
 void GameObject::setScale(glm::vec3 newScale, bool applyTilingScale) {
+	PxVec3 oldScale = asPxVec3(this->transform_->getScale());
 	this->transform_->setScale(newScale);
 
 	if (physicsShape_ != nullptr) {
@@ -138,13 +143,14 @@ void GameObject::setScale(glm::vec3 newScale, bool applyTilingScale) {
 		PxGeometry& geometry = geometryHolder.any();
 		if (geometry.getType() == PxGeometryType::eBOX) {
 			PxBoxGeometry& boxGeometry = static_cast<PxBoxGeometry&>(geometry);
+			boxGeometry.halfExtents.x /= oldScale.x;
+			boxGeometry.halfExtents.y /= oldScale.y;
+			boxGeometry.halfExtents.z /= oldScale.z;
 			boxGeometry.halfExtents.x *= getScale().x;
 			boxGeometry.halfExtents.y *= getScale().y;
 			boxGeometry.halfExtents.z *= getScale().z;
 
-			physicsActor_->detachShape(*physicsShape_);
 			physicsShape_->setGeometry(boxGeometry);
-			physicsActor_->attachShape(*physicsShape_);
 		}
 	}
 

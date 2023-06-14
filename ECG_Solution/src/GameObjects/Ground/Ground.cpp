@@ -4,9 +4,8 @@ Ground::Ground(MyShader* shader, PxPhysics* physics) : GameObject("Ground", shad
 
 	PxMaterial* material = physics->createMaterial(0.8, 0.5, 0.2);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
-	PxShape* collider = physics->createShape(geometry, *material);
-	setCollider(collider);
 
+	setCollider(&geometry, material);
 }
 
 void Ground::onHealthChange(int oldHealth, int newHealth)

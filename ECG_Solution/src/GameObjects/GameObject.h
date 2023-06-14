@@ -48,8 +48,8 @@ protected:
 	// Physics
 	PxPhysics* physics_;
 	PxRigidActor* physicsActor_;
-	PxMaterial* physicsMaterial_;
 	PxShape* physicsShape_;
+	PxMaterial* physicsMaterial_;
 
 	bool highlighted_ = false;
 	glm::vec3 highlightColor_ = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -116,8 +116,7 @@ public:
 	MyModel* getModel();
 	void setAnimator(MyAnimator& newAnimator);
 
-	void setCollider(PxShape* colliderShape);
-	PxShape* getCollider() { return physicsShape_; }
+	void setCollider(PxGeometry* geometry, PxMaterial* material);
 	PxRigidActor* getRigidActor() { return this->physicsActor_; }
 
 	void reset();

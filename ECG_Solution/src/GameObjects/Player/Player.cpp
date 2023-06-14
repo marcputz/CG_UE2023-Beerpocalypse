@@ -6,13 +6,13 @@ Player::Player(MyShader* shader, PxPhysics* physics) : GameObject("Player", shad
 	
 	PxMaterial* material = physics->createMaterial(0.5, 0.5, 0.0);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
-	PxShape* collider = physics->createShape(geometry, *material);
+
+	setCollider(&geometry, material);
+
 	PxFilterData filterData;
 	filterData.word0 = CollisionLayer::LAYER_PLAYER; // own ID
 	filterData.word1 = CollisionLayer::LAYER_COLLECTABLES | CollisionLayer::LAYER_ENEMIES; // IDs to do collision callback with
-	collider->setSimulationFilterData(filterData);
-
-	setCollider(collider);
+	physicsShape_->setSimulationFilterData(filterData);
 	
 	thirdPersonCamera = new PlayerCameraThirdPerson(this->transform_);
 	firstPersonCamera = new PlayerCameraFirstPerson(this->transform_);
@@ -69,7 +69,6 @@ void Player::onCollision(GameObject* otherObject) {
 			this->setHealth(this->getHealth() + 20);
 			score++;
 			beer->setVisible(false);
-			beer->enableCollider(false);
 			MyAssetManager::playSound("bell");
 		}
 		return;

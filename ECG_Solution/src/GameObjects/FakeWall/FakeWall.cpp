@@ -4,9 +4,8 @@ FakeWall::FakeWall(MyShader * shader, PxPhysics * physics) : GameObject("Fake Wa
 {
 	PxMaterial* material = physics->createMaterial(0.5, 0.2, 0.8);
 	PxBoxGeometry geometry = PxBoxGeometry(1, 1, 1);
-	PxShape* collider = physics->createShape(geometry, *material);
 
-	setCollider(collider);
+	setCollider(&geometry, material);
 }
 
 void FakeWall::onBeforeUpdate()
