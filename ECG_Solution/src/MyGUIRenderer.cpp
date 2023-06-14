@@ -53,7 +53,7 @@ void MyGUIRenderer::renderBeers(MyShader& shader, int currentBeerCount, int maxB
 
 		shader.setMat4("modelMatrix", modelMatrix);
 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0., 4);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		position.x = position.x - 0.0425f;
 	}
@@ -66,7 +66,7 @@ void MyGUIRenderer::renderBeers(MyShader& shader, int currentBeerCount, int maxB
 
 		shader.setMat4("modelMatrix", modelMatrix);
 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0., 4);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		position.x = position.x - 0.0425f;
 	}
@@ -98,7 +98,7 @@ void MyGUIRenderer::renderBullets(MyShader& shader, int currentBulletCount, int 
 
 		shader.setMat4("modelMatrix", modelMatrix);
 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0., 4);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		position.x = position.x - 0.0305f;
 	}
@@ -112,7 +112,7 @@ void MyGUIRenderer::renderBullets(MyShader& shader, int currentBulletCount, int 
 
 		shader.setMat4("modelMatrix", modelMatrix);
 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0., 4);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		position.x = position.x - 0.0305f;
 	}
@@ -146,7 +146,7 @@ void MyGUIRenderer::renderHealth(MyShader& shader, int currentHealth, int maxHea
 
 	shader.setMat4("modelMatrix", modelMatrix);
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0., 4);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 void MyGUIRenderer::initTextures() {

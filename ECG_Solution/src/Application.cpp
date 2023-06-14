@@ -252,27 +252,27 @@ int main(int argc, char** argv) {
 
 	initLevel(particleGen);
 
-	for (int i = 0; i < roomOne.size(); i++) {
+	for (unsigned int i = 0; i < roomOne.size(); i++) {
 		scene->addObject(roomOne[i]);
 	}
 
-	for (int i = 0; i < roomTwo.size(); i++) {
+	for (unsigned int i = 0; i < roomTwo.size(); i++) {
 		scene->addObject(roomTwo[i]);
 	}
 
-	for (int i = 0; i < roomThree.size(); i++) {
+	for (unsigned int i = 0; i < roomThree.size(); i++) {
 		scene->addObject(roomThree[i]);
 	}
 
-	for (int i = 0; i < roomFour.size(); i++) {
+	for (unsigned int i = 0; i < roomFour.size(); i++) {
 		scene->addObject(roomFour[i]);
 	}
 
-	for (int i = 0; i < roomFive.size(); i++) {
+	for (unsigned int i = 0; i < roomFive.size(); i++) {
 		scene->addObject(roomFive[i]);
 	}
 
-	for (int i = 0; i < corridors.size(); i++) {
+	for (unsigned int i = 0; i < corridors.size(); i++) {
 		scene->addObject(corridors[i]);
 	}
 
@@ -1109,7 +1109,7 @@ void renderBloomQuad() {
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	}
 	glBindVertexArray(bloomQuadVAO);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0., 4);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindVertexArray(0);
 }
 
@@ -1423,11 +1423,11 @@ void readINIFile() {
 	windowTitle = iniReader.Get("window", "title", WINDOW_TITLE_DEFAULT);
 	startFullscreen = iniReader.GetBoolean("window", "fullscreen", START_FULLSCREEN_DEFAULT);
 
-	cameraFov = iniReader.GetReal("camera", "fov", CAMERA_FOV_DEFAULT);
-	cameraNear = iniReader.GetReal("camera", "near", CAMERA_NEAR_DEFAULT);
-	cameraFar = iniReader.GetReal("camera", "far", CAMERA_FAR_DEFAULT);
+	cameraFov = (float) iniReader.GetReal("camera", "fov", CAMERA_FOV_DEFAULT);
+	cameraNear = (float) iniReader.GetReal("camera", "near", CAMERA_NEAR_DEFAULT);
+	cameraFar = (float) iniReader.GetReal("camera", "far", CAMERA_FAR_DEFAULT);
 
-	audioVolume = iniReader.GetReal("audio", "volume", AUDIO_VOLUME_DEFAULT);
+	audioVolume = (float) iniReader.GetReal("audio", "volume", AUDIO_VOLUME_DEFAULT);
 }
 
 void static initOpenGL() {

@@ -3,8 +3,8 @@
 extern bool freezeZombies;
 
 Zombie::Zombie(MyShader* shader, PxPhysics* physics) : GameObject("Zombie", shader, physics, "zombie/Zombie.dae", false) {
-	PxMaterial* material = physics->createMaterial(1, 1, 0.01f);
-	PxBoxGeometry geometry = PxBoxGeometry(0.3, 0.7, 0.3);
+	PxMaterial* material = physics->createMaterial(PxReal(1), PxReal(1), PxReal(0.01f));
+	PxBoxGeometry geometry = PxBoxGeometry(0.3f, 0.7f, 0.3f);
 
 	setCollider(&geometry, material);
 
@@ -12,7 +12,7 @@ Zombie::Zombie(MyShader* shader, PxPhysics* physics) : GameObject("Zombie", shad
 	collissionFilterData.word0 = CollisionLayer::LAYER_ENEMIES; // Own ID
 	collissionFilterData.word1 = CollisionLayer::LAYER_PLAYER; // IDs to do collision callback with
 	physicsShape_->setSimulationFilterData(collissionFilterData);
-	physicsShape_->setLocalPose(PxTransform(PxVec3(0, 0.7, 0)));
+	physicsShape_->setLocalPose(PxTransform(PxVec3(0.0f, 0.7f, 0.0f)));
 
 	// Lock rotation axis
 	PxRigidDynamic* dyn = static_cast<PxRigidDynamic*>(physicsActor_);

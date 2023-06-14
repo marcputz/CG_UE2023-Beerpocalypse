@@ -5,8 +5,8 @@ MyAnimation::MyAnimation(const std::string& animationPath, MyModel* model) {
 	const aiScene* scene = importer.ReadFile(animationPath, aiProcess_Triangulate);
 	assert(scene && scene->mRootNode);
 	auto animation = scene->mAnimations[0];
-	duration_ = animation->mDuration;
-	ticksPerSecond_ = animation->mTicksPerSecond;
+	duration_ = (float) animation->mDuration;
+	ticksPerSecond_ = (float) animation->mTicksPerSecond;
 	readHierarchyData(rootNode_, scene->mRootNode);
 	readMissingBones(animation, *model);
 }
@@ -76,7 +76,7 @@ void MyAnimation::readHierarchyData(AssimpNodeData& destination, const aiNode* s
 	);
 	destination.childrenCount = source->mNumChildren;
 
-	for (int i = 0; i < source->mNumChildren; i++) {
+	for (unsigned int i = 0; i < source->mNumChildren; i++) {
 		AssimpNodeData newData;
 		readHierarchyData(newData, source->mChildren[i]);
 		destination.children.push_back(newData);
