@@ -361,44 +361,56 @@ int main(int argc, char** argv) {
 	scene->addObject(&vampire, false);
 	*/
 
+	glm::vec3 dirLightAmbient = glm::vec3(0.05f, 0.05f, 0.05f);
+	glm::vec3 dirLightDiffuse = glm::vec3(0.2f, 0.2f, 0.2f);
+	glm::vec3 dirLightSpecular = glm::vec3(0.3f, 0.3f, 0.3f);
+
+	glm::vec3 pointLightAmbient = glm::vec3(0.00f, 0.05f, 0.05f);
+	glm::vec3 pointLightDiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	glm::vec3 pointLightSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	glm::vec3 spotLightAmbient = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 spotLightDiffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 spotLightSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+
 	// Init lights
-	MyDirectionalLight dirLight(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.2f, 0.2f, 0.2f), glm::vec3(0.3f, 0.3f, 0.3f),
+	MyDirectionalLight dirLight(dirLightAmbient, dirLightDiffuse, dirLightSpecular,
 		true, glm::vec3(-0.2f, -1.0f, 0.3f));
 	dirLight.addLightToShader(defaultShader);
 	dirLight.addLightToShader(animationShader);
 
-	MyPointLight pointLightOne(glm::vec3(0.00f, 0.00f, 0.00f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MyPointLight pointLightOne(pointLightAmbient, pointLightDiffuse, pointLightSpecular,
 		true, pointLightPositions[0],
 		1.0f, 0.09f, 0.032f);
 	pointLightOne.addLightToShader(defaultShader);
 	pointLightOne.addLightToShader(animationShader);
 
-	MyPointLight pointLightTwo(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MyPointLight pointLightTwo(pointLightAmbient, pointLightDiffuse, pointLightSpecular,
 		true, pointLightPositions[1],
 		1.0f, 0.09f, 0.032f);
 	pointLightTwo.addLightToShader(defaultShader);
 	pointLightTwo.addLightToShader(animationShader);
 
-	MyPointLight pointLightThree(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MyPointLight pointLightThree(pointLightAmbient, pointLightDiffuse, pointLightSpecular,
 		true, pointLightPositions[2],
 		1.0f, 0.09f, 0.032f);
 	pointLightThree.addLightToShader(defaultShader);
 	pointLightThree.addLightToShader(animationShader);
 
-	MyPointLight pointLightFour(glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MyPointLight pointLightFour(pointLightAmbient, pointLightDiffuse, pointLightSpecular,
 		true, pointLightPositions[3],
 		1.0f, 0.09f, 0.032f);
 	pointLightFour.addLightToShader(defaultShader);
 	pointLightFour.addLightToShader(animationShader);
 
-	playerFlashLight = new MySpotLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+	playerFlashLight = new MySpotLight(spotLightAmbient, spotLightDiffuse, spotLightSpecular,
 		true, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
 		17.5f, 20.0f, player);
 	playerFlashLight->addLightToShader(defaultShader);
 	playerFlashLight->addLightToShader(animationShader);
 
-	MySpotLight spotLightOne(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MySpotLight spotLightOne(spotLightAmbient, spotLightDiffuse, spotLightSpecular,
 		true,
 		roomOne[beerIdx[0]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
@@ -406,7 +418,7 @@ int main(int argc, char** argv) {
 	spotLightOne.addLightToShader(defaultShader);
 	spotLightOne.addLightToShader(animationShader);
 
-	MySpotLight spotLightTwo(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MySpotLight spotLightTwo(spotLightAmbient, spotLightDiffuse, spotLightSpecular,
 		true,
 		roomTwo[beerIdx[1]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
@@ -414,7 +426,7 @@ int main(int argc, char** argv) {
 	spotLightTwo.addLightToShader(defaultShader);
 	spotLightTwo.addLightToShader(animationShader);
 
-	MySpotLight spotLightThree(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MySpotLight spotLightThree(spotLightAmbient, spotLightDiffuse, spotLightSpecular,
 		true,
 		roomThree[beerIdx[2]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
@@ -422,7 +434,7 @@ int main(int argc, char** argv) {
 	spotLightThree.addLightToShader(defaultShader);
 	spotLightThree.addLightToShader(animationShader);
 
-	MySpotLight spotLightFour(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MySpotLight spotLightFour(spotLightAmbient, spotLightDiffuse, spotLightSpecular,
 		true,
 		roomFour[beerIdx[3]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
@@ -430,7 +442,7 @@ int main(int argc, char** argv) {
 	spotLightFour.addLightToShader(defaultShader);
 	spotLightFour.addLightToShader(animationShader);
 
-	MySpotLight spotLightFive(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+	MySpotLight spotLightFive(spotLightAmbient, spotLightDiffuse, spotLightSpecular,
 		true,
 		corridors[beerIdx[4]]->getWorldPosition() + glm::vec3(0.0f, 3.5f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f),
 		1.0f, 0.09f, 0.032f,
