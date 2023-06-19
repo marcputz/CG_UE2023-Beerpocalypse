@@ -60,29 +60,43 @@ My2DTexture MyAssetManager::loadTexture(const char* textureFileName, My2DTexture
 
 	if (search == textures_.end()) {
 		int width, height, nrChannels;
-		unsigned int format;
+		unsigned int internalFormat = 0, imageFormat = 0;
 		unsigned char* textureData = stbi_load(textureFileName, &width, &height, &nrChannels, 0);
 
 		if (nrChannels == 1) {
-			format = GL_RED;
+			imageFormat = GL_RED;
 		} else {
 			if (nrChannels == 3) {
-				format = GL_RGB;
+				imageFormat = GL_RGB;
 			} else {
 				if (nrChannels == 4) {
-					format = GL_RGBA;
+					imageFormat = GL_RGBA;
 				}
 			}
 		}
 
 		if (textureAlpha) {
-			if (format == GL_RGB) {
-				format = GL_RGBA;
+			if (imageFormat == GL_RGB) {
+				imageFormat = GL_RGBA;
+			}
+		}
+
+		internalFormat = imageFormat;
+
+		// sRGB for gamma correction
+		if (textureType == DIFFUSE) {
+			switch (imageFormat) {
+				case GL_RGB:
+					internalFormat = GL_SRGB;
+					break;
+				case GL_RGBA:
+					internalFormat = GL_SRGB_ALPHA;
+					break;
 			}
 		}
 
 		My2DTexture texture;
-		texture.generate(textureName, width, height, textureData, textureType, format, format);
+		texture.generate(textureName, width, height, textureData, textureType, internalFormat, imageFormat);
 
 		stbi_image_free(textureData);
 

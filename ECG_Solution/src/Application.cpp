@@ -83,7 +83,7 @@ const float CAMERA_FOV_DEFAULT = 60.0f;
 const float CAMERA_NEAR_DEFAULT = 0.1f;
 const float CAMERA_FAR_DEFAULT = 100.0f;
 const float CAMERA_EXPOSURE_DEFAULT = 1.0f;
-const float CAMERA_GAMMA_DEFAULT = 1.0f;
+const float CAMERA_GAMMA_DEFAULT = 2.2f;
 
 const float AUDIO_VOLUME_DEFAULT = 0.5f;
 
@@ -361,16 +361,16 @@ int main(int argc, char** argv) {
 	scene->addObject(&vampire, false);
 	*/
 
-	glm::vec3 dirLightAmbient = glm::vec3(0.05f, 0.05f, 0.05f);
-	glm::vec3 dirLightDiffuse = glm::vec3(0.2f, 0.2f, 0.2f);
-	glm::vec3 dirLightSpecular = glm::vec3(0.3f, 0.3f, 0.3f);
+	glm::vec3 dirLightAmbient = glm::vec3(0.00f, 0.00f, 0.00f);
+	glm::vec3 dirLightDiffuse = glm::vec3(0.1f, 0.1f, 0.1f);
+	glm::vec3 dirLightSpecular = glm::vec3(0.2f, 0.2f, 0.2f);
 
-	glm::vec3 pointLightAmbient = glm::vec3(0.00f, 0.05f, 0.05f);
-	glm::vec3 pointLightDiffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	glm::vec3 pointLightAmbient = glm::vec3(0.00f, 0.00f, 0.00f);
+	glm::vec3 pointLightDiffuse = glm::vec3(1.5f, 1.5f, 1.5f);
 	glm::vec3 pointLightSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	glm::vec3 spotLightAmbient = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 spotLightDiffuse = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 spotLightDiffuse = glm::vec3(1.5f, 1.5f, 1.5f);
 	glm::vec3 spotLightSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	// Init lights
