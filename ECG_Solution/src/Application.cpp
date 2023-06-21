@@ -80,7 +80,7 @@ const bool VSYNC_DEFAULT = true;
 const unsigned int REFRESH_RATE_DEFAULT = 60;
 const string WINDOW_TITLE_DEFAULT = "Beerpocalypse (CG SS2023)";
 const bool START_FULLSCREEN_DEFAULT = false;
-const bool START_BORDERLESS_DEFAULT = true;
+const bool START_BORDERLESS_DEFAULT = false;
 
 const float CAMERA_FOV_DEFAULT = 60.0f;
 const float CAMERA_NEAR_DEFAULT = 0.1f;
