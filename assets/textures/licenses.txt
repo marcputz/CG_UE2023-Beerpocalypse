@@ -1,0 +1,63 @@
+All images converted and resized with http://www.aconvert.com/image/
+
+wood_texture.dds cropped (Total Textures - R2 Copyright 3DTotal.com)
+wood_texture_specular.dds cropped (Total Textures - R2 Copyright 3DTotal.com)
+bricks_diffuse.dds (Total Textures - R2 Copyright 3DTotal.com)
+bricks_specular.dds (Total Textures - R2 Copyright 3DTotal.com)
+skybox Yokohama converted (http://www.humus.name/index.php?page=Textures&start=0)
+
+
+Links to all third-party assets can be found below.
+All assets made by ourselves can be used and distributed freely and without attribution under the CC0 License (Public Domain).
+
+------- MODELS ----------
+
+
+
+------- IMAGES ----------
+
+Bullet:
+https://www.rawpixel.com/image/6334912/png-sticker-public-domain#eyJrZXlzIjoiYnVsbGV0IHdhciIsInNvcnRlZEtleXMiOiJidWxsZXQgd2FyIn0
+(CC0 Creative Commons License - Public Domain)
+
+Lifebar:
+(c) Marc Putz & Fabian Holzschuster, 2023
+
+Zombie Blood:
+(c) Marc Putz & Fabian Holzschuster, 2023
+
+Beer Sparkle:
+(c) Marc Putz & Fabian Holzschsuter, 2023
+
+Beer Icon:
+Image taken from 3D model, source can be found under the Models section.
+
+------- SOUNDS ----------
+
+Zombie Grunts & Attack Sounds:
+(c) Fesliyan Studios (www.fesliyanstudios.com)
+License policy under https://www.fesliyanstudios.com/sound-effects-policy
+
+Gunshot Sound:
+(c) Fesliyan Studios (www.fesliyanstudios.com)
+License policy under https://www.fesliyanstudios.com/sound-effects-policy
+
+Gun Reload Sound:
+(c) Fesliyan Studios (www.fesliyanstudios.com)
+License policy under https://www.fesliyanstudios.com/sound-effects-policy
+
+Wooden Crates Sounds:
+(c) Fesliyan Studios (www.fesliyanstudios.com)
+License policy under https://www.fesliyanstudios.com/sound-effects-policy
+
+Footstep Sounds:
+(c) Fesliyan Studios (www.fesliyanstudios.com)
+License policy under https://www.fesliyanstudios.com/sound-effects-policy
+
+Button Click Sound:
+(c) Mixkit (www.mixkit.co/free-sound-effects/click/)
+Mixkit Sound Effects Free License
+
+Beer Collect Sound:
+(c) Mixkit (www.mixkit.co/free-sound-effects/win/)
+Mixkit Sound Effects Free License
