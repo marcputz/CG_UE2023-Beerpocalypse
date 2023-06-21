@@ -76,6 +76,7 @@ void static renderHUD(MyTextRenderer textRenderer, MyShader textShader);
 // Default values if settings are not found
 const unsigned int SCR_WIDTH_DEFAULT = 1280;
 const unsigned int SCR_HEIGHT_DEFAULT = 720;
+const bool VSYNC_DEFAULT = true;
 const unsigned int REFRESH_RATE_DEFAULT = 60;
 const string WINDOW_TITLE_DEFAULT = "Beerpocalypse (CG SS2023)";
 const bool START_FULLSCREEN_DEFAULT = false;
@@ -91,8 +92,10 @@ const float AUDIO_VOLUME_DEFAULT = 0.5f;
 
 // Window-Attributes
 GLFWwindow* window;
+int monitorMaxRefreshRate = 0;
 unsigned int screenWidth = 0;
 unsigned int screenHeight = 0;
+bool vsync = true;
 unsigned int refreshRate = 0;
 string windowTitle = "";
 bool startFullscreen = false;
@@ -1698,7 +1701,9 @@ void readINIFile() {
 		screenHeight = 480.0f;
 	}
 
+	vsync = iniReader.GetBoolean("window", "vsync", VSYNC_DEFAULT);
 	refreshRate = iniReader.GetInteger("window", "refresh_rate", REFRESH_RATE_DEFAULT);
+	monitorMaxRefreshRate = refreshRate;
 	windowTitle = iniReader.Get("window", "title", WINDOW_TITLE_DEFAULT);
 	startFullscreen = iniReader.GetBoolean("window", "fullscreen", START_FULLSCREEN_DEFAULT);
 	startBorderless = iniReader.GetBoolean("window", "borderless_window", START_BORDERLESS_DEFAULT);
@@ -1776,6 +1781,8 @@ void static initOpenGL() {
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
+		monitorMaxRefreshRate = mode->refreshRate;
+
 		if (startBorderless == true) {
 			monitor = nullptr;
 			glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
@@ -1797,6 +1804,8 @@ void static initOpenGL() {
 
 	// This function makes the context of the specified window current on the calling thread. 
 	glfwMakeContextCurrent(window);
+
+	glfwSwapInterval(vsync == true ? 1 : monitorMaxRefreshRate / refreshRate);
 
 	/* --------------------------------------------- */
 	// Init GLEW
