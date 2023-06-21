@@ -79,6 +79,7 @@ const unsigned int SCR_HEIGHT_DEFAULT = 720;
 const unsigned int REFRESH_RATE_DEFAULT = 60;
 const string WINDOW_TITLE_DEFAULT = "Beerpocalypse (CG SS2023)";
 const bool START_FULLSCREEN_DEFAULT = false;
+const bool START_BORDERLESS_DEFAULT = true;
 
 const float CAMERA_FOV_DEFAULT = 60.0f;
 const float CAMERA_NEAR_DEFAULT = 0.1f;
@@ -95,6 +96,7 @@ unsigned int screenHeight = 0;
 unsigned int refreshRate = 0;
 string windowTitle = "";
 bool startFullscreen = false;
+bool startBorderless = false;
 
 // Camera
 float cameraFov = 0.0f;
@@ -1388,7 +1390,7 @@ void setupBloomBuffers() {
 	glDrawBuffers(2, attachments);
 	// check framebuffer for completeness
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "Framebuffer (depth) not complete!" << std::endl;
+		std::cout << "[SETUP]Framebuffer (depth) not complete!" << std::endl;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -1406,7 +1408,7 @@ void setupBloomBuffers() {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongColorBuffers[i], 0);
 		// also check if framebuffers are complete (no need for depth buffer)
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			std::cout << "Framebuffer (blur) not complete!" << std::endl;
+			std::cout << "[SETUP]Framebuffer (blur) not complete!" << std::endl;
 		}
 	}
 }
@@ -1434,7 +1436,7 @@ void adjustBloomBuffers() {
 	glDrawBuffers(2, attachments);
 	// check framebuffer for completeness
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "Framebuffer (depth) not complete!" << std::endl;
+		std::cout << "[ADJUST]Framebuffer (depth) not complete!" << std::endl;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -1450,7 +1452,7 @@ void adjustBloomBuffers() {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingPongColorBuffers[i], 0);
 		// also check if framebuffers are complete (no need for depth buffer)
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-			std::cout << "Framebuffer (blur) not complete!" << std::endl;
+			std::cout << "[ADJUST]Framebuffer (blur) not complete!" << std::endl;
 		}
 	}
 }
@@ -1459,6 +1461,18 @@ void createTextProjection() {
 	textProjection = glm::ortho(0.0f, static_cast<float>(screenWidth), 0.0f, static_cast<float>(screenHeight));
 	textShader.use();
 	textShader.setMat4("projection", textProjection);
+}
+
+void setGamePaused(bool newValue) {
+	isPaused = newValue;
+
+	if (isPaused == true) {
+		// stop capturing mouse
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	} else {
+		// capture mouse
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -1687,6 +1701,7 @@ void readINIFile() {
 	refreshRate = iniReader.GetInteger("window", "refresh_rate", REFRESH_RATE_DEFAULT);
 	windowTitle = iniReader.Get("window", "title", WINDOW_TITLE_DEFAULT);
 	startFullscreen = iniReader.GetBoolean("window", "fullscreen", START_FULLSCREEN_DEFAULT);
+	startBorderless = iniReader.GetBoolean("window", "borderless_window", START_BORDERLESS_DEFAULT);
 
 	cameraFov = (float) iniReader.GetReal("camera", "fov", CAMERA_FOV_DEFAULT);
 	
@@ -1722,18 +1737,6 @@ void readINIFile() {
 	}
 }
 
-void setGamePaused(bool newValue) {
-	isPaused = newValue;
-
-	if (isPaused == true) {
-		// stop capturing mouse
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	} else {
-		// capture mouse
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	}
-}
-
 void static initOpenGL() {
 
 	/* --------------------------------------------- */
@@ -1755,6 +1758,7 @@ void static initOpenGL() {
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);  // Create an OpenGL debug context 
 	glfwWindowHint(GLFW_REFRESH_RATE, refreshRate); // Set refresh rate
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+	glfwWindowHint(GLFW_AUTO_ICONIFY, GLFW_TRUE);
 
 	// Enable antialiasing (4xMSAA)
 	glfwWindowHint(GLFW_SAMPLES, 4);
@@ -1762,12 +1766,25 @@ void static initOpenGL() {
 	// Open window
 	GLFWmonitor* monitor = nullptr;
 
-	if (startFullscreen) {
+	if (startFullscreen == true) {
 		monitor = glfwGetPrimaryMonitor();
 
-		int xP, yP, w, h;
-		glfwGetMonitorWorkarea(monitor, &xP, &yP, &w, &h);
-		window = glfwCreateWindow(w, h, windowTitle.c_str(), monitor, nullptr);
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+
+		if (startBorderless == true) {
+			monitor = nullptr;
+			glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+		}
+
+		screenWidth = mode->width;
+		screenHeight = mode->height;
+
+		window = glfwCreateWindow(screenWidth, screenHeight, windowTitle.c_str(), monitor, nullptr);
 	} else {
 		window = glfwCreateWindow(screenWidth, screenHeight, windowTitle.c_str(), monitor, nullptr);
 	}
