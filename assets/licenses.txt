@@ -8,26 +8,54 @@ skybox Yokohama converted (http://www.humus.name/index.php?page=Textures&start=0
 
 
 Links to all third-party assets can be found below.
-All assets made by ourselves can be used and distributed freely and without attribution under the CC0 License (Public Domain).
+We have checked all assets to the best of our abilities and made sure they can be used for our game, by checking for creative commons, free-use licenses, terms of use legal agreements or permissions to use in an educational context or for commercial and non-commercial video game development.
+
+All assets made by ourselves can be used, modified and distributed freely without attribution (Public Domain).
 
 ------- MODELS ----------
 
+Zombie:
+(c) Adobe Mixamo
+Terms of use under www.adobe.com/legal/terms.html
 
+Brick Wall:
+Model:
+(c) Marc Putz & Fabian Holzschuster
+Texture:
+Found on www.3dtextures.me/2020/09/17/brick-wall-019/
+CC0 Creative Commons License - Public Domain
+Specular map created from inverted roughness map
+
+Concrete/Pavement Ground:
+Model:
+(c) Marc Putz & Fabian Holzschuster
+Texture:
+Found on www.3dtextures.me/2022/03/09/concrete-019/
+CC0 Creative Commons License - Public Domain
+Specular map created from inverted roughness map
+
+Wood & Metal Roof:
+Model:
+(c) Marc Putz & Fabian Holzschuster
+Texture:
+Found on www.3dtextures.me/2022/09/16/wood-metal-platform-001/
+CC0 Creative Commons License - Public Domain
+Specular map created from modified metallic map
 
 ------- IMAGES ----------
 
 Bullet:
-https://www.rawpixel.com/image/6334912/png-sticker-public-domain#eyJrZXlzIjoiYnVsbGV0IHdhciIsInNvcnRlZEtleXMiOiJidWxsZXQgd2FyIn0
+www.rawpixel.com/image/6334912/png-sticker-public-domain#eyJrZXlzIjoiYnVsbGV0IHdhciIsInNvcnRlZEtleXMiOiJidWxsZXQgd2FyIn0
 (CC0 Creative Commons License - Public Domain)
 
 Lifebar:
-(c) Marc Putz & Fabian Holzschuster, 2023
+(c) Marc Putz & Fabian Holzschuster
 
 Zombie Blood:
-(c) Marc Putz & Fabian Holzschuster, 2023
+(c) Marc Putz & Fabian Holzschuster
 
 Beer Sparkle:
-(c) Marc Putz & Fabian Holzschsuter, 2023
+(c) Marc Putz & Fabian Holzschsuter
 
 Beer Icon:
 Image taken from 3D model, source can be found under the Models section.
