@@ -1769,19 +1769,19 @@ void static initOpenGL() {
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	// Open window
-	GLFWmonitor* monitor = nullptr;
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	monitorMaxRefreshRate = mode->refreshRate;
+
+	if (refreshRate > monitorMaxRefreshRate) {
+		refreshRate = monitorMaxRefreshRate;
+	}
 
 	if (startFullscreen == true) {
-		monitor = glfwGetPrimaryMonitor();
-
-		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
 		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-
-		monitorMaxRefreshRate = mode->refreshRate;
 
 		if (startBorderless == true) {
 			monitor = nullptr;
@@ -1793,6 +1793,7 @@ void static initOpenGL() {
 
 		window = glfwCreateWindow(screenWidth, screenHeight, windowTitle.c_str(), monitor, nullptr);
 	} else {
+		monitor = nullptr;
 		window = glfwCreateWindow(screenWidth, screenHeight, windowTitle.c_str(), monitor, nullptr);
 	}
 
