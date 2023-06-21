@@ -26,6 +26,14 @@ Found on www.3dtextures.me/2020/09/17/brick-wall-019/
 CC0 Creative Commons License - Public Domain
 Specular map created from inverted roughness map
 
+Wooden Crates:
+Model:
+(c) Marc Putz & Fabian Holzschuster
+Texture:
+Found on www.ambientcg.com/view?id=Planks037A
+CC0 Creative Commons License - Public Domain
+Specular map created from inverted roughness map
+
 Concrete/Pavement Ground:
 Model:
 (c) Marc Putz & Fabian Holzschuster
