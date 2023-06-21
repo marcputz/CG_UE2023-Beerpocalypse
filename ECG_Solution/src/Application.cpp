@@ -908,7 +908,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 	// floor
 	Ground* groundCorridorTopOfFourth = new Ground{ &defaultShader, gPhysics };
 	groundCorridorTopOfFourth->setLocalPosition(glm::vec3(-17.5f, 9.5f, 35.0f));
-	groundCorridorTopOfFourth->setScale(glm::vec3(8.4999f, 1.0f, 2.0f), true);
+	// z-fighting prevention
+	groundCorridorTopOfFourth->setScale(glm::vec3(8.499f, 1.0f, 2.0f), true);
 	// right wall
 	StaticCube* rightWallCorridorTopOfFourth = new StaticCube{ &defaultShader, gPhysics };
 	rightWallCorridorTopOfFourth->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, -3.0f));

@@ -9,5 +9,7 @@ uniform sampler2D tex;
 
 void main() {
 	FragColor = texture(tex, TexCoords);
+
+	// don't bloom
 	BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 }
