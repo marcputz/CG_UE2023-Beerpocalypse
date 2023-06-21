@@ -56,6 +56,7 @@ void setupBloomBuffers();
 void adjustBloomBuffers();
 void createTextProjection();
 void initLevel(MyParticleGenerator& particleGenerator);
+void setGamePaused(bool newValue);
 
 // PhysX
 void static initPhysX();
@@ -589,14 +590,13 @@ int main(int argc, char** argv) {
 		// Fail Condition
 		if (player->getHealth() <= 0) {
 			isGameLost = true;
-			isPaused = true;
-			//exit(100);
+			setGamePaused(true);
 		}
 
 		// win condition
 		if (score == maxScore) {
 			isGameWon = true;
-			isPaused = true;
+			setGamePaused(true);
 		}
 
 		// Render Light-Cubes
@@ -1485,7 +1485,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	case GLFW_KEY_ESCAPE:
 		// Pause game
 		if (isGameLost == false && isGameWon == false) {
-			isPaused = !isPaused;
+			setGamePaused(!isPaused);
 		}
 		break;
 	case GLFW_KEY_ENTER:
@@ -1496,7 +1496,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			score = 0;
 			isGameLost = false;
 			isGameWon = false;
-			isPaused = false;
+			setGamePaused(false);
 		}
 		break;
 	case GLFW_KEY_F10:
@@ -1719,6 +1719,18 @@ void readINIFile() {
 
 	if (audioVolume > 1.0f) {
 		audioVolume = 1.0f;
+	}
+}
+
+void setGamePaused(bool newValue) {
+	isPaused = newValue;
+
+	if (isPaused == true) {
+		// stop capturing mouse
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	} else {
+		// capture mouse
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	}
 }
 
