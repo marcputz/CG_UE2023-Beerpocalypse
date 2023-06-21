@@ -42,6 +42,12 @@ Found on www.3dtextures.me/2022/09/16/wood-metal-platform-001/
 CC0 Creative Commons License - Public Domain
 Specular map created from modified metallic map
 
+Beer Bottle:
+www.free3d.com/3d-model/-oz-beer-bottle-v1--386973.html
+(c) User: printable_models
+Slightly modified model for lower polygon count
+Changed beer sticker texture
+
 ------- IMAGES ----------
 
 Bullet:
