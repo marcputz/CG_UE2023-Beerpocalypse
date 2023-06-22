@@ -1,11 +1,11 @@
 #version 330 core
 
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 in vec2 TexCoords;
 flat in int TexSelect;
 flat in float ParticleScale;
-//in vec4 particleColor;
 
 
 uniform sampler2D bloodTexture;
@@ -25,5 +25,7 @@ void main() {
 	}
 
 	result.xyz = result.xyz * (1 - ParticleScale);
+
 	FragColor = result;
+	BrightColor = result;
 }
