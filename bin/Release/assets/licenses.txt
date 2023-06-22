@@ -1,12 +1,3 @@
-All images converted and resized with http://www.aconvert.com/image/
-
-wood_texture.dds cropped (Total Textures - R2 Copyright 3DTotal.com)
-wood_texture_specular.dds cropped (Total Textures - R2 Copyright 3DTotal.com)
-bricks_diffuse.dds (Total Textures - R2 Copyright 3DTotal.com)
-bricks_specular.dds (Total Textures - R2 Copyright 3DTotal.com)
-skybox Yokohama converted (http://www.humus.name/index.php?page=Textures&start=0)
-
-
 Links to all third-party assets can be found below.
 We have checked all assets to the best of our abilities and made sure they can be used for our game, by checking for creative commons, free-use licenses, terms of use legal agreements or permissions to use in an educational context or for commercial and non-commercial video game development.
 
