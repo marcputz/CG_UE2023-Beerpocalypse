@@ -879,8 +879,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 
 	Button* buttonRoomThree = new Button{ &defaultShader, gPhysics, fakeWallRoomTwoButtonThree };
 	buttonRoomThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(7.0f, 2.5f, 9.0f));
-	buttonRoomThree->setScale(glm::vec3(0.5, 0.5, 0.5));
-	buttonRoomThree->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
+	buttonRoomThree->setScale(glm::vec3(4.0f, 4.0f, 4.0f));
+	buttonRoomThree->setLocalRotation(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
 
 	Beer* beerThree = new Beer{ &defaultShader, gPhysics };
 	beerThree->setLocalPosition(groundRoomThree->getWorldPosition() + glm::vec3(-5, beerYOffset, 4));
@@ -1018,8 +1018,8 @@ void initLevel(MyParticleGenerator& particleGenerator) {
 
 	Button* buttonRoomFour = new Button{ &defaultShader, gPhysics, fakeWallRoomTwoButtonFour };
 	buttonRoomFour->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, 2.5f, 2.0f));
-	buttonRoomFour->setScale(glm::vec3(0.5, 0.5, 0.5));
-	buttonRoomFour->setLocalRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
+	buttonRoomFour->setScale(glm::vec3(4.0f, 4.0f, 4.0f));
+	buttonRoomFour->setLocalRotation(glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
 
 	Beer* beerFour = new Beer{ &defaultShader, gPhysics };
 	beerFour->setLocalPosition(groundCorridorTopOfFourth->getWorldPosition() + glm::vec3(0.0f, beerYOffset, 0.0f));

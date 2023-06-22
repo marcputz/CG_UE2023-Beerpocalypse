@@ -1,15 +1,15 @@
 #include "Button.h"
 
-Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate) : GameObject("Button", shader, physics, "button/button_red.obj", true) {
+Button::Button(MyShader* shader, PxPhysics* physics, Activatable* objectToActivate) : GameObject("Button", shader, physics, "button/button_red/button.obj", true) {
 	linkedObject_ = objectToActivate;
-	
+
 	PxMaterial* material = physics->createMaterial(PxReal(0.8f), PxReal(0.8f), PxReal(0.1f));
-	PxBoxGeometry geometry = PxBoxGeometry(1, 0.4f, 1);
+	PxBoxGeometry geometry = PxBoxGeometry(0.1f, 0.04f, 0.1f);
 
 	setCollider(&geometry, material);
 
 	redButtonModel = model_;
-	greenButtonModel = new MyModel("button/button_green.obj");
+	greenButtonModel = new MyModel("button/button_green/button.obj");
 
 	if (isActivated) {
 		model_ = greenButtonModel;
